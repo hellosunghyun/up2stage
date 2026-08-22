@@ -29,6 +29,13 @@ const RADIUS = {
   lg: 16,
 };
 
+function getUserFriendlyError(message: string): string {
+  if (message.includes("Receiving end does not exist")) {
+    return "현재 탭에서 확장 프로그램이 실행되지 않았어요. http/https 웹페이지에서 다시 열어주세요.";
+  }
+  return "문서를 불러오지 못했어요. 페이지를 새로고침하고 다시 시도해주세요.";
+}
+
 export function App() {
   const [panel, setPanel] = useState<PanelState>("DISCOVERY");
   const [attachments, setAttachments] = useState<AttachmentPayload[]>([]);
@@ -117,11 +124,11 @@ export function App() {
           flex: 1,
           overflowY: "auto",
           padding: "20px 16px",
-          background: COLORS.bgCanvas,
+          background: COLORS.bgInverse,
         }}
       >
         {error && (
-          <p style={{ color: COLORS.textPrimary }}>{error}</p>
+          <p style={{ color: COLORS.brandLime }}>{getUserFriendlyError(error)}</p>
         )}
 
         {panel === "DISCOVERY" && (
@@ -198,7 +205,7 @@ function DiscoveryView({
         style={{
           fontSize: 19,
           fontWeight: 700,
-          color: COLORS.textPrimary,
+          color: COLORS.textOnInverse,
           margin: 0,
         }}
       >
@@ -207,7 +214,7 @@ function DiscoveryView({
       <p
         style={{
           fontSize: 14,
-          color: COLORS.textSecondary,
+          color: COLORS.textInverseSecondary,
           margin: 0,
         }}
       >
@@ -215,7 +222,7 @@ function DiscoveryView({
       </p>
 
       {attachments.length === 0 ? (
-        <p style={{ color: COLORS.textSecondary }}>
+        <p style={{ color: COLORS.textInverseSecondary }}>
           현재 페이지에서 지원하는 형식의 첨부 문서를 찾지 못했어요.
         </p>
       ) : (
@@ -273,7 +280,7 @@ function SelectionView({
           style={{
             fontSize: 19,
             fontWeight: 700,
-            color: COLORS.textPrimary,
+            color: COLORS.textOnInverse,
             margin: 0,
           }}
         >
@@ -293,7 +300,7 @@ function SelectionView({
         </button>
       </div>
 
-      <p style={{ fontSize: 14, color: COLORS.textSecondary, margin: 0 }}>
+      <p style={{ fontSize: 14, color: COLORS.textInverseSecondary, margin: 0 }}>
         함께 분석할 문서를 골라주세요.
       </p>
 
@@ -311,7 +318,7 @@ function SelectionView({
       <p
         style={{
           fontSize: 12,
-          color: COLORS.textSecondary,
+          color: COLORS.textInverseSecondary,
           margin: 0,
           display: "flex",
           alignItems: "center",
@@ -329,9 +336,9 @@ function SelectionView({
             flex: 1,
             padding: "14px 16px",
             borderRadius: RADIUS.md,
-            border: `1px solid ${COLORS.border}`,
+            border: `1px solid ${COLORS.textInverseSecondary}`,
             background: "transparent",
-            color: COLORS.textPrimary,
+            color: COLORS.textOnInverse,
             fontSize: 15,
             fontWeight: 700,
             cursor: "pointer",
@@ -382,7 +389,7 @@ function ConsentView({
         style={{
           fontSize: 19,
           fontWeight: 700,
-          color: COLORS.textPrimary,
+          color: COLORS.textOnInverse,
           margin: 0,
         }}
       >
@@ -398,7 +405,7 @@ function ConsentView({
       <p
         style={{
           fontSize: 14,
-          color: COLORS.textSecondary,
+          color: COLORS.textInverseSecondary,
           margin: 0,
         }}
       >
@@ -419,7 +426,7 @@ function ConsentView({
           onChange={onToggleConsent}
           style={{ marginTop: 2 }}
         />
-        <span style={{ fontSize: 13, color: COLORS.textPrimary }}>
+        <span style={{ fontSize: 13, color: COLORS.textOnInverse }}>
           위 문서를 AI 처리에 사용하는 데 동의합니다.
         </span>
       </label>
@@ -431,9 +438,9 @@ function ConsentView({
             flex: 1,
             padding: "14px 16px",
             borderRadius: RADIUS.md,
-            border: `1px solid ${COLORS.border}`,
+            border: `1px solid ${COLORS.textInverseSecondary}`,
             background: "transparent",
-            color: COLORS.textPrimary,
+            color: COLORS.textOnInverse,
             fontSize: 15,
             fontWeight: 700,
             cursor: "pointer",
