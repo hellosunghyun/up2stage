@@ -20,9 +20,9 @@ export default defineBackground(() => {
     await chrome.tabs.create({ url });
   });
 
-  chrome.action.onClicked.addListener(async (tab) => {
+  chrome.action.onClicked.addListener((tab) => {
     if (tab.id) {
-      await chrome.sidePanel.open({ tabId: tab.id });
+      void chrome.sidePanel.open({ tabId: tab.id });
     }
   });
 });

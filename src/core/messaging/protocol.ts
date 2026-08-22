@@ -30,7 +30,7 @@ export const messaging = {
   ): void {
     onMessage("openSidePanel", async (message) => {
       const parsed = OpenSidePanelSchema.parse(message.data);
-      await handler(parsed, message.sender as chrome.runtime.MessageSender);
+      await handler(parsed, message.sender);
     });
   },
   async openViewer(data: OpenViewerData): Promise<void> {

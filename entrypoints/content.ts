@@ -9,8 +9,8 @@ function checkAndRenderOverlay() {
 
   if (matched) {
     mountOverlay({
-      onOpen: async () => {
-        await messaging.openSidePanel({});
+      onOpen: () => {
+        void messaging.openSidePanel({});
       },
       onClose: () => {
         unmountOverlay();

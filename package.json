@@ -41,6 +41,7 @@
     "@axe-core/playwright": "latest",
     "@commitlint/cli": "latest",
     "@commitlint/config-conventional": "latest",
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "latest",
     "@tailwindcss/vite": "latest",
     "@testing-library/jest-dom": "latest",
@@ -54,7 +55,7 @@
     "globals": "latest",
     "prettier": "latest",
     "tailwindcss": "latest",
-    "typescript": "latest",
+    "typescript": "5.8.3",
     "typescript-eslint": "latest",
     "vitest": "latest",
     "wxt": "latest"
