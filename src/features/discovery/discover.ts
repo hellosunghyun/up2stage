@@ -1,4 +1,4 @@
-import { DiscoveredAttachment } from "./types";
+import type { DiscoveredAttachment } from "./types";
 import { canonicalUrl, toAbsoluteUrl } from "./url";
 import { inferExtension, inferFileName } from "./filename";
 

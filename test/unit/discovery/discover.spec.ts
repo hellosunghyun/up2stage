@@ -16,15 +16,15 @@ describe("attachment discovery", () => {
       '<a href="https://example.org/notice.pdf">공고문</a>';
     const found = discoverAttachments("https://example.org/");
     expect(found).toHaveLength(1);
-    expect(found[0].fileName).toBe("notice.pdf");
-    expect(found[0].extension).toBe("pdf");
-    expect(found[0].selected).toBe(true);
+    expect(found[0]?.fileName).toBe("notice.pdf");
+    expect(found[0]?.extension).toBe("pdf");
+    expect(found[0]?.selected).toBe(true);
   });
 
   it("converts relative URLs to absolute", () => {
     document.body.innerHTML = '<a href="/documents/form.hwp">신청서</a>';
     const found = discoverAttachments("https://example.org/page");
-    expect(found[0].url).toBe("https://example.org/documents/form.hwp");
+    expect(found[0]?.url).toBe("https://example.org/documents/form.hwp");
   });
 
   it("deduplicates same URL and filename", () => {
@@ -67,7 +67,7 @@ describe("attachment discovery", () => {
     document.body.innerHTML =
       '<a href="https://example.org/notice.pdf">공고문 다운로드</a>';
     const found = discoverAttachments("https://example.org/");
-    expect(found[0].sourceElementText).toBe("공고문 다운로드");
+    expect(found[0]?.sourceElementText).toBe("공고문 다운로드");
   });
 });
 
