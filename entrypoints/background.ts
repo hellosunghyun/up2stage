@@ -17,7 +17,10 @@ async function getActiveTabId(): Promise<number> {
 
 async function sendToContent<T>(name: string): Promise<T> {
   const tabId = await getActiveTabId();
-  return chrome.tabs.sendMessage(tabId, { name, data: undefined });
+  console.log(`[up2stage:background] sendToContent tabId=${tabId}, name=${name}`);
+  const result = (await chrome.tabs.sendMessage(tabId, { name, data: undefined })) as T;
+  console.log(`[up2stage:background] sendToContent response:`, result);
+  return result;
 }
 
 export default defineBackground(() => {

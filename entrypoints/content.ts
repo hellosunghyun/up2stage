@@ -24,6 +24,7 @@ chrome.runtime.onMessage.addListener((
   sendResponse: (response?: unknown) => void
 ) => {
   const name = getMessageName(message);
+  console.log("[up2stage:content] onMessage:", name, message);
 
   if (name === "currentPageContext") {
     void Promise.resolve({
@@ -34,7 +35,15 @@ chrome.runtime.onMessage.addListener((
   }
 
   if (name === "discoverAttachments") {
-    void Promise.resolve(discoverAttachments()).then(sendResponse);
+    void Promise.resolve(discoverAttachments())
+      .then((result) => {
+        console.log("[up2stage:content] discoverAttachments result:", result.length);
+        sendResponse(result);
+      })
+      .catch((e) => {
+        console.error("[up2stage:content] discoverAttachments failed:", e);
+        sendResponse([]);
+      });
     return true;
   }
 

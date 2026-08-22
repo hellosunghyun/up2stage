@@ -48,11 +48,14 @@ export function App() {
 
     async function load() {
       try {
+        console.log("[up2stage:sidepanel] loading attachments...");
         const docs = await messaging.discoverAttachments();
+        console.log("[up2stage:sidepanel] attachments loaded:", docs);
         if (!mounted) return;
         setAttachments(docs);
         setSelectedIds(new Set(docs.map((d) => d.id)));
       } catch (e) {
+        console.error("[up2stage:sidepanel] attachments failed:", e);
         if (!mounted) return;
         setError(
           e instanceof Error ? e.message : "문서를 불러오지 못했어요."
