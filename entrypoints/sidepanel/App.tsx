@@ -123,12 +123,12 @@ export function App() {
         style={{
           flex: 1,
           overflowY: "auto",
-          padding: "20px 16px",
-          background: COLORS.bgInverse,
+          padding: 0,
+          background: COLORS.bgCanvas,
         }}
       >
         {error && (
-          <p style={{ color: COLORS.brandLime }}>{getUserFriendlyError(error)}</p>
+          <p style={{ padding: "16px", color: COLORS.textPrimary }}>{getUserFriendlyError(error)}</p>
         )}
 
         {panel === "DISCOVERY" && (
@@ -205,8 +205,9 @@ function DiscoveryView({
         style={{
           fontSize: 19,
           fontWeight: 700,
-          color: COLORS.textOnInverse,
+          color: COLORS.textPrimary,
           margin: 0,
+          padding: "20px 16px 0",
         }}
       >
         복잡한 공고 문서, 바로 정리해볼까요?
@@ -214,15 +215,16 @@ function DiscoveryView({
       <p
         style={{
           fontSize: 14,
-          color: COLORS.textInverseSecondary,
+          color: COLORS.textSecondary,
           margin: 0,
+          padding: "0 16px",
         }}
       >
         직접 열어볼 필요 없이 관련 문서를 함께 분석할 수 있어요.
       </p>
 
       {attachments.length === 0 ? (
-        <p style={{ color: COLORS.textInverseSecondary }}>
+        <p style={{ color: COLORS.textSecondary, padding: "0 16px" }}>
           현재 페이지에서 지원하는 형식의 첨부 문서를 찾지 못했어요.
         </p>
       ) : (
@@ -236,7 +238,7 @@ function DiscoveryView({
           <button
             onClick={onStart}
             style={{
-              marginTop: 8,
+              margin: "8px 16px 0",
               padding: "14px 16px",
               borderRadius: RADIUS.md,
               border: "none",
@@ -275,12 +277,12 @@ function SelectionView({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 16px 0" }}>
         <h2
           style={{
             fontSize: 19,
             fontWeight: 700,
-            color: COLORS.textOnInverse,
+            color: COLORS.textPrimary,
             margin: 0,
           }}
         >
@@ -300,7 +302,7 @@ function SelectionView({
         </button>
       </div>
 
-      <p style={{ fontSize: 14, color: COLORS.textInverseSecondary, margin: 0 }}>
+      <p style={{ fontSize: 14, color: COLORS.textSecondary, margin: 0, padding: "0 16px" }}>
         함께 분석할 문서를 골라주세요.
       </p>
 
@@ -318,27 +320,28 @@ function SelectionView({
       <p
         style={{
           fontSize: 12,
-          color: COLORS.textInverseSecondary,
+          color: COLORS.textSecondary,
           margin: 0,
           display: "flex",
           alignItems: "center",
           gap: 6,
+          padding: "0 16px",
         }}
       >
         <span style={{ color: COLORS.actionPrimary }}>ⓘ</span>
         선택한 문서는 Upstage AI로 전송되어 분석됩니다.
       </p>
 
-      <div style={{ display: "flex", gap: 8 }}>
+      <div style={{ display: "flex", gap: 8, padding: "0 16px 16px" }}>
         <button
           onClick={onBack}
           style={{
             flex: 1,
             padding: "14px 16px",
             borderRadius: RADIUS.md,
-            border: `1px solid ${COLORS.textInverseSecondary}`,
+            border: `1px solid ${COLORS.border}`,
             background: "transparent",
-            color: COLORS.textOnInverse,
+            color: COLORS.textPrimary,
             fontSize: 15,
             fontWeight: 700,
             cursor: "pointer",
@@ -389,8 +392,9 @@ function ConsentView({
         style={{
           fontSize: 19,
           fontWeight: 700,
-          color: COLORS.textOnInverse,
+          color: COLORS.textPrimary,
           margin: 0,
+          padding: "16px 16px 0",
         }}
       >
         선택한 문서를 확인해주세요.
@@ -405,8 +409,9 @@ function ConsentView({
       <p
         style={{
           fontSize: 14,
-          color: COLORS.textInverseSecondary,
+          color: COLORS.textSecondary,
           margin: 0,
+          padding: "0 16px",
         }}
       >
         이 문서는 Upstage를 통해 처리됩니다.
@@ -418,6 +423,7 @@ function ConsentView({
           alignItems: "flex-start",
           gap: 10,
           cursor: "pointer",
+          padding: "0 16px",
         }}
       >
         <input
@@ -426,21 +432,21 @@ function ConsentView({
           onChange={onToggleConsent}
           style={{ marginTop: 2 }}
         />
-        <span style={{ fontSize: 13, color: COLORS.textOnInverse }}>
+        <span style={{ fontSize: 13, color: COLORS.textPrimary }}>
           위 문서를 AI 처리에 사용하는 데 동의합니다.
         </span>
       </label>
 
-      <div style={{ display: "flex", gap: 8 }}>
+      <div style={{ display: "flex", gap: 8, padding: "0 16px 16px" }}>
         <button
           onClick={onBack}
           style={{
             flex: 1,
             padding: "14px 16px",
             borderRadius: RADIUS.md,
-            border: `1px solid ${COLORS.textInverseSecondary}`,
+            border: `1px solid ${COLORS.border}`,
             background: "transparent",
-            color: COLORS.textOnInverse,
+            color: COLORS.textPrimary,
             fontSize: 15,
             fontWeight: 700,
             cursor: "pointer",
