@@ -31,14 +31,11 @@ up to stage는 현재 보고 있는 웹페이지와 그 페이지에 연결된 �
 
 up to stage는 이 과정을 다음과 같이 바꿉니다.
 
-```text
-Discover
-   ↓
-Understand
-   ↓
-Verify
-   ↓
-Act
+```mermaid
+flowchart TD
+    Discover --> Understand
+    Understand --> Verify
+    Verify --> Act
 ```
 
 즉, **Many Documents → One Decision**을 만드는 것이 핵심입니다.
@@ -53,12 +50,11 @@ Chrome Extension은 등록된 URL Rule 또는 현재 페이지의 문서 구조�
 
 P0에서는 데모 안정성을 위해 **URL Rule 기반 Contextual Overlay**를 사용합니다.
 
-```text
-현재 웹페이지
-   ↓
-"관련 문서를 함께 확인할 수 있어요"
-   ↓
-up to stage Side Panel 열기
+```mermaid
+flowchart TD
+    A[현재 웹페이지] --> B[Contextual Overlay 표시]
+    B --> C["관련 문서를 함께 확인할 수 있어요"]
+    C --> D[up to stage Side Panel 열기]
 ```
 
 Overlay는 제품 본체가 아니라 현재 페이지에서 분석 경험으로 진입하는 가벼운 trigger입니다.
@@ -71,14 +67,11 @@ Overlay는 제품 본체가 아니라 현재 페이지에서 분석 경험으로
 
 발견했다고 바로 외부로 전송하지 않습니다.
 
-```text
-Document Discovery
-        ↓
-Document Selection
-        ↓
-External AI Processing Consent
-        ↓
-Analysis
+```mermaid
+flowchart TD
+    A[Document Discovery] --> B[Document Selection]
+    B --> C[External AI Processing Consent]
+    C --> D[Analysis]
 ```
 
 사용자가 선택한 문서만 Upstage로 전달합니다.
@@ -93,24 +86,15 @@ up to stage는 모든 파일에 동일한 Extraction Schema를 적용하지 않�
 
 현재 확정된 범용 문서 역할은 다음과 같습니다.
 
-```text
-primary_notice
-requirements_checklist
-application_form
-procedure_guide
-reference_material
-amendment_update
-other
-```
-
-예를 들어:
-
-- `primary_notice` → 핵심 조건, 일정, 제출물, 주의사항
-- `requirements_checklist` → 조건, 제외조건, 확인 질문
-- `application_form` → 필수 입력, 서명, 첨부, 형식 제약
-- `procedure_guide` → 절차, 제출 채널, 완료 확인
-- `reference_material` → 대량 재추출하지 않고 Search/lookup 대상으로 사용
-- `amendment_update` → 변경 전·후와 대체 관계 확인
+| 역할                     | 설명                                             |
+| ------------------------ | ------------------------------------------------ |
+| `primary_notice`         | 핵심 조건, 일정, 제출물, 주의사항                |
+| `requirements_checklist` | 조건, 제외조건, 확인 질문                        |
+| `application_form`       | 필수 입력, 서명, 첨부, 형식 제약                 |
+| `procedure_guide`        | 절차, 제출 채널, 완료 확인                       |
+| `reference_material`     | 대량 재추출하지 않고 Search/lookup 대상으로 사용 |
+| `amendment_update`       | 변경 전·후와 대체 관계 확인                      |
+| `other`                  | 기타 문서                                        |
 
 이 구조 덕분에 특정 장학금 하나가 아니라 다양한 공공·행정·지원 문서 Workflow로 확장할 수 있습니다.
 
@@ -136,15 +120,15 @@ Quick Question은 사용자가 버튼을 누른 뒤 새로 생성하지 않습�
 
 Agent가 문서를 분석할 때 미리 다음을 추출합니다.
 
-```text
-key
-label
-input type
-required
-options
-rule
-source location
-```
+| 필드              | 설명                                               |
+| ----------------- | -------------------------------------------------- |
+| `key`             | 질문 식별자                                        |
+| `label`           | 사용자에게 보이는 문구                             |
+| `input type`      | 입력 형식 (select, text, number, date, boolean 등) |
+| `required`        | 필수 응답 여부                                     |
+| `options`         | 선택형 질문의 선택지                               |
+| `rule`            | 평가 규칙                                          |
+| `source location` | 근거 Source ID                                     |
 
 예를 들어 `type=select`이고 `options`가 존재하면 해당 선택지를 그대로 동적 Form으로 렌더링합니다.
 
@@ -168,14 +152,14 @@ source location
 
 Parse 결과의 원문 element에 up to stage가 자체적으로 `Source ID`를 부여합니다.
 
-```text
-Source ID
-   ├─ Initial Guidance
-   ├─ Personalized Decision
-   ├─ Chat Answer
-   ├─ Original Highlight
-   ├─ Document Outline
-   └─ Accessible Semantic View
+```mermaid
+flowchart TD
+    A[Source ID] --> B[Initial Guidance]
+    A --> C[Personalized Decision]
+    A --> D[Chat Answer]
+    A --> E[Original Highlight]
+    A --> F[Document Outline]
+    A --> G[Accessible Semantic View]
 ```
 
 모델이 Source ID를 새로 만들게 하지 않습니다.
@@ -189,13 +173,11 @@ Solar도 이미 존재하는 Source ID 중 근거를 선택하는 역할만 합�
 
 독립 Viewer Page는 다음 세 영역으로 구성됩니다.
 
-```text
-┌──────────────┬───────────────────────────────┬──────────────────────┐
-│ Document     │ Original Document             │ up to stage          │
-│ Outline      │ Viewer                        │ Guidance / Evidence  │
-│ ~224px       │ Flexible                      │ ~443px               │
-└──────────────┴───────────────────────────────┴──────────────────────┘
-```
+| 영역                            | 역할                | 너비     |
+| ------------------------------- | ------------------- | -------- |
+| Document Outline                | 문서 구조 기반 목차 | ~224px   |
+| Original Document Viewer        | 원본 문서 렌더링    | flexible |
+| up to stage Guidance / Evidence | 안내와 근거         | ~443px   |
 
 Viewer에서는 다음을 제공합니다.
 
@@ -216,60 +198,55 @@ Viewer에서는 다음을 제공합니다.
 
 up to stage는 **Studio가 문서를 이해하고, Extension이 Case와 사용자 경험을 조직하는 구조**로 설계되어 있습니다.
 
-```text
-┌──────────────────────────────────────────────────────────────────────┐
-│                          Current Web Page                            │
-│                                                                      │
-│ URL Rule → Contextual Overlay                                       │
-│ DOM Attachment Discovery                                            │
-└──────────────────────────────┬───────────────────────────────────────┘
-                               │
-                               ▼
-┌──────────────────────────────────────────────────────────────────────┐
-│                       Chrome Side Panel                              │
-│                                                                      │
-│ Discover → Select → Consent → Process → Guidance                    │
-│                                      ↓                               │
-│                                 Quick Check                          │
-│                                      ↓                               │
-│                                     Q&A                              │
-└──────────────────────────────┬───────────────────────────────────────┘
-                               │
-                               ▼
-┌──────────────────── Upstage Studio Agent v0.22 ─────────────────────┐
-│                                                                      │
-│ Document Parse                                                       │
-│      ↓                                                               │
-│ Classify + Split                                                     │
-│      ↓                                                               │
-│ Role-specific Information Extract                                   │
-│      ↓                                                               │
-│ Initial Guidance Instruct                                           │
-└──────────────────────────────┬───────────────────────────────────────┘
-                               │ include=all
-                               ▼
-┌──────────────────────── up to stage Runtime ────────────────────────┐
-│                                                                      │
-│ Agent Output Adapter                                                 │
-│ Case Registry                                                        │
-│ Source Registry                                                      │
-│ Quick Question Normalizer                                           │
-│ Deterministic Decision Engine                                       │
-│ Conflict Detector                                                    │
-│ Section Chunker                                                      │
-│ Upstage Search                                                       │
-│ Solar                                                                │
-│ Evidence Resolver / Validator                                       │
-│ IndexedDB Cache                                                      │
-└──────────────────────────────┬───────────────────────────────────────┘
-                               │
-                               ▼
-┌────────────────────────── Viewer Page ───────────────────────────────┐
-│                                                                      │
-│ Document Outline │ Format Renderer │ Guidance / Evidence            │
-│                  │ Evidence Layer  │                                │
-│                  │ Semantic Layer  │                                │
-└──────────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph WebPage[Current Web Page]
+        A1[URL Rule → Contextual Overlay]
+        A2[DOM Attachment Discovery]
+    end
+
+    WebPage --> SidePanel
+
+    subgraph SidePanel[Chrome Side Panel]
+        B1[Discover → Select → Consent → Process → Guidance]
+        B2[Quick Check]
+        B3[Q&A]
+        B1 --> B2 --> B3
+    end
+
+    SidePanel --> Upstage
+
+    subgraph Upstage[Upstage Studio Agent v0.22]
+        C1[Document Parse]
+        C2[Classify + Split]
+        C3[Role-specific Information Extract]
+        C4[Initial Guidance Instruct]
+        C1 --> C2 --> C3 --> C4
+    end
+
+    Upstage --> Runtime
+
+    subgraph Runtime[up to stage Runtime]
+        D1[Agent Output Adapter]
+        D2[Case Registry]
+        D3[Source Registry]
+        D4[Quick Question Normalizer]
+        D5[Deterministic Decision Engine]
+        D6[Conflict Detector]
+        D7[Section Chunker]
+        D8[Upstage Search]
+        D9[Solar]
+        D10[Evidence Resolver / Validator]
+        D11[IndexedDB Cache]
+    end
+
+    Runtime --> Viewer
+
+    subgraph Viewer[Viewer Page]
+        E1[Document Outline]
+        E2[Format Renderer]
+        E3[Guidance / Evidence]
+    end
 ```
 
 ---
@@ -280,14 +257,11 @@ up to stage는 **Studio가 문서를 이해하고, Extension이 Case와 사용�
 
 현재 Agent는 확정본으로 취급합니다.
 
-```text
-Document Parse
-      ↓
-Classify + Split
-      ↓
-Role-specific Extract
-      ↓
-Initial Guidance Instruct
+```mermaid
+flowchart TD
+    A[Document Parse] --> B[Classify + Split]
+    B --> C[Role-specific Extract]
+    C --> D[Initial Guidance Instruct]
 ```
 
 ### Document Parse
@@ -314,28 +288,24 @@ Studio의 책임은 여기까지입니다.
 
 긴 문서나 reference material을 모든 질문마다 다시 LLM에 넣지 않습니다.
 
-```text
-Parse Result
-   ↓
-Section Chunker
-   ↓
-Upstage Search
-   ↓
-Relevant Sections
-   ↓
-Candidate Source Elements
-   ↓
-Solar
-   ↓
-Validated Evidence
+```mermaid
+flowchart TD
+    A[Parse Result] --> B[Section Chunker]
+    B --> C[Upstage Search]
+    C --> D[Relevant Sections]
+    D --> E[Candidate Source Elements]
+    E --> F[Solar]
+    F --> G[Validated Evidence]
 ```
 
 Section boundary는 다음 순서로 판단합니다.
 
-1. Heading
-2. Numbered structure (`1.`, `가.`, `①`, `제1조`, `붙임` 등)
-3. Table / List
-4. Length
+| 우선순위 | 기준                                                      |
+| -------- | --------------------------------------------------------- |
+| 1        | Heading                                                   |
+| 2        | Numbered structure (`1.`, `가.`, `①`, `제1조`, `붙임` 등) |
+| 3        | Table / List                                              |
+| 4        | Length                                                    |
 
 핵심 역할 분담은 다음과 같습니다.
 
@@ -390,12 +360,12 @@ Viewer는 문서를 편집하는 도구가 아닙니다.
 
 목표는 **원본 표현 + 정확한 근거 위치 + 구조적 탐색**입니다.
 
-| 포맷 | 구현 방향 |
-|---|---|
-| PDF | `pdfjs-dist` |
-| HWP / HWPX | `@rhwp/core` 기반 readonly renderer |
-| XLSX | SheetJS CE + readonly grid |
-| Large XLSX | `@tanstack/react-virtual` |
+| 포맷          | 구현 방향                                     |
+| ------------- | --------------------------------------------- |
+| PDF           | `pdfjs-dist`                                  |
+| HWP / HWPX    | `@rhwp/core` 기반 readonly renderer           |
+| XLSX          | SheetJS CE + readonly grid                    |
+| Large XLSX    | `@tanstack/react-virtual`                     |
 | Semantic View | Parse Elements → 자체 React semantic renderer |
 
 PDF에서는 가능하면 Canvas + Text Layer + Evidence Overlay를 사용합니다.
@@ -412,26 +382,24 @@ up to stage는 접근성을 별도의 부가 기능으로 다루지 않습니다
 
 문서에 대해 세 레이어를 구분합니다.
 
-```text
-Intelligence Guidance Layer
-            ↑
-Semantic Accessibility Layer
-            ↑
-Original Visual Source
+```mermaid
+flowchart BT
+    A[Original Visual Source] --> B[Semantic Accessibility Layer]
+    B --> C[Intelligence Guidance Layer]
 ```
 
 Parse element를 Semantic Tree로 재구성합니다.
 
-```text
-heading → h1~h6
-paragraph → p
-ordered list → ol
-unordered list → ul
-table → table
-header cell → th
-figure → figure
-caption → figcaption
-```
+| Parse element  | Semantic tag |
+| -------------- | ------------ |
+| heading        | `h1~h6`      |
+| paragraph      | `p`          |
+| ordered list   | `ol`         |
+| unordered list | `ul`         |
+| table          | `table`      |
+| header cell    | `th`         |
+| figure         | `figure`     |
+| caption        | `figcaption` |
 
 Raw Parse HTML을 그대로 사용자에게 렌더링하는 방식이 아니라, 자체 Semantic Normalizer와 React renderer를 사용합니다.
 
@@ -460,40 +428,48 @@ entrypoints/
 
 짧은 event routing만 담당합니다.
 
-- Side Panel open
-- Tab event
-- Message routing
-- Permission handling
-- Viewer tab 생성
+| 책임                | 설명                             |
+| ------------------- | -------------------------------- |
+| Side Panel open     | 탭에서 Side Panel 열기           |
+| Tab event           | 탭 이벤트 라우팅                 |
+| Message routing     | Extension context 간 메시지 중계 |
+| Permission handling | 권한 요청/확인                   |
+| Viewer tab 생성     | Viewer Extension Page 탭 열기    |
 
 장시간 Agent polling이나 대형 JSON 처리의 중심으로 사용하지 않습니다.
 
 ### Content Script
 
-- URL Rule 판단
-- Contextual Overlay
-- DOM Attachment Discovery
-- Current Page Context 전달
+| 책임                      |
+| ------------------------- |
+| URL Rule 판단             |
+| Contextual Overlay        |
+| DOM Attachment Discovery  |
+| Current Page Context 전달 |
 
 ### Side Panel
 
 제품의 Case Orchestrator입니다.
 
-- 문서 선택
-- 파일 획득
-- Agent 실행
-- Processing UX
-- Guidance
-- Quick Check
-- Search/Solar Q&A
+| 책임             |
+| ---------------- |
+| 문서 선택        |
+| 파일 획득        |
+| Agent 실행       |
+| Processing UX    |
+| Guidance         |
+| Quick Check      |
+| Search/Solar Q&A |
 
 ### Viewer Page
 
-- Format Renderer
-- Outline
-- Highlight
-- Evidence navigation
-- Accessible Semantic View
+| 책임                     |
+| ------------------------ |
+| Format Renderer          |
+| Outline                  |
+| Highlight                |
+| Evidence navigation      |
+| Accessible Semantic View |
 
 ---
 
@@ -501,28 +477,26 @@ entrypoints/
 
 P0에는 별도 서비스 서버가 없습니다.
 
-```text
-Chrome Extension
-    ↕
-Upstage APIs
+```mermaid
+flowchart LR
+    A[Chrome Extension] <--> B[Upstage APIs]
 ```
 
 Canonical persistent state는 IndexedDB에 저장합니다.
 
-```text
-IndexedDB + Dexie
-├─ cases
-├─ documents
-├─ parse elements
-├─ sources
-├─ extracts
-├─ guidance
-├─ quick questions
-├─ answers
-├─ chunks
-├─ conflicts
-└─ action items
-```
+| 저장소            | 설명                   |
+| ----------------- | ---------------------- |
+| `cases`           | 사용자가 시작한 Case   |
+| `documents`       | Case에 속한 문서       |
+| `parse elements`  | 문서 파싱 결과 element |
+| `sources`         | Source ID와 근거       |
+| `extracts`        | 역할별 추출 정보       |
+| `guidance`        | Initial Guidance       |
+| `quick questions` | Quick Question 정의    |
+| `answers`         | 사용자 응답            |
+| `chunks`          | Section chunk          |
+| `conflicts`       | 충돌 정보              |
+| `action items`    | 다음 행동              |
 
 UI의 임시 상태만 Zustand로 관리합니다.
 
@@ -536,20 +510,20 @@ Agent 분석 결과를 무조건 다시 처리하지 않습니다.
 
 기본 cache identity:
 
-```text
-SHA-256(file bytes)
-+
-agent version
+```mermaid
+flowchart TD
+    A[SHA-256 file bytes] --> B[Cache Identity]
+    C[Agent version] --> B
 ```
 
 동일 문서와 동일 Agent version이면 가능한 범위에서 기존 Context를 재사용합니다.
 
 이 구조는 향후:
 
-```text
-On-demand Context
-→ Reusable Document Context
-→ Continuously Maintained Context
+```mermaid
+flowchart LR
+    A[On-demand Context] --> B[Reusable Document Context]
+    B --> C[Continuously Maintained Context]
 ```
 
 로 확장할 수 있게 설계되어 있습니다.
@@ -558,28 +532,28 @@ On-demand Context
 
 # Tech Stack
 
-| 영역 | 기술 |
-|---|---|
-| Extension | WXT + Manifest V3 |
-| Language | TypeScript strict |
-| UI | React |
-| Styling | Tailwind CSS 4 |
-| UI primitives | shadcn/ui, 필요한 것만 |
-| Validation | Zod |
-| Local DB | Dexie / IndexedDB |
-| UI State | Zustand |
-| Extension Messaging | `@webext-core/messaging` |
-| HTTP | Native Fetch + AbortController |
-| Hash | Web Crypto SHA-256 |
-| HTML Sanitization | DOMPurify |
-| PDF | `pdfjs-dist` |
-| HWP / HWPX | `@rhwp/core` |
-| XLSX | SheetJS CE |
-| Virtualization | `@tanstack/react-virtual` |
-| Unit Test | Vitest |
-| Component Test | React Testing Library |
-| E2E | Playwright |
-| Accessibility Test | `@axe-core/playwright` |
+| 영역                | 기술                           |
+| ------------------- | ------------------------------ |
+| Extension           | WXT + Manifest V3              |
+| Language            | TypeScript strict              |
+| UI                  | React                          |
+| Styling             | Tailwind CSS 4                 |
+| UI primitives       | shadcn/ui, 필요한 것만         |
+| Validation          | Zod                            |
+| Local DB            | Dexie / IndexedDB              |
+| UI State            | Zustand                        |
+| Extension Messaging | `@webext-core/messaging`       |
+| HTTP                | Native Fetch + AbortController |
+| Hash                | Web Crypto SHA-256             |
+| HTML Sanitization   | DOMPurify                      |
+| PDF                 | `pdfjs-dist`                   |
+| HWP / HWPX          | `@rhwp/core`                   |
+| XLSX                | SheetJS CE                     |
+| Virtualization      | `@tanstack/react-virtual`      |
+| Unit Test           | Vitest                         |
+| Component Test      | React Testing Library          |
+| E2E                 | Playwright                     |
+| Accessibility Test  | `@axe-core/playwright`         |
 
 ---
 
@@ -587,16 +561,18 @@ On-demand Context
 
 up to stage는 문서 기반 제품이기 때문에 사용자 동의와 데이터 경계를 명확하게 둡니다.
 
-- 사용자가 선택한 문서만 외부로 전송
-- 전송 전에 명확한 AI 처리 고지
-- 기본 `<all_urls>` 권한 지양
-- browsing history 수집 금지
-- cookies 미사용
-- API Key 로그 금지
-- 원문 전체 console log 금지
-- Quick Question 답변을 필요 이상의 prompt에 포함하지 않음
-- Case 간 Source ID 혼입 차단
-- AI가 근거 ID를 임의 생성하지 못하게 validation
+| 원칙                          | 설명                                                     |
+| ----------------------------- | -------------------------------------------------------- |
+| 사용자 선택 전 문서 전송 금지 | 사용자가 선택한 문서만 외부로 전송                       |
+| AI 처리 고지                  | 전송 전에 명확한 AI 처리 고지                            |
+| 최소 권한                     | 기본 `<all_urls>` 권한 지양                              |
+| browsing history 금지         | browsing history 수집 금지                               |
+| cookies 미사용                | cookies 미사용                                           |
+| API Key 보호                  | API Key 로그 금지                                        |
+| 원문 보호                     | 원문 전체 console log 금지                               |
+| prompt 최소화                 | Quick Question 답변을 필요 이상의 prompt에 포함하지 않음 |
+| Source ID 격리                | Case 간 Source ID 혼입 차단                              |
+| 근거 ID 검증                  | AI가 근거 ID를 임의 생성하지 못하게 validation           |
 
 ---
 
@@ -704,16 +680,16 @@ feat: 현재 페이지의 관련 문서를 발견
 
 개발은 8개 Phase로 나뉩니다.
 
-```text
-Phase 1  Extension Shell
-Phase 2  Document Discovery & Selection
-Phase 3  Upstage Agent Integration
-Phase 4  Guidance & Quick Check
-Phase 5  Evidence & Source Registry
-Phase 6  Document Viewer
-Phase 7  Retrieval & Solar Q&A
-Phase 8  Accessible Semantic View
-```
+| Phase   | 내용                           |
+| ------- | ------------------------------ |
+| Phase 1 | Extension Shell                |
+| Phase 2 | Document Discovery & Selection |
+| Phase 3 | Upstage Agent Integration      |
+| Phase 4 | Guidance & Quick Check         |
+| Phase 5 | Evidence & Source Registry     |
+| Phase 6 | Document Viewer                |
+| Phase 7 | Retrieval & Solar Q&A          |
+| Phase 8 | Accessible Semantic View       |
 
 이 순서는 단순 일정 구분이 아니라 subsystem 의존성을 반영합니다.
 
@@ -723,16 +699,18 @@ Phase 8  Accessible Semantic View
 
 현재 프로젝트에서 확정된 것:
 
-- Product direction 확정
-- Chrome Extension architecture 확정
-- Upstage Studio Agent v0.22 확정
-- Agent 실제 실행 검증 완료
-- Agent role taxonomy 확정
-- Source/Evidence architecture 확정
-- Side Panel 주요 Flow 확정
-- Viewer 3-column architecture 확정
-- P0 기술 스택 확정
-- Development Phase 확정
+| 항목                          | 상태 |
+| ----------------------------- | ---- |
+| Product direction             | 확정 |
+| Chrome Extension architecture | 확정 |
+| Upstage Studio Agent v0.22    | 확정 |
+| Agent 실제 실행 검증          | 완료 |
+| Agent role taxonomy           | 확정 |
+| Source/Evidence architecture  | 확정 |
+| Side Panel 주요 Flow          | 확정 |
+| Viewer 3-column architecture  | 확정 |
+| P0 기술 스택                  | 확정 |
+| Development Phase             | 확정 |
 
 이 저장소의 초기 scaffold에는 의도적으로 완성된 제품 코드를 넣지 않습니다.
 
@@ -758,20 +736,20 @@ Phase 8  Accessible Semantic View
 
 오늘은 사용자가 up to stage를 현재 사이트로 가져옵니다.
 
-```text
-User
-→ Chrome Extension
-→ Current Page
-→ Document Guidance
+```mermaid
+flowchart LR
+    A[User] --> B[Chrome Extension]
+    B --> C[Current Page]
+    C --> D[Document Guidance]
 ```
 
 향후에는 학교·재단·공공기관이 자신의 문서를 누구에게나 접근 가능한 Guidance로 제공할 수 있습니다.
 
-```text
-Institution
-→ Document Context
-→ Embedded / API / B2B·B2G
-→ Everyone
+```mermaid
+flowchart LR
+    A[Institution] --> B[Document Context]
+    B --> C[Embedded / API / B2B·B2G]
+    C --> D[Everyone]
 ```
 
 기회는 이미 존재할 수 있습니다.
@@ -784,14 +762,11 @@ Institution
 
 ## Project Principle
 
-**Structured**  
-Understand the structure.
-
-**Trusted**  
-Return to the evidence.
-
-**Accessible**  
-Navigate it your way.
+| 가치           | 의미                      |
+| -------------- | ------------------------- |
+| **Structured** | Understand the structure. |
+| **Trusted**    | Return to the evidence.   |
+| **Accessible** | Navigate it your way.     |
 
 > Intelligence should not hide the document.  
 > **It should unfold it.**
