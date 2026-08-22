@@ -50,9 +50,5 @@ export default defineBackground(() => {
     await chrome.tabs.create({ url });
   });
 
-  chrome.action.onClicked.addListener((tab) => {
-    if (tab.id) {
-      void chrome.sidePanel.open({ tabId: tab.id });
-    }
-  });
+  void chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
 });
