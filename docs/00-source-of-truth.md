@@ -11,7 +11,7 @@
 - Quick Question은 Agent Extract 결과로 미리 생성하고 클릭 후 새 LLM 호출 없이 폼을 연다.
 - PDF/HWP(HWPX)/XLSX는 renderer adapter로 분리한다.
 - Viewer 기본 layout은 224px Outline + Flexible Workspace + 443px Guidance다.
-- 사용자 UI 명칭은 `up to stage`다.
+- 사용자 UI 명칭은 `up2stage`다.
 
 ## 변경 절차
 
