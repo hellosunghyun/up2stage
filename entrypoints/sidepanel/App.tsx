@@ -4,6 +4,10 @@ import {
   type AttachmentPayload,
   type PageContext,
 } from "../../src/core/messaging/protocol";
+import {
+  canStartAnalysis,
+  getSelected,
+} from "../../src/features/document-selection/selection";
 
 type PanelState = "DISCOVERY" | "SELECTION" | "CONSENT_CONFIRM";
 
@@ -61,9 +65,10 @@ export function App() {
   }, []);
 
   const selectedDocs = useMemo(
-    () => attachments.filter((a) => selectedIds.has(a.id)),
+    () => getSelected(attachments, selectedIds),
     [attachments, selectedIds]
   );
+  const canStart = canStartAnalysis({ selectedIds, consentChecked });
 
   const toggleDoc = (id: string) => {
     setSelectedIds((prev) => {
@@ -149,9 +154,12 @@ export function App() {
         {panel === "CONSENT_CONFIRM" && (
           <ConsentView
             selectedDocs={selectedDocs}
+            canStart={canStart}
             consentChecked={consentChecked}
             onToggleConsent={() => setConsentChecked((v) => !v)}
-            onStart={() => alert("Phase 3: Agent upload")}
+            onStart={() => {
+              console.log("Phase 3: upload", selectedDocs);
+            }}
             onBack={() => setPanel("SELECTION")}
           />
         )}
@@ -369,12 +377,14 @@ function SelectionView({
 
 function ConsentView({
   selectedDocs,
+  canStart,
   consentChecked,
   onToggleConsent,
   onStart,
   onBack,
 }: {
   selectedDocs: AttachmentPayload[];
+  canStart: boolean;
   consentChecked: boolean;
   onToggleConsent: () => void;
   onStart: () => void;
@@ -447,17 +457,17 @@ function ConsentView({
         </button>
         <button
           onClick={onStart}
-          disabled={!consentChecked}
+          disabled={!canStart}
           style={{
             flex: 2,
             padding: "14px 16px",
             borderRadius: RADIUS.md,
             border: "none",
-            background: consentChecked ? COLORS.brandLime : "#2a2f3b",
-            color: consentChecked ? COLORS.textPrimary : COLORS.textInverseSecondary,
+            background: canStart ? COLORS.brandLime : "#2a2f3b",
+            color: canStart ? COLORS.textPrimary : COLORS.textInverseSecondary,
             fontSize: 15,
             fontWeight: 700,
-            cursor: consentChecked ? "pointer" : "not-allowed",
+            cursor: canStart ? "pointer" : "not-allowed",
           }}
         >
           분석 시작
