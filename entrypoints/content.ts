@@ -10,15 +10,35 @@ declare global {
   }
 }
 
-messaging.onCurrentPageContext(() => {
-  return {
-    url: window.location.href,
-    title: document.title,
-  };
-});
+function getMessageName(message: unknown): string | undefined {
+  if (message && typeof message === "object" && "name" in message) {
+    const value = message.name;
+    return typeof value === "string" ? value : undefined;
+  }
+  return undefined;
+}
 
-messaging.onDiscoverAttachments(() => {
-  return discoverAttachments();
+chrome.runtime.onMessage.addListener((
+  message: unknown,
+  _sender: chrome.runtime.MessageSender,
+  sendResponse: (response?: unknown) => void
+) => {
+  const name = getMessageName(message);
+
+  if (name === "currentPageContext") {
+    void Promise.resolve({
+      url: window.location.href,
+      title: document.title,
+    }).then(sendResponse);
+    return true;
+  }
+
+  if (name === "discoverAttachments") {
+    void Promise.resolve(discoverAttachments()).then(sendResponse);
+    return true;
+  }
+
+  return false;
 });
 
 function checkAndRenderOverlay() {
