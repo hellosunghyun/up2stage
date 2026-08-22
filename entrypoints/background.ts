@@ -12,6 +12,10 @@ async function getActiveTabId(): Promise<number> {
   });
   const id = tab?.id;
   if (!id) throw new Error("활성 탭을 찾을 수 없어요.");
+  const url = tab.url ?? "";
+  if (!url.startsWith("http://") && !url.startsWith("https://")) {
+    throw new Error("현재 페이지에서 확장 프로그램을 실행할 수 없어요. http/https 웹페이지에서 다시 시도해 주세요.");
+  }
   return id;
 }
 

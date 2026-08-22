@@ -55,11 +55,10 @@ export function App() {
         setAttachments(docs);
         setSelectedIds(new Set(docs.map((d) => d.id)));
       } catch (e) {
-        console.error("[up2stage:sidepanel] attachments failed:", e);
+        const friendly = e instanceof Error ? e.message : "문서를 불러오지 못했어요.";
+        console.log("[up2stage:sidepanel] attachments failed:", friendly);
         if (!mounted) return;
-        setError(
-          e instanceof Error ? e.message : "문서를 불러오지 못했어요."
-        );
+        setError(getUserFriendlyError(friendly));
       }
     }
 
