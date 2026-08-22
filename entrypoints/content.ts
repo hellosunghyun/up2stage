@@ -3,6 +3,12 @@ import { messaging } from "../src/core/messaging/protocol";
 import { findMatchingRule } from "../src/features/contextual-overlay/rules";
 import { mountOverlay, unmountOverlay } from "../src/features/contextual-overlay/mount";
 
+declare global {
+  interface Window {
+    __up2stageInjected?: boolean;
+  }
+}
+
 function checkAndRenderOverlay() {
   const url = new URL(window.location.href);
   const matched = findMatchingRule(url);
@@ -22,8 +28,12 @@ function checkAndRenderOverlay() {
 }
 
 export default defineContentScript({
-  matches: ["*://*.example.org/*"],
+  matches: [],
   main() {
+    if (window.__up2stageInjected) {
+      return;
+    }
+    window.__up2stageInjected = true;
     console.log("up to stage content script loaded");
     checkAndRenderOverlay();
   },

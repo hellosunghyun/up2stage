@@ -1,8 +1,5 @@
-import { createRoot, type Root } from "react-dom/client";
-import React from "react";
-import { ContextualOverlay } from "./Overlay";
+import { createContextualOverlay } from "./overlay";
 
-let overlayRoot: Root | null = null;
 let hostElement: HTMLElement | null = null;
 
 export interface MountOverlayOptions {
@@ -18,23 +15,12 @@ export function mountOverlay({ onOpen, onClose }: MountOverlayOptions): void {
   hostElement.style.all = "initial";
   hostElement.style.position = "static";
 
-  const container = document.createElement("div");
-  container.id = "up2stage-overlay-container";
-  hostElement.appendChild(container);
-
+  const overlayElement = createContextualOverlay({ onOpen, onClose });
+  hostElement.appendChild(overlayElement);
   document.body.appendChild(hostElement);
-
-  overlayRoot = createRoot(container);
-  overlayRoot.render(
-    React.createElement(ContextualOverlay, { onOpen, onClose })
-  );
 }
 
 export function unmountOverlay(): void {
-  if (overlayRoot) {
-    overlayRoot.unmount();
-    overlayRoot = null;
-  }
   if (hostElement && hostElement.parentNode) {
     hostElement.parentNode.removeChild(hostElement);
     hostElement = null;
