@@ -1,21 +1,22 @@
 import { defineConfig } from "wxt";
 
 /**
- * 구조와 권한 기준만 담은 WXT 설정이다.
- * 이 ZIP에는 제품 구현 코드가 없으므로 entrypoint 구현은 기능 단위 커밋으로 추가한다.
+ * WXT 기반 Manifest V3 설정이다.
+ * 사용자 노출 이름은 "up to stage"를 사용한다.
  */
 export default defineConfig({
   modules: ["@wxt-dev/module-react"],
   manifest: {
-    name: "up2stage",
+    name: "up to stage",
     short_name: "up2stage",
+    version: "0.0.1",
     description:
       "웹에서 마주친 여러 문서를 구조화되고 신뢰할 수 있으며 접근 가능한 안내로 펼칩니다.",
     permissions: ["activeTab", "scripting", "sidePanel", "storage"],
     host_permissions: ["https://api.upstage.ai/*"],
     optional_host_permissions: ["https://*/*", "http://*/*"],
     action: {
-      default_title: "up2stage 열기"
+      default_title: "up to stage 열기"
     }
   }
 });
