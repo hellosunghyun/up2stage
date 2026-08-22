@@ -1,6 +1,6 @@
-# UP²STAGE Codebase Structure Starter
+# up to stage Codebase Structure Starter
 
-이 ZIP은 UP²STAGE 개발을 시작하기 위한 **구조·문서·설정 스타터**다.
+이 ZIP은 up to stage 개발을 시작하기 위한 **구조·문서·설정 스타터**다.
 제품 기능 구현 코드는 의도적으로 포함하지 않았다.
 
 포함 내용:
@@ -28,7 +28,7 @@
 
 - Agent: `UP2STAGE General Document Guidance v0.22` 고정
 - P0: 서버 없음, 모든 orchestration은 Chrome Extension에서 수행
-- 제품명: UI·발표에서는 `UP²STAGE`, 코드·파일명에서는 `UP2STAGE` / `up2stage`
+- 제품명: UI·발표에서는 `up to stage`, 코드·파일명에서는 `UP2STAGE` / `up2stage`
 - Figma와 일부 과거 자료의 `Unfold` 표기는 이전 이름이므로 새 구현에는 사용하지 않는다.
 - `references/`는 읽기 전용 개발 자료이며 제품 번들에 포함하지 않는다.
 

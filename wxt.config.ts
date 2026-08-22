@@ -7,15 +7,15 @@ import { defineConfig } from "wxt";
 export default defineConfig({
   modules: ["@wxt-dev/module-react"],
   manifest: {
-    name: "UP²STAGE",
-    short_name: "UP2STAGE",
+    name: "up to stage",
+    short_name: "up2stage",
     description:
       "웹에서 마주친 여러 문서를 구조화되고 신뢰할 수 있으며 접근 가능한 안내로 펼칩니다.",
     permissions: ["activeTab", "scripting", "sidePanel", "storage"],
     host_permissions: ["https://api.upstage.ai/*"],
     optional_host_permissions: ["https://*/*", "http://*/*"],
     action: {
-      default_title: "UP²STAGE 열기"
+      default_title: "up to stage 열기"
     }
   }
 });

@@ -2,7 +2,7 @@
   "name": "up2stage",
   "version": "0.0.0-private",
   "private": true,
-  "description": "UP²STAGE Chrome Extension 개발용 구조와 문서 기반 스타터. 제품 구현 코드는 포함하지 않는다.",
+  "description": "up to stage Chrome Extension 개발용 구조와 문서 기반 스타터. 제품 구현 코드는 포함하지 않는다.",
   "license": "UNLICENSED",
   "engines": {
     "node": ">=22",
