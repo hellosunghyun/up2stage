@@ -28,7 +28,7 @@ function checkAndRenderOverlay() {
 }
 
 export default defineContentScript({
-  matches: [],
+  matches: ["http://*/*", "https://*/*"],
   main() {
     if (window.__up2stageInjected) {
       return;

@@ -12,7 +12,7 @@ export default defineConfig({
     version: "0.0.1",
     description:
       "웹에서 마주친 여러 문서를 구조화되고 신뢰할 수 있으며 접근 가능한 안내로 펼칩니다.",
-    permissions: ["activeTab", "scripting", "sidePanel", "storage"],
+    permissions: ["activeTab", "sidePanel", "storage"],
     host_permissions: ["https://api.upstage.ai/*"],
     optional_host_permissions: ["https://*/*", "http://*/*"],
     action: {
