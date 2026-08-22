@@ -1,5 +1,24 @@
 import { defineBackground } from "wxt/utils/define-background";
-import { messaging } from "../src/core/messaging/protocol";
+import {
+  messaging,
+  type AttachmentPayload,
+  type PageContext,
+} from "../src/core/messaging/protocol";
+
+async function getActiveTabId(): Promise<number> {
+  const [tab] = await chrome.tabs.query({
+    active: true,
+    currentWindow: true,
+  });
+  const id = tab?.id;
+  if (!id) throw new Error("활성 탭을 찾을 수 없어요.");
+  return id;
+}
+
+async function sendToContent<T>(name: string): Promise<T> {
+  const tabId = await getActiveTabId();
+  return chrome.tabs.sendMessage(tabId, { name, data: undefined });
+}
 
 export default defineBackground(() => {
   console.log("up to stage background started");
@@ -9,6 +28,14 @@ export default defineBackground(() => {
     if (tabId) {
       await chrome.sidePanel.open({ tabId });
     }
+  });
+
+  messaging.onCurrentPageContext(async () => {
+    return sendToContent<PageContext>("currentPageContext");
+  });
+
+  messaging.onDiscoverAttachments(async () => {
+    return sendToContent<AttachmentPayload[]>("discoverAttachments");
   });
 
   messaging.onOpenViewer(async ({ caseId, documentId, sourceId }) => {
