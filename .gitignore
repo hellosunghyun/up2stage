@@ -1,0 +1,14 @@
+node_modules/
+.wxt/
+.output/
+coverage/
+playwright-report/
+test-results/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+.dev-profile/
+.chrome-profile/
+artifacts/

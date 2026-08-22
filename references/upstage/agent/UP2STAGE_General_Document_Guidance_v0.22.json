@@ -1,0 +1,689 @@
+{
+  "kind": "studio.agent-config-draft",
+  "exportedAt": "2026-08-22T21:28:49.454Z",
+  "exportedFrom": {
+    "agentId": "agt_m6gGCrKd344J4FCrbrMXcL",
+    "agentName": "UP2STAGE General Document Guidance v0.22",
+    "configId": "cfg_kib2mmcrEcrkX2c3nhs4E4",
+    "configVer": 22
+  },
+  "agentConfig": {
+    "agent_name": "UP2STAGE General Document Guidance v0.22",
+    "pipelineType": "instruct",
+    "documentParseConfiguration": {
+      "modelName": "document-parse",
+      "mode": "auto",
+      "ocrMode": "auto",
+      "lang": "ko",
+      "chartRecognition": false,
+      "coordinates": true,
+      "mergeMultipageTables": false,
+      "outputFormats": [
+        "html",
+        "markdown"
+      ],
+      "base64Encoding": []
+    },
+    "documentClassifyConfiguration": {
+      "modelName": "",
+      "schema": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "document-classify",
+          "schema": {
+            "type": "string",
+            "oneOf": [
+              {
+                "const": "primary_notice",
+                "description": "기회·지원·정책·행사·업무의 목적, 대상, 결과·혜택, 일정, 주요 요건과 제출 항목을 종합적으로 설명하는 중심 공고·안내. 정정문, 작성 양식, 단계별 매뉴얼, 체크리스트와 대량 조회표는 제외한다."
+              },
+              {
+                "const": "requirements_checklist",
+                "description": "자격·요건·제외·예외·준수사항을 규정하거나 항목별로 점검하는 규정표·자가진단·체크리스트. 중심 공고, 사용자가 작성하는 양식과 단계별 절차 매뉴얼은 제외한다."
+              },
+              {
+                "const": "application_form",
+                "description": "신청서·자기소개서·추천서·동의서·설문처럼 사용자가 내용을 작성하거나 서명·날인해 제출해야 하는 양식. 공고문, 규정표와 절차 안내는 제외한다."
+              },
+              {
+                "const": "procedure_guide",
+                "description": "로그인, 메뉴 이동, 입력, 업로드, 제출, 완료 확인 등 순서가 있는 행동과 채널·파일 규칙을 설명하는 사용·신청 절차 안내. 자격 규정과 작성 양식은 제외한다."
+              },
+              {
+                "const": "reference_material",
+                "description": "대량 표·목록·카탈로그·기관/대상 목록·환산표·FAQ·예시·부록처럼 특정 값을 조회하거나 해석할 때 사용하는 참고자료. 이 유형은 Parse와 Search로 활용하며 전체 항목을 Extract하지 않는다."
+              },
+              {
+                "const": "amendment_update",
+                "description": "기존 공고·규정·양식의 날짜, 조건, 서류, 절차 또는 값을 변경·대체하는 정정·변경 안내. 새로운 전체 공고와 단순 재게시 문서는 제외한다."
+              },
+              {
+                "const": "other",
+                "description": "위 유형으로 안정적으로 분류할 수 없거나 현재 작업과 직접 관련이 낮은 문서. 애매한 문서를 다른 유형에 강제로 넣지 않는다."
+              }
+            ]
+          }
+        }
+      },
+      "customName": "document_role",
+      "split": true,
+      "splitCriteria": [
+        {
+          "criterion": "file_boundary",
+          "description": "결합 업로드된 원본 파일 경계를 유지해 각 파일의 역할을 분류한다."
+        }
+      ]
+    },
+    "informationExtractConfiguration": {
+      "modelName": "",
+      "schemas": [
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "primary_notice_extract",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "문서가 다루는 기회·업무·정책·행사의 공식 제목만 추출한다. 없으면 빈 문자열."
+                },
+                "issuer": {
+                  "type": "string",
+                  "description": "공고·운영·책임 기관 또는 조직명만 추출한다. 없으면 빈 문자열."
+                },
+                "benefits_or_outcomes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "금액·혜택·제공 결과·선발 규모 등 사용자가 얻게 되는 핵심 결과를 최대 4개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "key_dates": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "신청·접수·행사·발표·지급 등 중요한 날짜와 정확한 시각을 단계명과 함께 원문 그대로 최대 6개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "key_requirements": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "대상, 자격, 필수 조건과 제한을 한 항목에 한 조건씩 최대 8개 추출한다. 개인의 충족 여부는 판단하지 않는다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "required_submissions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "모든 대상자에게 공통으로 필요한 서류·양식·파일·정보를 최대 8개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "conditional_submissions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "특정 조건에서만 필요한 제출물과 조건을 `항목 | 조건` 형식으로 최대 8개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "quick_questions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "개인 적용 여부를 판단하는 데 꼭 필요한 사용자 입력만 최대 6개 추출한다. 각 항목은 `key=<영문 snake_case> | label=<질문> | type=<text|number|select|boolean|date|organization_select> | required=<true|false> | options=<쉼표 구분 선택지 또는 빈 값> | rule=<근거 조건>` 형식으로 작성한다. 문서만으로 알 수 있는 값, 판정에 불필요한 개인정보와 원문에 없는 질문은 만들지 않는다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "critical_cautions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "누락·부적격·취소·불이익에 직접 연결되는 핵심 주의사항만 최대 6개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "next_actions_seed": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "사용자가 실제로 수행해야 하는 다음 행동을 문서 순서대로 최대 5개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "contacts": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "담당 기관의 전화, 이메일, 문의 채널과 운영시간을 최대 4개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                }
+              }
+            }
+          },
+          "mode": "standard",
+          "modelName": "",
+          "schemaLayout": {
+            "version": 1,
+            "columns": [
+              {
+                "name": "title",
+                "source": "root"
+              },
+              {
+                "name": "issuer",
+                "source": "root"
+              },
+              {
+                "name": "benefits_or_outcomes",
+                "source": "root"
+              },
+              {
+                "name": "key_dates",
+                "source": "root"
+              },
+              {
+                "name": "key_requirements",
+                "source": "root"
+              },
+              {
+                "name": "required_submissions",
+                "source": "root"
+              },
+              {
+                "name": "conditional_submissions",
+                "source": "root"
+              },
+              {
+                "name": "quick_questions",
+                "source": "root"
+              },
+              {
+                "name": "critical_cautions",
+                "source": "root"
+              },
+              {
+                "name": "next_actions_seed",
+                "source": "root"
+              },
+              {
+                "name": "contacts",
+                "source": "root"
+              }
+            ]
+          }
+        },
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "requirements_checklist_extract",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "document_title": {
+                  "type": "string",
+                  "description": "요건·규정·체크리스트 문서의 공식 제목만 추출한다. 없으면 빈 문자열."
+                },
+                "requirements": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "충족해야 하는 자격·요건·준수 항목을 한 항목에 한 조건씩 최대 10개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "exclusions_or_failure_conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "부적격·실패·제외를 직접 결정하는 조건을 최대 8개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "exceptions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "일반 조건에 대한 명시적 예외·대체 기준·조건부 허용을 최대 5개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "required_evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "요건을 확인하기 위해 필요한 증빙·확인 자료를 조건과 함께 최대 8개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "quick_questions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "개인 적용 여부를 판단하는 데 꼭 필요한 사용자 입력만 최대 6개 추출한다. 각 항목은 `key=<영문 snake_case> | label=<질문> | type=<text|number|select|boolean|date|organization_select> | required=<true|false> | options=<쉼표 구분 선택지 또는 빈 값> | rule=<근거 조건>` 형식으로 작성한다. 문서만으로 알 수 있는 값, 판정에 불필요한 개인정보와 원문에 없는 질문은 만들지 않는다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "cautions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "기준일·발급일·유효기간·환산 방식·최종 확인처럼 판정 오류를 막는 주의사항을 최대 6개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                }
+              }
+            }
+          },
+          "mode": "standard",
+          "modelName": "",
+          "schemaLayout": {
+            "version": 1,
+            "columns": [
+              {
+                "name": "document_title",
+                "source": "root"
+              },
+              {
+                "name": "requirements",
+                "source": "root"
+              },
+              {
+                "name": "exclusions_or_failure_conditions",
+                "source": "root"
+              },
+              {
+                "name": "exceptions",
+                "source": "root"
+              },
+              {
+                "name": "required_evidence",
+                "source": "root"
+              },
+              {
+                "name": "quick_questions",
+                "source": "root"
+              },
+              {
+                "name": "cautions",
+                "source": "root"
+              }
+            ]
+          }
+        },
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "application_form_extract",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "form_title": {
+                  "type": "string",
+                  "description": "사용자가 작성·서명·제출해야 하는 양식의 공식 제목만 추출한다. 없으면 빈 문자열."
+                },
+                "form_type": {
+                  "type": "string",
+                  "description": "application, essay, consent, recommendation, declaration, questionnaire, other 중 가장 적절한 값 하나를 출력한다."
+                },
+                "required_fields": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "반드시 작성해야 하는 입력 항목·문항·표를 최대 12개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "required_signatures": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "필요한 서명·날인·동의 주체와 위치를 최대 5개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "required_attachments": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "이 양식과 함께 제출해야 하는 첨부자료를 최대 8개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "format_constraints": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "분량·글꼴·파일형식·용량·파일명 등 형식 제약을 최대 8개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "form_cautions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "미작성·식별정보 노출·서식 변경 등 제출 실패에 연결되는 주의사항을 최대 6개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                }
+              }
+            }
+          },
+          "mode": "standard",
+          "modelName": "",
+          "schemaLayout": {
+            "version": 1,
+            "columns": [
+              {
+                "name": "form_title",
+                "source": "root"
+              },
+              {
+                "name": "form_type",
+                "source": "root"
+              },
+              {
+                "name": "required_fields",
+                "source": "root"
+              },
+              {
+                "name": "required_signatures",
+                "source": "root"
+              },
+              {
+                "name": "required_attachments",
+                "source": "root"
+              },
+              {
+                "name": "format_constraints",
+                "source": "root"
+              },
+              {
+                "name": "form_cautions",
+                "source": "root"
+              }
+            ]
+          }
+        },
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "procedure_extract",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "guide_title": {
+                  "type": "string",
+                  "description": "절차 안내 문서의 공식 제목만 추출한다. 없으면 빈 문자열."
+                },
+                "steps": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "로그인부터 최종 완료 확인까지 순서가 있는 사용자 행동을 최대 12개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "channels": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "웹사이트·이메일·방문·우편 등 제출·처리 채널과 주소를 최대 5개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "file_rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "허용 확장자·용량·파일명·병합·암호·발급일 등 파일 규칙을 최대 8개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "completion_checks": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "완료 여부를 확인하는 상태·메뉴·문구·후속 확인 방법을 최대 5개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "procedure_cautions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "마감 직전 대응 제한, 임시저장, 수정 불가 등 절차상 치명적 주의사항을 최대 6개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                }
+              }
+            }
+          },
+          "mode": "standard",
+          "modelName": "",
+          "schemaLayout": {
+            "version": 1,
+            "columns": [
+              {
+                "name": "guide_title",
+                "source": "root"
+              },
+              {
+                "name": "steps",
+                "source": "root"
+              },
+              {
+                "name": "channels",
+                "source": "root"
+              },
+              {
+                "name": "file_rules",
+                "source": "root"
+              },
+              {
+                "name": "completion_checks",
+                "source": "root"
+              },
+              {
+                "name": "procedure_cautions",
+                "source": "root"
+              }
+            ]
+          }
+        },
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "amendment_extract",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "target_document": {
+                  "type": "string",
+                  "description": "변경 대상이 되는 기존 공고·규정·양식의 공식 제목 또는 식별자를 추출한다. 없으면 빈 문자열."
+                },
+                "effective_date": {
+                  "type": "string",
+                  "description": "변경 내용의 적용일 또는 효력 발생일을 원문 그대로 추출한다. 없으면 빈 문자열."
+                },
+                "changes": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "변경된 내용을 `항목 | 변경 전 | 변경 후` 형식으로 최대 10개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "superseded_items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "더 이상 사용하지 않거나 대체된 문서·항목을 최대 5개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "amendment_cautions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "재제출 여부, 적용 범위, 변경되지 않은 항목 등 해석에 필요한 주의사항을 최대 5개 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                }
+              }
+            }
+          },
+          "mode": "standard",
+          "modelName": "",
+          "schemaLayout": {
+            "version": 1,
+            "columns": [
+              {
+                "name": "target_document",
+                "source": "root"
+              },
+              {
+                "name": "effective_date",
+                "source": "root"
+              },
+              {
+                "name": "changes",
+                "source": "root"
+              },
+              {
+                "name": "superseded_items",
+                "source": "root"
+              },
+              {
+                "name": "amendment_cautions",
+                "source": "root"
+              }
+            ]
+          }
+        }
+      ],
+      "categorySchemaMapping": {
+        "primary_notice": "primary_notice_extract",
+        "requirements_checklist": "requirements_checklist_extract",
+        "application_form": "application_form_extract",
+        "procedure_guide": "procedure_extract",
+        "amendment_update": "amendment_extract"
+      },
+      "location": true
+    },
+    "pipelineEdges": [
+      {
+        "id": "e0",
+        "source": {
+          "nodeType": "parse"
+        },
+        "target": {
+          "nodeType": "classify",
+          "name": "document_role"
+        }
+      },
+      {
+        "id": "e1",
+        "source": {
+          "nodeType": "classify",
+          "name": "document_role"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "primary_notice_extract"
+        },
+        "condition": {
+          "conditionName": "primary_notice"
+        }
+      },
+      {
+        "id": "e2",
+        "source": {
+          "nodeType": "classify",
+          "name": "document_role"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "requirements_checklist_extract"
+        },
+        "condition": {
+          "conditionName": "requirements_checklist"
+        }
+      },
+      {
+        "id": "e3",
+        "source": {
+          "nodeType": "classify",
+          "name": "document_role"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "application_form_extract"
+        },
+        "condition": {
+          "conditionName": "application_form"
+        }
+      },
+      {
+        "id": "e4",
+        "source": {
+          "nodeType": "classify",
+          "name": "document_role"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "procedure_extract"
+        },
+        "condition": {
+          "conditionName": "procedure_guide"
+        }
+      },
+      {
+        "id": "e5",
+        "source": {
+          "nodeType": "classify",
+          "name": "document_role"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "amendment_extract"
+        },
+        "condition": {
+          "conditionName": "amendment_update"
+        }
+      },
+      {
+        "id": "e6",
+        "source": {
+          "nodeType": "extract",
+          "name": "primary_notice_extract"
+        },
+        "target": {
+          "nodeType": "instruct",
+          "name": "initial_guidance"
+        }
+      }
+    ],
+    "instructConfiguration": {
+      "nodes": [
+        {
+          "name": "initial_guidance",
+          "modelName": "",
+          "prompt": "당신은 UP2STAGE의 initial guidance 생성 단계입니다. @title, @issuer, @benefits_or_outcomes, @key_dates, @key_requirements, @required_submissions, @conditional_submissions, @critical_cautions, @next_actions_seed만 사용하세요. 개인의 자격을 판정하거나 원문에 없는 사실을 만들지 마세요. 반드시 설명·Markdown 없이 다음 JSON 객체 하나만 출력하세요: {\"overview\":\"1~2문장\",\"top_requirements\":[\"최대 4개\"],\"nearest_deadline\":\"가장 가까운 실제 신청·제출 마감\",\"required_submissions\":[\"최대 5개\"],\"top_cautions\":[\"최대 4개\"],\"next_actions\":[\"최대 4개\"],\"missing_information\":[\"최대 4개\"],\"personalization_status\":\"not_evaluated\"}. nearest_deadline은 문의 대응 종료보다 실제 신청·제출 종료를 우선합니다. 값이 없으면 빈 문자열 또는 빈 배열을 사용하세요."
+        }
+      ],
+      "connectionMapping": {
+        "initial_guidance": {
+          "targetType": "extract",
+          "schemaName": "primary_notice_extract"
+        }
+      }
+    }
+  }
+}

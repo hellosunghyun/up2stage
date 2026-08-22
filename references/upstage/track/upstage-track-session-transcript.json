@@ -1,0 +1,1976 @@
+{
+  "title": "정션 아시아 2026 - 업스테이지(Upstage) 트랙 파트너 세션",
+  "source_file": "JUNCTION-ASIA-DAY-1-part-06.mp4",
+  "language": "ko",
+  "summary": "업스테이지(Upstage) 소프트웨어 엔지니어 이현 발표자가 기업 비전과 핵심 기술인 Solar LLM, Document AI, Upstage Studio 플랫폼을 소개하고, 문서 업무 자동화를 구현하는 정션 트랙 챌린지 과제와 평가 기준, 지원 혜택을 안내합니다.",
+  "segments": [
+    {
+      "start_time": "00:00",
+      "end_time": "00:28",
+      "title": "트랙 파트너 업스테이지 소개",
+      "audio": {
+        "transcript_or_detailed_summary": "사회자가 이전 발표에 감사 인사를 전하고 다음 트랙 파트너인 업스테이지를 소개하며 환영 박수를 유도합니다.",
+        "speakers": [
+          "Host"
+        ],
+        "language": "en",
+        "non_speech_audio": [
+          "Applause"
+        ]
+      },
+      "screen_description": "어두운 배경에 Upstage 로고와 'Track Partner' 텍스트가 표시되고 이어 메인 무대와 행사 범퍼 영상이 나타납니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "중앙에 파트너 로고가 있는 슬라이드 및 무대 전경",
+        "visible_text": [
+          {
+            "text": "Track Partner",
+            "role": "header",
+            "location": "top_center",
+            "language": "en"
+          },
+          {
+            "text": "Upstage",
+            "role": "logo",
+            "location": "center",
+            "language": "en"
+          },
+          {
+            "text": "JUNCTIONX KOREA 2026",
+            "role": "event_badge",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "DAY 1",
+            "role": "badge",
+            "location": "top_right",
+            "language": "en"
+          },
+          {
+            "text": "HACK OUR ORIGIN",
+            "role": "banner",
+            "location": "side_pillars",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "center",
+            "content_type": "slide_screen",
+            "description": "Upstage 로고가 표시된 대형 스크린"
+          },
+          {
+            "position": "stage_right",
+            "content_type": "person",
+            "description": "무대 위 사회자"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "title",
+          "title": "Track Partner",
+          "subtitle": "Upstage",
+          "sections": [],
+          "table_structure": []
+        },
+        "people": [
+          "Host"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": []
+      },
+      "key_entities": [
+        "Upstage",
+        "Junction Asia 2026"
+      ],
+      "events_and_actions": [
+        "사회자가 업스테이지 발표자를 호명함"
+      ],
+      "context_for_ai": "해커톤 트랙 파트너 세션 시작 부분",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "00:28",
+      "end_time": "00:48",
+      "title": "Upstage 트랙 챌린지 시작 및 발표자 소개",
+      "audio": {
+        "transcript_or_detailed_summary": "업스테이지의 소프트웨어 엔지니어 이현이 인사하며 업스테이지 소개와 해커톤 챌린지 발표를 시작합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "Upstage Track Challenge 타이틀 슬라이드가 표시되고 무대 위 발표자 이현이 마이크를 쥐고 발표를 시작합니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "슬라이드 화면과 발표자 카메라 영상 분할 뷰",
+        "visible_text": [
+          {
+            "text": "JUNCTION ASIA 2026",
+            "role": "header",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Upstage Track Challenge",
+            "role": "title",
+            "location": "center_left",
+            "language": "en"
+          },
+          {
+            "text": "About Upstage",
+            "role": "section_title",
+            "location": "center_left",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "left",
+            "content_type": "slide_area",
+            "description": "발표 슬라이드 표시 영역"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 이현 클로즈업"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "title",
+          "title": "Upstage Track Challenge",
+          "subtitle": "JUNCTION ASIA 2026",
+          "sections": [],
+          "table_structure": []
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": []
+      },
+      "key_entities": [
+        "Upstage",
+        "Lee Hyun"
+      ],
+      "events_and_actions": [
+        "발표자가 자기소개를 하고 발표 개요를 설명함"
+      ],
+      "context_for_ai": "Upstage 트랙 파트너 세션 도입부",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "00:48",
+      "end_time": "01:16",
+      "title": "Upstage 기업 개요 및 비전",
+      "audio": {
+        "transcript_or_detailed_summary": "업스테이지가 한국, 미국, 일본에 거점을 둔 글로벌 AI 스타트업이며 AI를 유익하게 만들고 업무의 미래를 지능화하는 미션을 설명합니다. $270M 투자 유치와 포털 다음(Daum) 인수, 국내 최초 생성형 AI 유니콘 달성 성과를 언급합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "글로벌 AI 스타트업 업스테이지의 미션, 비전, 투자금액($270M), 100개 이상 글로벌 고객사, 포털 다음 인수 성과를 보여주는 슬라이드입니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "슬라이드 영역과 우측 발표자 카메라 뷰",
+        "visible_text": [
+          {
+            "text": "Upstage, a Global AI Startup: Korea, US, and Japan",
+            "role": "title",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Mission: Making AI Beneficial",
+            "role": "body",
+            "location": "center",
+            "language": "en"
+          },
+          {
+            "text": "Vision: Building intelligence for the future of work",
+            "role": "body",
+            "location": "center",
+            "language": "en"
+          },
+          {
+            "text": "$270M Total Raised Capital",
+            "role": "statistic",
+            "location": "bottom_left",
+            "language": "en"
+          },
+          {
+            "text": "100+ AI engineers / Global customers",
+            "role": "statistic",
+            "location": "bottom_center",
+            "language": "en"
+          },
+          {
+            "text": "Portal 'Daum' acquired",
+            "role": "statistic",
+            "location": "bottom_left",
+            "language": "en"
+          },
+          {
+            "text": "Korea's first generative AI unicorn",
+            "role": "statistic",
+            "location": "bottom_right",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "left",
+            "content_type": "slide_area",
+            "description": "회사 지표와 미션을 정리한 슬라이드"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 영상"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "content",
+          "title": "Upstage, a Global AI Startup: Korea, US, and Japan",
+          "subtitle": "",
+          "sections": [
+            {
+              "heading": "Mission & Vision",
+              "content": [
+                "Mission: Making AI Beneficial - Making the world better with AI",
+                "Vision: Building intelligence for the future of work"
+              ]
+            },
+            {
+              "heading": "Key Achievements",
+              "content": [
+                "$270M Total Raised Capital (AWS, AMD)",
+                "100+ AI engineers / Global customers",
+                "Portal 'Daum' acquired",
+                "Korea's first generative AI unicorn"
+              ]
+            }
+          ],
+          "table_structure": []
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": []
+      },
+      "key_entities": [
+        "Upstage",
+        "Daum",
+        "AWS",
+        "AMD"
+      ],
+      "events_and_actions": [
+        "발표자가 기업 현황과 주요 실적을 설명함"
+      ],
+      "context_for_ai": "기업 소개 슬라이드",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "01:16",
+      "end_time": "01:31",
+      "title": "과기정통부 독자 AI 파운데이션 모델 사업 선정",
+      "audio": {
+        "transcript_or_detailed_summary": "과기정통부의 독자 AI 파운데이션 모델 프로젝트 주관사로 선정되어 SKT, LG와 함께 Top 3에 진입한 소식을 전합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "Solar LLM을 중심으로 다양한 파트너 및 협력 기관이 연결된 소버린 AI 생태계 다이어그램 슬라이드가 표시됩니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "슬라이드 영역과 우측 발표자 비디오",
+        "visible_text": [
+          {
+            "text": "Upstage selected by the Ministry of Science and ICT to lead Korea's 'Sovereign AI Foundation Model' project",
+            "role": "title",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Solar LLM",
+            "role": "center_node",
+            "location": "center",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "left",
+            "content_type": "slide_area",
+            "description": "Solar LLM 생태계 맵 다이어그램"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 영상"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "diagram",
+          "title": "Upstage selected by the Ministry of Science and ICT to lead Korea's 'Sovereign AI Foundation Model' project",
+          "subtitle": "",
+          "sections": [
+            {
+              "heading": "Ecosystem Partners",
+              "content": [
+                "OKESTRO, Fast Campus, Yuno, Lawtalk, allganize, MakinaRocks, Lablup, KAIST, Flitto, Sogang University"
+              ]
+            }
+          ],
+          "table_structure": []
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": [
+          "Solar LLM 중심의 파트너 네트워크 다이어그램"
+        ]
+      },
+      "key_entities": [
+        "Solar LLM",
+        "과기정통부",
+        "SKT",
+        "LG"
+      ],
+      "events_and_actions": [
+        "발표자가 독자 AI 파운데이션 모델 프로젝트 선정을 설명함"
+      ],
+      "context_for_ai": "국가 소버린 AI 프로젝트 선정 배경",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "01:31",
+      "end_time": "02:04",
+      "title": "AI 시장 성장 및 모델 라인업 로드맵",
+      "audio": {
+        "transcript_or_detailed_summary": "2024년 1월 Solar Mini 출시를 시작으로 Document Parse, Solar Pro, Information Extract를 거쳐 현재 AI Agent 개발에 집중하고 있음을 설명합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "2024년부터 2025년까지 Solar Mini, Document Parse, Solar Pro, Agents로 이어지는 폭발적 성장 그래프가 표시됩니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "슬라이드 영역과 우측 발표자 비디오",
+        "visible_text": [
+          {
+            "text": "Leading the AI market with explosive growth",
+            "role": "title",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "More than 100 engineers deliver our education and services, with 800+ AI models built to date.",
+            "role": "subtitle",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Solar Mini (Jan 2024)",
+            "role": "chart_label",
+            "location": "center_left",
+            "language": "en"
+          },
+          {
+            "text": "Document Parse (Oct 2024)",
+            "role": "chart_label",
+            "location": "center",
+            "language": "en"
+          },
+          {
+            "text": "Solar Pro (Sep 2024)",
+            "role": "chart_label",
+            "location": "center_top",
+            "language": "en"
+          },
+          {
+            "text": "Information Extract (May 2025)",
+            "role": "chart_label",
+            "location": "top_center",
+            "language": "en"
+          },
+          {
+            "text": "Agents (Jun 2025)",
+            "role": "chart_label",
+            "location": "top_right",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "left",
+            "content_type": "slide_area",
+            "description": "출시 모델 및 에이전트 타임라인 라인 차트"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 영상"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "chart",
+          "title": "Leading the AI market with explosive growth",
+          "subtitle": "More than 100 engineers deliver our education and services, with 800+ AI models built to date.",
+          "sections": [
+            {
+              "heading": "Product Releases",
+              "content": [
+                "Solar Mini (Jan 2024)",
+                "Document Parse (Oct 2024)",
+                "Solar Pro (Sep 2024)",
+                "Solar Pro 2 (Jan 2025)",
+                "Information Extract (May 2025)",
+                "Agents (Jun 2025)"
+              ]
+            }
+          ],
+          "table_structure": []
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": [
+          "AI 모델 출시 타임라인 및 성장 곡선 차트"
+        ]
+      },
+      "key_entities": [
+        "Solar Mini",
+        "Document Parse",
+        "Solar Pro",
+        "Upstage Studio",
+        "AI Agent"
+      ],
+      "events_and_actions": [
+        "발표자가 모델 로드맵과 에이전트 개발 현황을 설명함"
+      ],
+      "context_for_ai": "업스테이지 제품 출시 타임라인",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "02:04",
+      "end_time": "02:31",
+      "title": "업스테이지 핵심 제품군 및 교육 플랫폼",
+      "audio": {
+        "transcript_or_detailed_summary": "파운데이션 모델(Solar LLM, Document Parse, Information Extract), 플랫폼(Upstage Studio, AI Workspace, TimelyAI), 그리고 Upstage Education 사업을 설명하며 교육팀의 기여를 강조합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "Models, Platforms, Education 3대 영역으로 구성된 업스테이지 제품군 전체 포트폴리오 슬라이드입니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "슬라이드 영역과 우측 발표자 비디오",
+        "visible_text": [
+          {
+            "text": "Upstage powers the Future of Work with AI",
+            "role": "title",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Models: Solar LLM, Document Parse, Information Extract",
+            "role": "category",
+            "location": "center_top",
+            "language": "en"
+          },
+          {
+            "text": "Platforms: Upstage Studio, AI Workspace for Enterprise, TimelyAI",
+            "role": "category",
+            "location": "center",
+            "language": "en"
+          },
+          {
+            "text": "Education: Upstage Education",
+            "role": "category",
+            "location": "center_bottom",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "left",
+            "content_type": "slide_area",
+            "description": "제품 및 서비스 포트폴리오 슬라이드"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 영상"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "content",
+          "title": "Upstage powers the Future of Work with AI",
+          "subtitle": "",
+          "sections": [
+            {
+              "heading": "Models",
+              "content": [
+                "Solar LLM: A family of small yet powerful LLMs",
+                "Document Parse: Make your documents LLM-ready",
+                "Information Extract: Universal information extraction"
+              ]
+            },
+            {
+              "heading": "Platforms",
+              "content": [
+                "Upstage Studio: Build AI Document Workflows with agents",
+                "AI Workspace for Enterprise",
+                "TimelyAI: Hold everyone productive in their work"
+              ]
+            },
+            {
+              "heading": "Education",
+              "content": [
+                "Upstage Education: Until everyone becomes an AI Innovator"
+              ]
+            }
+          ],
+          "table_structure": []
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": []
+      },
+      "key_entities": [
+        "Solar LLM",
+        "Document Parse",
+        "Upstage Studio",
+        "Upstage Education"
+      ],
+      "events_and_actions": [
+        "발표자가 모델, 플랫폼, 교육 3가지 비즈니스 축을 소개함"
+      ],
+      "context_for_ai": "업스테이지 비즈니스 구조 소개",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "02:31",
+      "end_time": "02:57",
+      "title": "AWS 마켓플레이스 인기 2위 달성 성과",
+      "audio": {
+        "transcript_or_detailed_summary": "업스테이지가 Document OCR 분야의 기술력을 토대로 AWS 마켓플레이스에서 전 세계 인기 솔루션 2위를 기록한 성과를 발표합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "AWS 마켓플레이스에서 Upstage Document AI가 'The most subscribed products last month' 상위권(2위)에 랭크된 캡처 화면 슬라이드입니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "슬라이드 영역과 우측 발표자 비디오",
+        "visible_text": [
+          {
+            "text": "Top-ranked on AWS Marketplace",
+            "role": "title",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Upstage's Document AI is the #2 most popular solution worldwide on AWS Marketplace.",
+            "role": "subtitle",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Document Intelligence - AI Agent (Upstage)",
+            "role": "listing_title",
+            "location": "center",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "left",
+            "content_type": "slide_area",
+            "description": "AWS Marketplace 구독 순위 화면"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 영상"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "content",
+          "title": "Top-ranked on AWS Marketplace",
+          "subtitle": "Upstage's Document AI is the #2 most popular solution worldwide on AWS Marketplace.",
+          "sections": [],
+          "table_structure": []
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": []
+      },
+      "key_entities": [
+        "AWS Marketplace",
+        "Document AI",
+        "Upstage"
+      ],
+      "events_and_actions": [
+        "발표자가 글로벌 마켓플레이스 성과를 강조함"
+      ],
+      "context_for_ai": "글로벌 시장 검증 및 기술력 입증 사례",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "02:57",
+      "end_time": "03:28",
+      "title": "산업별 주요 엔터프라이즈 고객사",
+      "audio": {
+        "transcript_or_detailed_summary": "한화생명, 삼성생명, KB국민은행 등 금융·보험·엔터프라이즈 고객사들을 소개하며 특히 초기 고객이었던 한화생명과의 협력 경험을 언급합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "한화생명, 삼성화재, 메리츠화재, KB국민은행, 삼성SDS, 포스코 등 수많은 파트너 및 고객사 로고가 정리된 슬라이드입니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "슬라이드 영역과 우측 발표자 비디오",
+        "visible_text": [
+          {
+            "text": "Trusted by industry leaders across sectors",
+            "role": "title",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "We work with leading companies across industries to create real business value with AI and establish best practices.",
+            "role": "subtitle",
+            "location": "top_left",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "left",
+            "content_type": "slide_area",
+            "description": "국내외 주요 고객사 로고 그리드"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 영상"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "content",
+          "title": "Trusted by industry leaders across sectors",
+          "subtitle": "We work with leading companies across industries to create real business value with AI and establish best practices.",
+          "sections": [
+            {
+              "heading": "Client Sectors",
+              "content": [
+                "Finance & Insurance: 한화생명, 삼성생명, 메리츠화재, KB손해보험, 신한라이프, 카카오페이손해보험, 삼성카드, Kbank",
+                "Tech & Enterprise: 현대백화점, 삼성물산, 삼성SDS, GS리테일, SK텔레콤, Toss, 원티드"
+              ]
+            }
+          ],
+          "table_structure": []
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": []
+      },
+      "key_entities": [
+        "한화생명",
+        "삼성화재",
+        "KB국민은행",
+        "삼성SDS"
+      ],
+      "events_and_actions": [
+        "발표자가 엔터프라이즈 고객 사례를 공유함"
+      ],
+      "context_for_ai": "엔터프라이즈 B2B 레퍼런스 소개",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "03:28",
+      "end_time": "04:28",
+      "title": "글로벌 기업들이 업스테이지를 선택하는 이유: 성능 및 확장성",
+      "audio": {
+        "transcript_or_detailed_summary": "업스테이지의 강력한 벤치마크 성능(Solar Pro)과 대규모 처리 능력(매일 300만 장 이상의 문서 및 국내 실손보험 청구서류의 70~80% 처리)을 핵심 경쟁력으로 제시합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "연간 예상 매출 $20M, 일일 300만 페이지 자동 처리, 100+ 고객사, 70% 보험 청구 점유율, 200여 명의 엔지니어, $270M 펀딩 수치를 담은 슬라이드입니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "슬라이드 영역과 우측 발표자 비디오",
+        "visible_text": [
+          {
+            "text": "Why the world's top companies choose Upstage",
+            "role": "title",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "By the numbers: Proven impact at enterprise scale.",
+            "role": "subtitle",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "$20M annual revenue (2025)",
+            "role": "metric",
+            "location": "center_left",
+            "language": "en"
+          },
+          {
+            "text": "3M+ pages automated daily",
+            "role": "metric",
+            "location": "center",
+            "language": "en"
+          },
+          {
+            "text": "100+ global enterprises",
+            "role": "metric",
+            "location": "center_right",
+            "language": "en"
+          },
+          {
+            "text": "70% insurance claims processed in Korea",
+            "role": "metric",
+            "location": "bottom_left",
+            "language": "en"
+          },
+          {
+            "text": "~200 AI engineers & system integrators",
+            "role": "metric",
+            "location": "bottom_center",
+            "language": "en"
+          },
+          {
+            "text": "$270M funding raised",
+            "role": "metric",
+            "location": "bottom_right",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "left",
+            "content_type": "slide_area",
+            "description": "핵심 성과 지표 요약 슬라이드"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 영상"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "content",
+          "title": "Why the world's top companies choose Upstage",
+          "subtitle": "By the numbers: Proven impact at enterprise scale.",
+          "sections": [
+            {
+              "heading": "Scale & Impact",
+              "content": [
+                "Growth: $20M annual revenue (2025)",
+                "Scale: 3M+ pages automated daily",
+                "Customers: 100+ global enterprises",
+                "Market reach: 70% insurance claims processed in Korea",
+                "Talent pool: ~200 AI engineers & system integrators",
+                "Funding raised: $270M from AWS, AMD and top-tier investors"
+              ]
+            }
+          ],
+          "table_structure": []
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": []
+      },
+      "key_entities": [
+        "Upstage",
+        "Solar Pro",
+        "Document AI"
+      ],
+      "events_and_actions": [
+        "발표자가 대규모 처리량과 시장 점유율 지표를 설명함"
+      ],
+      "context_for_ai": "기업 엔터프라이즈 스케일 증명",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "04:28",
+      "end_time": "05:10",
+      "title": "Upstage Studio 소개 및 Chat 기능",
+      "audio": {
+        "transcript_or_detailed_summary": "문서 AI 워크플로우를 구축할 수 있는 플랫폼인 Upstage Studio와 문서 업로드 후 즉시 대화, 검색(RAG), 번역을 수행하는 Chat 기능을 소개합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "Upstage Studio 타이틀 슬라이드와 4개 에이전트(Classify, Parse, Extract, Solar LLM) 구성도, Key features: Chat 슬라이드가 이어집니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "슬라이드 영역과 우측 발표자 비디오",
+        "visible_text": [
+          {
+            "text": "Products: Upstage Studio",
+            "role": "header",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Tackle document chaos with intelligence",
+            "role": "subtitle",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "What is Upstage Studio?",
+            "role": "title",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Key features: Chat",
+            "role": "title",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Search / RAG",
+            "role": "feature_tag",
+            "location": "center_right",
+            "language": "en"
+          },
+          {
+            "text": "Document Chat",
+            "role": "feature_tag",
+            "location": "center_right",
+            "language": "en"
+          },
+          {
+            "text": "Document Translation",
+            "role": "feature_tag",
+            "location": "center_right",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "left",
+            "content_type": "slide_area",
+            "description": "Studio 인터페이스 및 Chat 기능 예시 슬라이드"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 영상"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "content",
+          "title": "Key features: Chat",
+          "subtitle": "",
+          "sections": [
+            {
+              "heading": "Capabilities",
+              "content": [
+                "Search / RAG",
+                "Document Chat",
+                "Document Translation"
+              ]
+            }
+          ],
+          "table_structure": []
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": []
+      },
+      "key_entities": [
+        "Upstage Studio",
+        "Document Chat",
+        "RAG"
+      ],
+      "events_and_actions": [
+        "발표자가 Upstage Studio의 기본 구성과 Chat 기능을 설명함"
+      ],
+      "context_for_ai": "Upstage Studio 플랫폼 기능 소개",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "05:10",
+      "end_time": "06:07",
+      "title": "핵심 기능 1: Parse (문서 파싱)",
+      "audio": {
+        "transcript_or_detailed_summary": "문서 파싱 기능인 Parse 노드를 설명합니다. 다양한 포맷을 HTML/Markdown으로 변환하며 복잡한 표, 수식, 체크박스를 정밀하게 인식하고 바운딩 박스를 통해 출처 추적이 가능함을 강조합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "Parse 기능의 다중 페이지, 표, 다이어그램 처리 역량 및 타사 OCR 대비 성능/비용 벤치마크 표가 슬라이드에 제시됩니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "슬라이드 영역과 우측 발표자 비디오",
+        "visible_text": [
+          {
+            "text": "Key feature #1: Parse",
+            "role": "title",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Parse converts diverse document formats to HTML and markdown.",
+            "role": "subtitle",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "1 Intelligent recognition",
+            "role": "feature_bullet",
+            "location": "center_right",
+            "language": "en"
+          },
+          {
+            "text": "2 Source traceability",
+            "role": "feature_bullet",
+            "location": "bottom_right",
+            "language": "en"
+          },
+          {
+            "text": "Page limit 1000",
+            "role": "spec",
+            "location": "top_left",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "left",
+            "content_type": "slide_area",
+            "description": "Parse 기능 설명 및 벤치마크 비교표"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 영상"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "table",
+          "title": "Key feature #1: Parse",
+          "subtitle": "Parse shows the best balance of speed and accuracy among peers. Particularly when the processing volume goes up.",
+          "sections": [
+            {
+              "heading": "Features",
+              "content": [
+                "Page limit 1000 per request",
+                "Supports checkboxes, signatures, multi-page/complex tables, rotated docs, charts & diagrams",
+                "Full transparency with layout analysis and coordinates"
+              ]
+            }
+          ],
+          "table_structure": [
+            {
+              "title": "Speed, Accuracy & Cost Comparison",
+              "headers": [
+                "Model",
+                "Speed 1 page (sec)",
+                "Speed 1,000 pages (sec)",
+                "Accuracy Tables (F1)",
+                "Accuracy Layout (mAP)",
+                "Cost Per page (cent)"
+              ],
+              "rows": [
+                [
+                  "Upstage Enhanced (Default)",
+                  "3.79",
+                  "121",
+                  "97.28",
+                  "97.32",
+                  "3.00"
+                ],
+                [
+                  "Upstage Standard (Optional)",
+                  "2.83",
+                  "149",
+                  "97.28",
+                  "97.32",
+                  "1.00"
+                ],
+                [
+                  "Amazon Textract",
+                  "2.52",
+                  "2,382",
+                  "97.01",
+                  "89.37",
+                  "1.50"
+                ],
+                [
+                  "Google Layout Parser",
+                  "2.72",
+                  "681",
+                  "81.04",
+                  "88.88",
+                  "3.00"
+                ],
+                [
+                  "Microsoft Document Intelligence",
+                  "4.94",
+                  "146",
+                  "91.95",
+                  "86.39",
+                  "1.00"
+                ],
+                [
+                  "LlamaParse Agentic Plus",
+                  "9.91",
+                  "2,546",
+                  "96.24",
+                  "95.27",
+                  "5.00"
+                ]
+              ],
+              "footnotes": [
+                "Benchmark on client's public domain data in Kaggle repository."
+              ],
+              "reading_order": "row-by-row"
+            }
+          ]
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": [
+          "문서 파싱 벤치마크 비교 테이블"
+        ]
+      },
+      "key_entities": [
+        "Parse",
+        "HTML",
+        "Markdown",
+        "Upstage Enhanced"
+      ],
+      "events_and_actions": [
+        "발표자가 Parse 노드의 기능과 벤치마크 데이터를 설명함"
+      ],
+      "context_for_ai": "Upstage Studio Parse 기능 심층 설명",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "06:07",
+      "end_time": "06:47",
+      "title": "핵심 기능 2: Classify (문서 분류)",
+      "audio": {
+        "transcript_or_detailed_summary": "추가 학습 없이 사용자 정의 문서 클래스로 문서를 자동 분류하고 분할(auto-splitting) 및 다운스트림 워크플로우를 트리거하는 Classify 노드와 타사 대비 높은 속도/정확도 벤치마크를 소개합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "Classify 노드의 다중 문서 분류/분할 화면 및 타 모델(Claude, GPT-4.0, Qwen, Gemini) 대비 속도/정확도 벤치마크 표가 표시됩니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "슬라이드 영역과 우측 발표자 비디오",
+        "visible_text": [
+          {
+            "text": "Key feature #2: Classify",
+            "role": "title",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Classify lets you to define your own document classes without additional training.",
+            "role": "subtitle",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Downstream integration",
+            "role": "feature_label",
+            "location": "bottom_left",
+            "language": "en"
+          },
+          {
+            "text": "Auto-splitting",
+            "role": "feature_label",
+            "location": "bottom_center",
+            "language": "en"
+          },
+          {
+            "text": "Classify shows highest speed and accuracy among peers.",
+            "role": "benchmark_header",
+            "location": "top_left",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "left",
+            "content_type": "slide_area",
+            "description": "Classify 기능 설명 및 벤치마크 비교표"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 영상"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "table",
+          "title": "Key feature #2: Classify",
+          "subtitle": "Classify shows highest speed and accuracy among peers.",
+          "sections": [
+            {
+              "heading": "Features",
+              "content": [
+                "Downstream integration: Trigger tasks based on classifications",
+                "Auto-splitting: Separate files with bundled documents into sub-documents"
+              ]
+            }
+          ],
+          "table_structure": [
+            {
+              "title": "Classification Benchmark",
+              "headers": [
+                "Model",
+                "Speed (page/sec)",
+                "Classify Accuracy (%)",
+                "Cost (USD / 1k page)",
+                "Errors (Unparsable docs)"
+              ],
+              "rows": [
+                [
+                  "Upstage Standard",
+                  "5.3",
+                  "91.5",
+                  "0.4",
+                  "0"
+                ],
+                [
+                  "Upstage Lite (Default)",
+                  "4.4",
+                  "88.2",
+                  "0.08",
+                  "0"
+                ],
+                [
+                  "Claude Opus 4.0",
+                  "21.4",
+                  "90.5",
+                  "1.9",
+                  "47"
+                ],
+                [
+                  "OpenAI GPT-4.0",
+                  "15.9",
+                  "87.5",
+                  "2.6",
+                  "8"
+                ],
+                [
+                  "Qwen 2.5-VL-72B",
+                  "6.2",
+                  "74.0",
+                  "287"
+                ],
+                [
+                  "Google Gemini 1.5 Flash",
+                  "19.3",
+                  "91.4",
+                  "0.2",
+                  "2"
+                ]
+              ],
+              "footnotes": [
+                "Last updated: Jan 2025"
+              ],
+              "reading_order": "row-by-row"
+            }
+          ]
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": [
+          "Classify 노드 분류 정확도 및 속도 벤치마크 테이블"
+        ]
+      },
+      "key_entities": [
+        "Classify",
+        "Upstage Standard",
+        "Upstage Lite"
+      ],
+      "events_and_actions": [
+        "발표자가 Classify 노드의 제로샷 분류 및 벤치마크 결과를 소개함"
+      ],
+      "context_for_ai": "Upstage Studio Classify 기능 설명",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "06:47",
+      "end_time": "07:11",
+      "title": "핵심 기능 3: Extract (정보 추출)",
+      "audio": {
+        "transcript_or_detailed_summary": "영수증, 청구서 등 다양한 문서에서 key-value 쌍, 목록, 테이블을 정밀하게 추출하는 Extract 노드의 기능과 좌표 기반 출처 추적, 의미론적 이해(semantic understanding) 역량을 설명합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "Extract 기능 UI(원천 문서와 JSON 결과 매핑) 및 타 모델 대비 벤치마크 표가 슬라이드에 제시됩니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "슬라이드 영역과 우측 발표자 비디오",
+        "visible_text": [
+          {
+            "text": "Key feature #3: Extract",
+            "role": "title",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Extract delivers key-values, lists, and tables instantly with high accuracy.",
+            "role": "subtitle",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "1 Source traceability",
+            "role": "bullet",
+            "location": "bottom_left",
+            "language": "en"
+          },
+          {
+            "text": "2 Semantic understanding",
+            "role": "bullet",
+            "location": "bottom_center",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "left",
+            "content_type": "slide_area",
+            "description": "Extract 기능 UI 및 벤치마크 비교표"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 영상"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "table",
+          "title": "Key feature #3: Extract",
+          "subtitle": "Extract balances speed, accuracy, cost, and reliability for real enterprise documents.",
+          "sections": [
+            {
+              "heading": "Core Values",
+              "content": [
+                "Source traceability: Every extracted value is mapped to its exact coordinates",
+                "Semantic understanding: Extract not only what's explicitly written, but also what's implied"
+              ]
+            }
+          ],
+          "table_structure": [
+            {
+              "title": "Extract Performance Benchmark",
+              "headers": [
+                "Model",
+                "Speed",
+                "Accuracy Overall",
+                "Cost",
+                "Errors",
+                "Tables with many rows",
+                "Complex documents",
+                "Long documents"
+              ],
+              "rows": [
+                [
+                  "Upstage Enhanced",
+                  "52.2",
+                  "81.0",
+                  "6.0",
+                  "0",
+                  "157.1",
+                  "93.1",
+                  "83.8",
+                  "41.3"
+                ],
+                [
+                  "Upstage Standard",
+                  "42.4",
+                  "76.0",
+                  "4.0",
+                  "0",
+                  "151.0",
+                  "83.9",
+                  "18.7",
+                  "62.2"
+                ],
+                [
+                  "Claude Opus 4.0",
+                  "56.1",
+                  "83.7",
+                  "7.5",
+                  "28",
+                  "153.5",
+                  "93.9",
+                  "85.4",
+                  "62.5"
+                ],
+                [
+                  "OpenAI GPT-4.0",
+                  "50.5",
+                  "79.1",
+                  "5.0",
+                  "0",
+                  "187.8",
+                  "64.0",
+                  "100.4",
+                  "40.7"
+                ]
+              ],
+              "footnotes": [],
+              "reading_order": "row-by-row"
+            }
+          ]
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": [
+          "Extract 노드 성능 비교 벤치마크 표"
+        ]
+      },
+      "key_entities": [
+        "Extract",
+        "Upstage Enhanced",
+        "Semantic understanding"
+      ],
+      "events_and_actions": [
+        "발표자가 정보 추출 기능과 출처 매핑 기능을 설명함"
+      ],
+      "context_for_ai": "Upstage Studio Extract 기능 설명",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "07:11",
+      "end_time": "07:36",
+      "title": "핵심 기능 4: Instruct (자연어 프롬프트 지시)",
+      "audio": {
+        "transcript_or_detailed_summary": "자연어 프롬프트를 통해 이전 노드의 추출 결과에 기반한 고도화된 인사이트 도출, 조건부 판단 및 후속 작업 연계를 수행하는 Instruct 노드를 소개합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "Instruct 기능의 프롬프트 입력과 조건 판정 결과(Status: Rejected), 원천 문서 그라운딩을 보여주는 슬라이드입니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "슬라이드 영역과 우측 발표자 비디오",
+        "visible_text": [
+          {
+            "text": "Key feature #4: Instruct",
+            "role": "title",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Instruct receives simple natural language prompts to generate highly tailored insights.",
+            "role": "subtitle",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "1 Insight-driven routing",
+            "role": "feature_bullet",
+            "location": "center_right",
+            "language": "en"
+          },
+          {
+            "text": "2 Source-grounded insights",
+            "role": "feature_bullet",
+            "location": "bottom_right",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "left",
+            "content_type": "slide_area",
+            "description": "Instruct 노드 프롬프트 및 출력 예시"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 영상"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "content",
+          "title": "Key feature #4: Instruct",
+          "subtitle": "Instruct receives simple natural language prompts to generate highly tailored insights.",
+          "sections": [
+            {
+              "heading": "Features",
+              "content": [
+                "Insight-driven routing: Trigger downstream actions based on the synthesized results",
+                "Source-grounded insights: Trace every result directly back to the original document"
+              ]
+            }
+          ],
+          "table_structure": []
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": []
+      },
+      "key_entities": [
+        "Instruct",
+        "LLM",
+        "Prompt"
+      ],
+      "events_and_actions": [
+        "발표자가 자연어 프롬프트 기반 Instruct 노드를 설명함"
+      ],
+      "context_for_ai": "Upstage Studio Instruct 기능 설명",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "07:36",
+      "end_time": "10:11",
+      "title": "Upstage Studio 실제 시연 데모",
+      "audio": {
+        "transcript_or_detailed_summary": "실제 Upstage Studio 웹 화면에서 청약 상담 도우미(청약 공고문 자동 파싱, 스키마 추출, 자격 조건 판정)와 의약품 허가심사(진해거담제/해열진통제 적합성 검토) 워크플로우를 직접 시연합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "Upstage Studio UI 데모 영상이 재생되며 노드 구성, 스키마 정의, 파싱 및 추출 결과, 한국어 청약/의약품 공고문 분석 결과가 화면에 나타납니다.",
+      "screen": {
+        "scene_type": "screencast",
+        "overall_layout": "Upstage Studio 웹 애플리케이션 화면",
+        "visible_text": [
+          {
+            "text": "청약 상담 도우미",
+            "role": "workflow_title",
+            "location": "top_left",
+            "language": "ko"
+          },
+          {
+            "text": "2026년 청년 전세임대 1순위 입주자 수시모집",
+            "role": "document_header",
+            "location": "top_center",
+            "language": "ko"
+          },
+          {
+            "text": "상주자이르네 입주자모집공고",
+            "role": "document_title",
+            "location": "center_left",
+            "language": "ko"
+          },
+          {
+            "text": "지원 가능 / 지원 불가",
+            "role": "result_status",
+            "location": "center_right",
+            "language": "ko"
+          },
+          {
+            "text": "Studio (https://studio.upstage.ai)",
+            "role": "url",
+            "location": "top_left",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "center",
+            "content_type": "ui_workflow",
+            "description": "Studio 노드 연결 및 실행 결과 확인 화면"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 영상"
+          }
+        ],
+        "slide": {
+          "is_slide": false,
+          "slide_type": "",
+          "title": "",
+          "subtitle": "",
+          "sections": [],
+          "table_structure": []
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [
+          "Upstage Studio 워크플로우 캔버스 및 결과 패널 활성화"
+        ],
+        "charts_and_diagrams": [
+          "Parse, Classify, Extract, Instruct 노드 연결 파이프라인"
+        ]
+      },
+      "key_entities": [
+        "Upstage Studio",
+        "청약 상담 도우미",
+        "의약품 허가심사",
+        "Solar Pro"
+      ],
+      "events_and_actions": [
+        "발표자가 실제 문서를 이용한 노드별 처리 데모를 시연함"
+      ],
+      "context_for_ai": "Upstage Studio 실제 제품 시연",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "10:11",
+      "end_time": "10:48",
+      "title": "업스테이지 트랙 챌린지 과제 안내",
+      "audio": {
+        "transcript_or_detailed_summary": "트랙 챌린지 주제인 'Building a Document Agent Service with Upstage Studio'를 공개하고, 일상 속 반복적이고 복잡한 문서 업무를 자동화하는 에이전트 서비스 개발 과제를 설명합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "트랙 제목, 배경, 도전 과제, 활용 기술(Studio 4개 노드 + REST API/웹훅 연동), 최종 산출물이 명시된 챌린지 상세 슬라이드입니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "슬라이드 영역과 우측 발표자 비디오",
+        "visible_text": [
+          {
+            "text": "Challenge Overview: Upstage Track Challenge",
+            "role": "header",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Track Title: Building a Document Agent Service with Upstage Studio",
+            "role": "body_bold",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "Background: Paperwork is everywhere...",
+            "role": "body",
+            "location": "center_left",
+            "language": "en"
+          },
+          {
+            "text": "Challenge Statement: Spot one repetitive task, recurring mistake, or everyday hassle...",
+            "role": "body",
+            "location": "center_left",
+            "language": "en"
+          },
+          {
+            "text": "Use of Technology: Combine Studio agents + integrate with any service via REST APIs & webhooks",
+            "role": "body",
+            "location": "bottom_left",
+            "language": "en"
+          },
+          {
+            "text": "Deliverables: A working document-workflow automation service built on Upstage Studio agents.",
+            "role": "body",
+            "location": "bottom_left",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "left",
+            "content_type": "slide_area",
+            "description": "트랙 챌린지 세부 요강 슬라이드"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 영상"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "content",
+          "title": "Upstage Track Challenge",
+          "subtitle": "Challenge Overview",
+          "sections": [
+            {
+              "heading": "Challenge Details",
+              "content": [
+                "Track Title: Building a Document Agent Service with Upstage Studio",
+                "Background: Automating diverse paperwork (scholarship, lease, part-time contract, expense receipts)",
+                "Challenge Statement: Spot repetitive tasks or document hassles and build a Document Agent service beyond understanding to getting work done",
+                "Use of Technology: Combine Studio agents (Parse, Classify, Extract, Instruct) and integrate via REST APIs & webhooks",
+                "Deliverables: A working document-workflow automation service"
+              ]
+            }
+          ],
+          "table_structure": []
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": []
+      },
+      "key_entities": [
+        "Upstage Track Challenge",
+        "Upstage Studio",
+        "Document Agent"
+      ],
+      "events_and_actions": [
+        "발표자가 트랙 과제와 개발 요건을 발표함"
+      ],
+      "context_for_ai": "해커톤 트랙 챌린지 요구사항 안내",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "10:48",
+      "end_time": "11:34",
+      "title": "평가 기준 및 참가자 혜택/상금",
+      "audio": {
+        "transcript_or_detailed_summary": "평가 항목 4가지(Upstage 기술 구현도 30점, 서비스 완성도 20점, 아이디어 독창성 25점, 프로덕트 기획 25점)와 참가자 굿즈, 1인당 $50 크레딧, 우승팀 팀원당 $200 크레딧 혜택을 안내합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "상금 및 혜택 슬라이드와 평가 기준 4개 영역(가중치 및 평가 요소)을 정리한 슬라이드가 차례로 표시됩니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "슬라이드 영역과 우측 발표자 비디오",
+        "visible_text": [
+          {
+            "text": "Prizes & Benefits",
+            "role": "header",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "$50 in credits per participant",
+            "role": "benefit",
+            "location": "center_left",
+            "language": "en"
+          },
+          {
+            "text": "$200 in credits per winning team member",
+            "role": "benefit",
+            "location": "center_left",
+            "language": "en"
+          },
+          {
+            "text": "Evaluation Criteria",
+            "role": "header",
+            "location": "top_left",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "left",
+            "content_type": "slide_area",
+            "description": "평가 기준표 및 상금 혜택 슬라이드"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 영상"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "table",
+          "title": "Evaluation Criteria",
+          "subtitle": "Upstage Track Challenge",
+          "sections": [
+            {
+              "heading": "Prizes & Benefits",
+              "content": [
+                "Goodie package",
+                "$50 in credits per participant",
+                "$200 in credits per winning team member"
+              ]
+            }
+          ],
+          "table_structure": [
+            {
+              "title": "Evaluation Criteria",
+              "headers": [
+                "Criteria",
+                "Evaluation Factor"
+              ],
+              "rows": [
+                [
+                  "Upstage Technology Implementation (30)",
+                  "How deeply the team leveraged Upstage Studio and its APIs (agent composition, external integrations, accuracy)"
+                ],
+                [
+                  "Service Completeness (20)",
+                  "Does the demo run reliably end to end? Are UI, screens, flows polished enough as a real service?"
+                ],
+                [
+                  "Idea Creativity (25)",
+                  "Is the problem discovery fresh? Does the solution stand apart from existing services?"
+                ],
+                [
+                  "Product Planning (25)",
+                  "Concrete target users and problem definition, well-prioritized scope within 3-day constraint, solid data-flow design"
+                ]
+              ],
+              "footnotes": [],
+              "reading_order": "row-by-row"
+            }
+          ]
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": [
+          "평가 기준 테이블"
+        ]
+      },
+      "key_entities": [
+        "Evaluation Criteria",
+        "Prizes & Benefits"
+      ],
+      "events_and_actions": [
+        "발표자가 심사 기준과 상금/크레딧 혜택을 설명함"
+      ],
+      "context_for_ai": "해커톤 심사 기준 및 보상 정보",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "11:34",
+      "end_time": "12:10",
+      "title": "API & Studio 시작 가이드 및 질의응답 안내",
+      "audio": {
+        "transcript_or_detailed_summary": "Upstage Console 가입 후 리딤 코드 'Edu_Junction_2026'을 입력해 크레딧을 수령하는 방법과 Upstage Studio 접근 링크, 디스코드 채널을 통한 지원을 안내하며 발표를 마무리합니다.",
+        "speakers": [
+          "Lee Hyun"
+        ],
+        "language": "en",
+        "non_speech_audio": []
+      },
+      "screen_description": "콘솔 가입(console.upstage.ai), 리딤 코드 입력(Edu_Junction_2026), 스튜디오 접속(studio.upstage.ai) 단계가 정리된 슬라이드입니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "슬라이드 영역과 우측 발표자 비디오",
+        "visible_text": [
+          {
+            "text": "How to Use Upstage API & Studio",
+            "role": "title",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "1/ Sign up for the Upstage Console: https://console.upstage.ai/home",
+            "role": "step",
+            "location": "center_left",
+            "language": "en"
+          },
+          {
+            "text": "2/ Enter a redeem code: Edu_Junction_2026",
+            "role": "step",
+            "location": "center_left",
+            "language": "en"
+          },
+          {
+            "text": "3/ Join the Upstage Studio: https://studio.upstage.ai/",
+            "role": "step",
+            "location": "bottom_left",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "left",
+            "content_type": "slide_area",
+            "description": "가입 및 리딤 코드 등록 절차 안내 슬라이드"
+          },
+          {
+            "position": "right",
+            "content_type": "speaker_video",
+            "description": "발표자 영상"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "content",
+          "title": "How to Use Upstage API & Studio",
+          "subtitle": "",
+          "sections": [
+            {
+              "heading": "Instructions",
+              "content": [
+                "1/ Sign up for Upstage Console: https://console.upstage.ai/home",
+                "2/ Redeem Code: Edu_Junction_2026 (Console - Dashboard - Credit - Redeem Code)",
+                "3/ Join Upstage Studio: https://studio.upstage.ai/"
+              ]
+            }
+          ],
+          "table_structure": []
+        },
+        "people": [
+          "Lee Hyun"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": []
+      },
+      "key_entities": [
+        "Upstage Console",
+        "Edu_Junction_2026",
+        "Upstage Studio"
+      ],
+      "events_and_actions": [
+        "발표자가 크레딧 리딤 코드와 시작 방법을 안내하고 발표를 마침"
+      ],
+      "context_for_ai": "참가자 개발 시작 가이드",
+      "confidence_notes": "정상 인식"
+    },
+    {
+      "start_time": "12:10",
+      "end_time": "12:33",
+      "title": "세션 종료 및 다음 파트너(래블업 x 퓨리오사AI) 소개",
+      "audio": {
+        "transcript_or_detailed_summary": "업스테이지 세션이 청중의 박수와 함께 끝나고 사회자가 다음 트랙 파트너인 래블업과 퓨리오사AI를 무대로 안내합니다.",
+        "speakers": [
+          "Host"
+        ],
+        "language": "en",
+        "non_speech_audio": [
+          "Applause"
+        ]
+      },
+      "screen_description": "무대 화면에 'Track Partner: lablup x FURIOSA AI' 로고 슬라이드가 표시됩니다.",
+      "screen": {
+        "scene_type": "presentation",
+        "overall_layout": "메인 무대와 차기 파트너 로고 슬라이드",
+        "visible_text": [
+          {
+            "text": "Track Partner",
+            "role": "header",
+            "location": "top_center",
+            "language": "en"
+          },
+          {
+            "text": "lablup x FURIOSA",
+            "role": "logo",
+            "location": "center",
+            "language": "en"
+          },
+          {
+            "text": "JUNCTIONX KOREA 2026",
+            "role": "event_badge",
+            "location": "top_left",
+            "language": "en"
+          },
+          {
+            "text": "DAY 1",
+            "role": "badge",
+            "location": "top_right",
+            "language": "en"
+          }
+        ],
+        "layout_regions": [
+          {
+            "position": "center",
+            "content_type": "slide_screen",
+            "description": "래블업 x 퓨리오사 로고 슬라이드"
+          },
+          {
+            "position": "stage_right",
+            "content_type": "person",
+            "description": "사회자"
+          }
+        ],
+        "slide": {
+          "is_slide": true,
+          "slide_type": "title",
+          "title": "Track Partner",
+          "subtitle": "lablup x FURIOSA",
+          "sections": [],
+          "table_structure": []
+        },
+        "people": [
+          "Host"
+        ],
+        "ui_state": [],
+        "charts_and_diagrams": []
+      },
+      "key_entities": [
+        "Lablup",
+        "FuriosaAI",
+        "Junction Asia 2026"
+      ],
+      "events_and_actions": [
+        "사회자가 다음 트랙 파트너를 소개함"
+      ],
+      "context_for_ai": "트랙 파트너 세션 전환",
+      "confidence_notes": "정상 인식"
+    }
+  ]
+}

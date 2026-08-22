@@ -1,0 +1,7 @@
+---
+description: UP²STAGE 저장소 공통 지침
+alwaysApply: true
+---
+
+작업 전 루트 `AGENTS.md`와 현재 경로의 하위 `AGENTS.md`를 읽는다.
+기능별 필수 문서는 `docs/00-index.md`에서 찾고, 추측보다 원본 Agent JSON·Job 결과·Upstage 매뉴얼을 우선한다.

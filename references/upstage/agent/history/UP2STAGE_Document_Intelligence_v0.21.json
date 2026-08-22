@@ -1,0 +1,999 @@
+{
+  "kind": "studio.agent-config-draft",
+  "exportedAt": "2026-08-22T20:30:39.015Z",
+  "exportedFrom": {
+    "agentId": "agt_m6gGCrKd344J4FCrbrMXcL",
+    "agentName": "UP2STAGE Document Intelligence v0.21",
+    "configId": "cfg_kib2mmcrEcrkX2c3nhs4E4",
+    "configVer": 21
+  },
+  "agentConfig": {
+    "agent_name": "UP2STAGE Document Intelligence v0.21",
+    "pipelineType": "instruct",
+    "documentParseConfiguration": {
+      "modelName": "document-parse",
+      "mode": "auto",
+      "ocrMode": "auto",
+      "lang": "ko",
+      "chartRecognition": false,
+      "coordinates": true,
+      "mergeMultipageTables": false,
+      "outputFormats": [
+        "html",
+        "text",
+        "markdown"
+      ],
+      "base64Encoding": [
+        "figure"
+      ]
+    },
+    "documentClassifyConfiguration": {
+      "modelName": "",
+      "schema": {
+        "type": "json_schema",
+        "json_schema": {
+          "name": "document-classify",
+          "schema": {
+            "type": "string",
+            "oneOf": [
+              {
+                "const": "core_notice",
+                "description": "프로그램의 목적, 운영기관, 대상, 혜택, 신청기간, 주요 자격요건, 제출서류와 전체 신청 흐름을 설명하는 핵심 모집·선발 공고. 정정공고, 사용자가 작성하는 양식, 체크박스 중심 자가진단표, 단순 기관 목록과 참고표는 제외한다."
+              },
+              {
+                "const": "amendment_notice",
+                "description": "기존 공고의 마감, 조건, 서류, 절차 또는 값을 변경·대체하는 정정·변경 공고. 새로운 전체 모집공고, 단순 재게시와 일반 참고자료는 제외한다."
+              },
+              {
+                "const": "eligibility_rules",
+                "description": "학년·학적·소득·성적·거주·국적·소속기관 등 지원 자격, 제외조건, 예외와 필요한 증빙을 설명하는 규정·조건표. 체크박스 중심 자가진단표, 신청 양식과 단순 기관 목록은 제외한다."
+              },
+              {
+                "const": "self_checklist",
+                "description": "사용자가 항목별로 체크하거나 응답하며 자격과 준비 상태를 점검하는 체크리스트·자가진단표·서약서. 서술형 자격 규정과 일반 신청 양식은 제외한다."
+              },
+              {
+                "const": "application_form",
+                "description": "신청서·자기소개서·추천서·동의서처럼 사용자가 내용을 작성하거나 서명·날인해야 하는 양식. 공고문, 자격 기준표와 제출 절차 안내는 제외한다."
+              },
+              {
+                "const": "procedure_guide",
+                "description": "온라인·오프라인 제출 순서, URL·채널, 파일명·병합·형식 규칙과 접수 완료 확인 방법을 안내하는 문서. 자격 기준표와 사용자가 작성하는 신청 양식은 제외한다."
+              },
+              {
+                "const": "institution_list",
+                "description": "지원·신청 대상에 포함되는 대학·기관·지역·국가 등을 행과 열로 나열한 목록표. 반복되는 기관명이 중심이며 사용자가 작성하는 입력란이나 일반 설명문은 없다."
+              },
+              {
+                "const": "reference",
+                "description": "환산표·FAQ·보조 기준·증빙 발급 안내·용어 설명처럼 핵심 공고의 사실을 해석하거나 값을 조회하는 참고자료. 전체 모집공고, 신청 양식과 기관 목록은 제외한다."
+              },
+              {
+                "const": "other",
+                "description": "위 유형 중 어느 하나로 안정적으로 분류할 수 없거나 이번 업무에 직접 사용되지 않는 문서. 애매한 문서를 기존 유형에 강제로 넣지 말고 other로 분류한다."
+              }
+            ]
+          }
+        }
+      },
+      "customName": "document_role",
+      "split": true,
+      "splitCriteria": [
+        {
+          "criterion": "file_boundary",
+          "description": "결합 업로드된 각 원본 첨부파일의 경계를 유지해 파일별로 문서 역할을 분류한다."
+        }
+      ]
+    },
+    "informationExtractConfiguration": {
+      "modelName": "",
+      "schemas": [
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "core_notice_extract",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "program_name": {
+                  "type": "string",
+                  "description": "장학·지원 프로그램의 공식 명칭만 1개 추출한다. 선발인원, 금액, 기간, 일정과 기관명은 포함하지 않는다. 원문에 없으면 빈 문자열."
+                },
+                "provider": {
+                  "type": "string",
+                  "description": "사업을 주관·시행·공고한 기관명만 추출한다. 사업명, 일정과 연락처는 포함하지 않는다. 원문에 없으면 빈 문자열."
+                },
+                "benefits": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "지원금·장학금의 금액, 지급 횟수, 지원 기간과 지원 유형을 각각 원문 그대로 추출한다. 자격조건과 일정은 포함하지 않는다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "selection_schedule": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "서류심사, 면접, 결과 발표, 지급 등 신청 접수 이후의 단계명과 일정을 원문 그대로 각각 추출한다. 신청 접수기간은 제외한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "application_periods": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "신청 접수의 시작일시, 종료일시, 정확한 마감 시각과 단계명을 원문 그대로 추출한다. 서로 다른 채널이나 단계의 마감은 분리한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "normalized_deadlines": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "일정이 명확한 경우 `label=<단계> | start_at=<ISO 8601 또는 빈 값> | end_at=<ISO 8601 또는 빈 값> | timezone=<예: Asia/Seoul> | channel=<제출 채널> | raw_text=<원문>` 형식으로 정규화한다. 날짜·시각이 불완전하면 임의 보완하지 않고 해당 값은 비운다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "key_requirements": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "공고에 직접 명시된 학년·학적·소득·성적·거주·국적·소속기관 등 핵심 지원요건을 각각 분리해 최대 8개 추출한다. 지원 가능 여부는 판정하지 않는다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "required_documents": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "모든 지원자에게 공통으로 필요한 제출서류명만 각각 추출한다. 조건부 서류, 단순 작성 필드와 발급 방법은 제외한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "conditional_documents": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "특정 조건에만 필요한 서류와 그 적용 조건을 `서류명 | 적용 조건 | raw_text=<원문>` 형식으로 추출한다. 조건이 불명확하면 임의 추론하지 않는다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "quick_questions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "지원 가능 여부를 확인하기 위해 사용자에게 실제로 물어야 하는 질문만 추출한다. 각 항목은 반드시 `key=<영문 snake_case> | label=<한국어 질문 라벨> | input_type=<text|number|select|boolean|date|institution_select> | required=<true|false> | options=<원문에 명시된 선택지, 없으면 빈 값> | related_rule=<연결되는 기준 key> | reason=<질문 이유> | raw_text=<근거 원문>` 형식의 한 줄 문자열로 작성한다. 문서만으로 이미 알 수 있는 값, 판정에 필요하지 않은 개인정보와 원문에 없는 질문은 만들지 않는다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "contact": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "담당 부서·기관의 전화번호, 이메일, 문의 게시판과 문의 가능시간을 각각 추출한다. 다른 설명은 포함하지 않는다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "core_cautions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "중복수혜, 허위서류, 마감, 서명, 원본, 발급일, 파일형식처럼 신청 실패나 불이익에 직접 연결되는 핵심 유의사항만 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "next_actions_seed": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "공고에 명시된 사용자 행동 중 현재부터 제출 완료까지 필요한 행동을 순서대로 추출한다. 원문에 없는 추천 행동은 만들지 않는다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                }
+              }
+            }
+          },
+          "mode": "standard",
+          "modelName": "",
+          "schemaLayout": {
+            "version": 1,
+            "columns": [
+              {
+                "name": "program_name",
+                "source": "root"
+              },
+              {
+                "name": "provider",
+                "source": "root"
+              },
+              {
+                "name": "benefits",
+                "source": "root"
+              },
+              {
+                "name": "selection_schedule",
+                "source": "root"
+              },
+              {
+                "name": "application_periods",
+                "source": "root"
+              },
+              {
+                "name": "normalized_deadlines",
+                "source": "root"
+              },
+              {
+                "name": "key_requirements",
+                "source": "root"
+              },
+              {
+                "name": "required_documents",
+                "source": "root"
+              },
+              {
+                "name": "conditional_documents",
+                "source": "root"
+              },
+              {
+                "name": "quick_questions",
+                "source": "root"
+              },
+              {
+                "name": "contact",
+                "source": "root"
+              },
+              {
+                "name": "core_cautions",
+                "source": "root"
+              },
+              {
+                "name": "next_actions_seed",
+                "source": "root"
+              }
+            ]
+          }
+        },
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "amendment_extract",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "target_notice": {
+                  "type": "string",
+                  "description": "정정 대상이 되는 기존 공고의 공식명, 공고번호 또는 식별 가능한 제목만 추출한다. 원문에 없으면 빈 문자열."
+                },
+                "effective_date": {
+                  "type": "string",
+                  "description": "정정 내용의 적용일 또는 효력 발생일을 원문 그대로 추출한다. 발행일과 적용일이 다르면 적용일을 우선하고, 불명확하면 임의 보완하지 않는다."
+                },
+                "changed_items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "변경 항목을 반드시 `field=<변경 대상> | before=<변경 전 값 또는 빈 값> | after=<변경 후 값> | effective_at=<적용일 또는 빈 값> | raw_text=<원문>` 형식으로 각각 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "superseded_documents": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "더 이상 사용하지 않거나 새 문서로 대체된 기존 공고·양식·첨부파일의 명칭을 각각 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "amendment_cautions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "정정공고 적용 범위, 기존 제출자의 재제출 여부, 변경되지 않은 항목 등 정정 내용을 해석할 때 필요한 주의사항만 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                }
+              }
+            }
+          },
+          "mode": "standard",
+          "modelName": "",
+          "schemaLayout": {
+            "version": 1,
+            "columns": [
+              {
+                "name": "target_notice",
+                "source": "root"
+              },
+              {
+                "name": "effective_date",
+                "source": "root"
+              },
+              {
+                "name": "changed_items",
+                "source": "root"
+              },
+              {
+                "name": "superseded_documents",
+                "source": "root"
+              },
+              {
+                "name": "amendment_cautions",
+                "source": "root"
+              }
+            ]
+          }
+        },
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "eligibility_extract",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "eligibility_conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "지원대상·학년·학적·소득·성적·거주·국적·소속기관 등 충족해야 하는 자격조건을 한 항목에 한 조건씩 원문 그대로 추출한다. 최종 지원 가능 여부는 판정하지 않는다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "normalized_rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "정규화 가능한 자격조건을 `criterion=<영문 snake_case> | operator=<eq|neq|gt|gte|lt|lte|in|not_in|contains|exists> | value=<값> | unit=<단위 또는 빈 값> | applies_to=<적용대상> | mandatory=<true|false> | raw_text=<원문>` 형식으로 추출한다. 불명확한 값은 임의 정규화하지 않는다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "exclusion_conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "휴학·수료·초과학기·근로·중복수혜 등 지원 불가를 직접 결정하는 제외조건을 한 항목에 한 조건씩 원문 그대로 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "normalized_exclusion_rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "정규화 가능한 제외조건을 `criterion=<영문 snake_case> | operator=<eq|neq|gt|gte|lt|lte|in|not_in|contains|exists> | value=<값> | unit=<단위 또는 빈 값> | mandatory=<true|false> | raw_text=<원문>` 형식으로 추출한다. 불명확하면 원문만 보존한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "exceptions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "일반 자격·제외조건의 명시적 예외, 별도 심사 또는 대체 기준을 각각 추출한다. 혜택과 일정은 제외한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "required_evidence": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "지원 자격 확인에 직접 필요한 증빙서류명과 필요한 조건을 추출한다. 신청서·자기소개서 같은 일반 제출양식은 제외한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "quick_questions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "지원 가능 여부를 확인하기 위해 사용자에게 실제로 물어야 하는 질문만 추출한다. 각 항목은 반드시 `key=<영문 snake_case> | label=<한국어 질문 라벨> | input_type=<text|number|select|boolean|date|institution_select> | required=<true|false> | options=<원문에 명시된 선택지, 없으면 빈 값> | related_rule=<연결되는 기준 key> | reason=<질문 이유> | raw_text=<근거 원문>` 형식의 한 줄 문자열로 작성한다. 문서만으로 이미 알 수 있는 값, 판정에 필요하지 않은 개인정보와 원문에 없는 질문은 만들지 않는다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "eligibility_cautions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "증빙 발급일, 유효기간, 산정 기준일, 환산 방식처럼 자격 판정 시 반드시 확인해야 하는 운영 주의사항을 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                }
+              }
+            }
+          },
+          "mode": "standard",
+          "modelName": "",
+          "schemaLayout": {
+            "version": 1,
+            "columns": [
+              {
+                "name": "eligibility_conditions",
+                "source": "root"
+              },
+              {
+                "name": "normalized_rules",
+                "source": "root"
+              },
+              {
+                "name": "exclusion_conditions",
+                "source": "root"
+              },
+              {
+                "name": "normalized_exclusion_rules",
+                "source": "root"
+              },
+              {
+                "name": "exceptions",
+                "source": "root"
+              },
+              {
+                "name": "required_evidence",
+                "source": "root"
+              },
+              {
+                "name": "quick_questions",
+                "source": "root"
+              },
+              {
+                "name": "eligibility_cautions",
+                "source": "root"
+              }
+            ]
+          }
+        },
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "self_checklist_extract",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "checklist_title": {
+                  "type": "string",
+                  "description": "자가 체크리스트·자가진단표·서약서의 공식 제목만 추출한다. 원문에 없으면 빈 문자열."
+                },
+                "checklist_items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "체크하거나 응답해야 하는 항목을 원문의 질문 또는 진술 형태로 각각 추출한다. 안내문과 장식 문구는 제외한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "quick_questions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "지원 가능 여부를 확인하기 위해 사용자에게 실제로 물어야 하는 질문만 추출한다. 각 항목은 반드시 `key=<영문 snake_case> | label=<한국어 질문 라벨> | input_type=<text|number|select|boolean|date|institution_select> | required=<true|false> | options=<원문에 명시된 선택지, 없으면 빈 값> | related_rule=<연결되는 기준 key> | reason=<질문 이유> | raw_text=<근거 원문>` 형식의 한 줄 문자열로 작성한다. 문서만으로 이미 알 수 있는 값, 판정에 필요하지 않은 개인정보와 원문에 없는 질문은 만들지 않는다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "required_confirmations": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "사용자가 반드시 확인·동의·서약해야 하는 항목을 각각 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "failure_conditions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "특정 응답이나 미확인이 지원 불가·제출 불가·추가 확인으로 이어지는 조건을 원문 그대로 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "checklist_cautions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "체크리스트의 작성, 서명, 제출과 판정 해석에 필요한 주의사항을 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                }
+              }
+            }
+          },
+          "mode": "standard",
+          "modelName": "",
+          "schemaLayout": {
+            "version": 1,
+            "columns": [
+              {
+                "name": "checklist_title",
+                "source": "root"
+              },
+              {
+                "name": "checklist_items",
+                "source": "root"
+              },
+              {
+                "name": "quick_questions",
+                "source": "root"
+              },
+              {
+                "name": "required_confirmations",
+                "source": "root"
+              },
+              {
+                "name": "failure_conditions",
+                "source": "root"
+              },
+              {
+                "name": "checklist_cautions",
+                "source": "root"
+              }
+            ]
+          }
+        },
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "application_form_extract",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "form_name": {
+                  "type": "string",
+                  "description": "양식의 공식 제목만 추출한다. 작성 항목과 제출요건은 포함하지 않는다. 원문에 없으면 빈 문자열."
+                },
+                "form_type": {
+                  "type": "string",
+                  "description": "양식 유형을 application, essay, consent, recommendation, declaration, report, other 중 하나의 영문 값으로 추출한다. 판단이 불가능하면 other."
+                },
+                "required_fields": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "사용자가 반드시 작성해야 하는 문항·입력란·선택항목을 각각 추출한다. 예시문과 설명문은 제외한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "optional_fields": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "선택적으로 작성할 수 있다고 명시된 문항·입력란만 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "signatures": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "본인·보호자·추천인·기관 등 서명·날인 주체와 요구 방식을 각각 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "attachments": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "이 양식에 함께 첨부하거나 삽입해야 하는 문서·사진·증빙을 각각 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "format_constraints": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "분량, 글자 수, 파일 형식, 파일명, 병합, 용량, 작성 도구, 수정 금지 등 형식 제약을 각각 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "form_cautions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "미작성, 서명 누락, 양식 변경, 원본 제출 등 양식 작성·제출 실패에 직접 연결되는 주의사항을 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                }
+              }
+            }
+          },
+          "mode": "standard",
+          "modelName": "",
+          "schemaLayout": {
+            "version": 1,
+            "columns": [
+              {
+                "name": "form_name",
+                "source": "root"
+              },
+              {
+                "name": "form_type",
+                "source": "root"
+              },
+              {
+                "name": "required_fields",
+                "source": "root"
+              },
+              {
+                "name": "optional_fields",
+                "source": "root"
+              },
+              {
+                "name": "signatures",
+                "source": "root"
+              },
+              {
+                "name": "attachments",
+                "source": "root"
+              },
+              {
+                "name": "format_constraints",
+                "source": "root"
+              },
+              {
+                "name": "form_cautions",
+                "source": "root"
+              }
+            ]
+          }
+        },
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "procedure_extract",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "application_steps": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "로그인, 메뉴 이동, 입력, 파일 업로드, 제출과 완료 확인까지 사용자가 수행해야 하는 행동을 원문 순서대로 한 단계씩 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "submission_channels": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "온라인 사이트, 이메일, 방문, 우편 등 제출 경로와 정확한 URL·주소·수신처만 각각 추출한다. 파일 규칙과 완료 확인은 제외한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "file_rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "허용 파일 형식, 파일명, 병합 순서, 용량, 암호, 스캔, 원본 여부 등 파일 관련 규칙을 각각 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "completion_checks": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "접수번호, 완료 화면, 이메일, 상태값 등 제출이 정상 완료됐는지 확인하는 방법을 각각 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "procedure_cautions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "브라우저 제한, 임시저장 불가, 마감 직전 위험, 별도 승인 등 절차 수행 중 실패 가능성이 높은 주의사항을 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                }
+              }
+            }
+          },
+          "mode": "standard",
+          "modelName": "",
+          "schemaLayout": {
+            "version": 1,
+            "columns": [
+              {
+                "name": "application_steps",
+                "source": "root"
+              },
+              {
+                "name": "submission_channels",
+                "source": "root"
+              },
+              {
+                "name": "file_rules",
+                "source": "root"
+              },
+              {
+                "name": "completion_checks",
+                "source": "root"
+              },
+              {
+                "name": "procedure_cautions",
+                "source": "root"
+              }
+            ]
+          }
+        },
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "institution_list_extract",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "list_title": {
+                  "type": "string",
+                  "description": "기관·대학·지역 목록의 공식 제목만 추출한다. 원문에 없으면 빈 문자열."
+                },
+                "institutions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "목록의 각 기관을 `name=<공식명> | campus=<캠퍼스 또는 빈 값> | region=<지역 또는 빈 값> | included=<true|false|unclear> | condition=<적용 조건 또는 빈 값> | raw_text=<원문>` 형식으로 추출한다. 표 헤더와 번호만 있는 셀은 기관명으로 보지 않는다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "inclusion_rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "목록 전체 또는 일부에 적용되는 포함·제외 기준, 본교·분교·캠퍼스 구분과 지역 조건을 각각 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "institution_cautions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "기관명 중복, 캠퍼스 구분, 폐교·통합, 별표 예외 등 목록을 해석할 때 필요한 주의사항을 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                }
+              }
+            }
+          },
+          "mode": "standard",
+          "modelName": "",
+          "schemaLayout": {
+            "version": 1,
+            "columns": [
+              {
+                "name": "list_title",
+                "source": "root"
+              },
+              {
+                "name": "institutions",
+                "source": "root"
+              },
+              {
+                "name": "inclusion_rules",
+                "source": "root"
+              },
+              {
+                "name": "institution_cautions",
+                "source": "root"
+              }
+            ]
+          }
+        },
+        {
+          "type": "json_schema",
+          "json_schema": {
+            "name": "reference_extract",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "reference_type": {
+                  "type": "string",
+                  "description": "참고자료 유형을 score_conversion, income_bracket, faq, evidence_issuance, benefit_table, terminology, general_reference, other 중 하나의 영문 값으로 추출한다."
+                },
+                "reference_rules": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "환산식, 구간 기준, 발급 조건, 값 조회 규칙 등 다른 문서를 해석하는 데 필요한 규칙을 각각 원문 그대로 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "qa_pairs": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "FAQ 형식인 경우 `question=<질문> | answer=<답변>` 형식으로 각각 추출한다. FAQ가 아니면 빈 배열."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                },
+                "reference_cautions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "description": "적용 연도, 기준일, 환산 예외, 발급 제한 등 참고자료 사용 시 필요한 주의사항을 추출한다."
+                  },
+                  "description": "원문에 없으면 빈 배열. 추론하거나 생성하지 않는다."
+                }
+              }
+            }
+          },
+          "mode": "standard",
+          "modelName": "",
+          "schemaLayout": {
+            "version": 1,
+            "columns": [
+              {
+                "name": "reference_type",
+                "source": "root"
+              },
+              {
+                "name": "reference_rules",
+                "source": "root"
+              },
+              {
+                "name": "qa_pairs",
+                "source": "root"
+              },
+              {
+                "name": "reference_cautions",
+                "source": "root"
+              }
+            ]
+          }
+        }
+      ],
+      "categorySchemaMapping": {
+        "core_notice": "core_notice_extract",
+        "amendment_notice": "amendment_extract",
+        "eligibility_rules": "eligibility_extract",
+        "self_checklist": "self_checklist_extract",
+        "application_form": "application_form_extract",
+        "procedure_guide": "procedure_extract",
+        "institution_list": "institution_list_extract",
+        "reference": "reference_extract"
+      },
+      "location": true
+    },
+    "pipelineEdges": [
+      {
+        "id": "e0",
+        "source": {
+          "nodeType": "parse"
+        },
+        "target": {
+          "nodeType": "classify",
+          "name": "document_role"
+        }
+      },
+      {
+        "id": "e1",
+        "source": {
+          "nodeType": "classify",
+          "name": "document_role"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "core_notice_extract"
+        },
+        "condition": {
+          "conditionName": "core_notice"
+        }
+      },
+      {
+        "id": "e2",
+        "source": {
+          "nodeType": "classify",
+          "name": "document_role"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "amendment_extract"
+        },
+        "condition": {
+          "conditionName": "amendment_notice"
+        }
+      },
+      {
+        "id": "e3",
+        "source": {
+          "nodeType": "classify",
+          "name": "document_role"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "eligibility_extract"
+        },
+        "condition": {
+          "conditionName": "eligibility_rules"
+        }
+      },
+      {
+        "id": "e4",
+        "source": {
+          "nodeType": "classify",
+          "name": "document_role"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "self_checklist_extract"
+        },
+        "condition": {
+          "conditionName": "self_checklist"
+        }
+      },
+      {
+        "id": "e5",
+        "source": {
+          "nodeType": "classify",
+          "name": "document_role"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "application_form_extract"
+        },
+        "condition": {
+          "conditionName": "application_form"
+        }
+      },
+      {
+        "id": "e6",
+        "source": {
+          "nodeType": "classify",
+          "name": "document_role"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "procedure_extract"
+        },
+        "condition": {
+          "conditionName": "procedure_guide"
+        }
+      },
+      {
+        "id": "e7",
+        "source": {
+          "nodeType": "classify",
+          "name": "document_role"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "institution_list_extract"
+        },
+        "condition": {
+          "conditionName": "institution_list"
+        }
+      },
+      {
+        "id": "e8",
+        "source": {
+          "nodeType": "classify",
+          "name": "document_role"
+        },
+        "target": {
+          "nodeType": "extract",
+          "name": "reference_extract"
+        },
+        "condition": {
+          "conditionName": "reference"
+        }
+      },
+      {
+        "id": "e9",
+        "source": {
+          "nodeType": "extract",
+          "name": "core_notice_extract"
+        },
+        "target": {
+          "nodeType": "instruct",
+          "name": "initial_guidance"
+        }
+      }
+    ],
+    "instructConfiguration": {
+      "nodes": [
+        {
+          "name": "initial_guidance",
+          "modelName": "",
+          "prompt": "당신은 UP2STAGE의 initial guidance 생성 단계입니다. 다음 Extract 필드만 사용하세요: @program_name, @provider, @benefits, @application_periods, @normalized_deadlines, @key_requirements, @required_documents, @conditional_documents, @core_cautions, @next_actions_seed. 지원 가능 여부를 개인화해 판정하지 말고, 원문에 없는 사실·날짜·서류·행동을 만들지 마세요. Source ID, page, citation 또는 좌표를 임의 생성하지 마세요. 값이 없으면 빈 배열 또는 빈 문자열로 유지하세요. 반드시 Markdown 코드블록이나 설명 없이 다음 키를 가진 유효한 JSON 객체 하나만 출력하세요: {\"program_summary\":\"한 문장\",\"key_requirements\":[\"핵심 요건, 최대 5개\"],\"nearest_deadline\":\"가장 가까운 명시적 마감, 없으면 빈 문자열\",\"required_documents\":[\"필수 서류\"],\"conditional_documents\":[\"조건부 서류와 조건\"],\"important_cautions\":[\"핵심 위험, 최대 5개\"],\"next_actions\":[\"원문에 근거한 다음 행동, 순서대로\"],\"missing_information\":[\"핵심 공고만으로 확인할 수 없는 내용\"],\"personalization_status\":\"not_evaluated\"}. 같은 사실은 중복하지 않고 날짜·시각·금액·조건은 원문 표현을 보존하세요."
+        }
+      ],
+      "connectionMapping": {
+        "initial_guidance": {
+          "targetType": "extract",
+          "schemaName": "core_notice_extract"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+{
+  "name": "up2stage",
+  "version": "0.0.0-private",
+  "private": true,
+  "description": "UP²STAGE Chrome Extension 개발용 구조와 문서 기반 스타터. 제품 구현 코드는 포함하지 않는다.",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=22",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "dev": "wxt",
+    "build": "wxt build",
+    "zip": "wxt zip",
+    "prepare": "wxt prepare",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:a11y": "playwright test --grep @a11y",
+    "check": "pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+  },
+  "dependencies": {
+    "@rhwp/core": "latest",
+    "@tanstack/react-virtual": "latest",
+    "@webext-core/messaging": "latest",
+    "dexie": "latest",
+    "dexie-react-hooks": "latest",
+    "dompurify": "latest",
+    "pdfjs-dist": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "xlsx": "latest",
+    "zod": "latest",
+    "zustand": "latest"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "latest",
+    "@commitlint/cli": "latest",
+    "@commitlint/config-conventional": "latest",
+    "@playwright/test": "latest",
+    "@tailwindcss/vite": "latest",
+    "@testing-library/jest-dom": "latest",
+    "@testing-library/react": "latest",
+    "@types/chrome": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "@wxt-dev/module-react": "latest",
+    "eslint": "latest",
+    "eslint-config-prettier": "latest",
+    "globals": "latest",
+    "prettier": "latest",
+    "tailwindcss": "latest",
+    "typescript": "latest",
+    "typescript-eslint": "latest",
+    "vitest": "latest",
+    "wxt": "latest"
+  }
+}
