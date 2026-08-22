@@ -15,6 +15,11 @@ Figma에서 확인된 의미 토큰을 코드의 CSS 변수로 유지한다.
 --radius-lg: 16px;
 ```
 
+## Figma 출처 확인
+
+- Discover documents (`78:2301`) 조회 시 `--jx-color-bg-canvas: white`, `--jx-color-text-on-inverse: #ffffff`, `--jx-spacing-16: 16px`, `--jx-radius-8: 8px` 등의 변수가 사용됨을 확인
+- 현재 토큰과 일치하며, Phase 2 Tailwind/디자인 시스템 적용 시 변수명 매핑 필요
+
 원칙:
 
 - raw hex의 무분별한 반복을 피한다.
