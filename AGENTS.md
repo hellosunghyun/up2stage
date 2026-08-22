@@ -64,6 +64,11 @@
 한 작업은 하나의 눈에 보이는 기능 또는 하나의 명확한 기술 경계를 완성해야 한다.
 관련 없는 대규모 리팩터링, 전체 포맷팅, 의존성 일괄 업데이트를 함께 하지 않는다.
 
+서로 영향을 주지 않는 변경은 `run_subagent`를 적극 활용해 병렬로 수행한다.
+
+- 병렬 가능: 문서 작성/갱신, README/AGENTS.md 업데이트, 의존성 버전 고정, lint/test/build 검증, 리서치 조회, 서로 다른 파일/폴더의 독립적인 구현
+- 병렬 금지: 동일 파일에 대한 동시 쓰기, 의존성 추가/변경, manifest/schema/version 변경, Agent/Job JSON/Upstage 원본 수정
+
 다음 변경은 구현 전에 ADR 또는 명시적 확인이 필요하다.
 
 - Agent schema / Agent version
