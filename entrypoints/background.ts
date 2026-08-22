@@ -4,8 +4,11 @@ import { messaging } from "../src/core/messaging/protocol";
 export default defineBackground(() => {
   console.log("up to stage background started");
 
-  messaging.onOpenSidePanel(async ({ tabId }) => {
-    await chrome.sidePanel.open({ tabId });
+  messaging.onOpenSidePanel(async (data, sender) => {
+    const tabId = data.tabId ?? sender.tab?.id;
+    if (tabId) {
+      await chrome.sidePanel.open({ tabId });
+    }
   });
 
   messaging.onOpenViewer(async ({ caseId, documentId, sourceId }) => {

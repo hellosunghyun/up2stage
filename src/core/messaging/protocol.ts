@@ -1,7 +1,7 @@
 import { defineExtensionMessaging } from "@webext-core/messaging";
 import { z } from "zod";
 
-const OpenSidePanelSchema = z.object({ tabId: z.number() });
+const OpenSidePanelSchema = z.object({ tabId: z.number().optional() });
 const OpenViewerSchema = z.object({
   caseId: z.string(),
   documentId: z.string().optional(),
@@ -19,15 +19,18 @@ export interface MessagingProtocol {
 const { sendMessage, onMessage } = defineExtensionMessaging<MessagingProtocol>();
 
 export const messaging = {
-  async openSidePanel(data: OpenSidePanelData): Promise<void> {
+  async openSidePanel(data: OpenSidePanelData = {}): Promise<void> {
     await sendMessage("openSidePanel", OpenSidePanelSchema.parse(data));
   },
   onOpenSidePanel(
-    handler: (data: OpenSidePanelData) => void | Promise<void>
+    handler: (
+      data: OpenSidePanelData,
+      sender: chrome.runtime.MessageSender
+    ) => void | Promise<void>
   ): void {
     onMessage("openSidePanel", async (message) => {
       const parsed = OpenSidePanelSchema.parse(message.data);
-      await handler(parsed);
+      await handler(parsed, message.sender as chrome.runtime.MessageSender);
     });
   },
   async openViewer(data: OpenViewerData): Promise<void> {

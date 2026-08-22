@@ -1,4 +1,5 @@
 import { defineContentScript } from "wxt/utils/define-content-script";
+import { messaging } from "../src/core/messaging/protocol";
 import { findMatchingRule } from "../src/features/contextual-overlay/rules";
 import { mountOverlay, unmountOverlay } from "../src/features/contextual-overlay/mount";
 
@@ -8,8 +9,8 @@ function checkAndRenderOverlay() {
 
   if (matched) {
     mountOverlay({
-      onOpen: () => {
-        // Side Panel open은 다음 Phase에서 messaging으로 연결
+      onOpen: async () => {
+        await messaging.openSidePanel({});
       },
       onClose: () => {
         unmountOverlay();
