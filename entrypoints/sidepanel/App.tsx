@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import {
   messaging,
   type AttachmentPayload,
-  type PageContext,
 } from "../../src/core/messaging/protocol";
 import {
   canStartAnalysis,
@@ -32,7 +31,6 @@ const RADIUS = {
 
 export function App() {
   const [panel, setPanel] = useState<PanelState>("DISCOVERY");
-  const [pageContext, setPageContext] = useState<PageContext | null>(null);
   const [attachments, setAttachments] = useState<AttachmentPayload[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [consentChecked, setConsentChecked] = useState(false);
@@ -43,12 +41,8 @@ export function App() {
 
     async function load() {
       try {
-        const [ctx, docs] = await Promise.all([
-          messaging.currentPageContext(),
-          messaging.discoverAttachments(),
-        ]);
+        const docs = await messaging.discoverAttachments();
         if (!mounted) return;
-        setPageContext(ctx);
         setAttachments(docs);
         setSelectedIds(new Set(docs.map((d) => d.id)));
       } catch (e) {
@@ -132,7 +126,6 @@ export function App() {
 
         {panel === "DISCOVERY" && (
           <DiscoveryView
-            pageContext={pageContext}
             attachments={attachments}
             onStart={() => setPanel("SELECTION")}
           />
@@ -140,7 +133,6 @@ export function App() {
 
         {panel === "SELECTION" && (
           <SelectionView
-            pageContext={pageContext}
             attachments={attachments}
             selectedIds={selectedIds}
             onToggle={toggleDoc}
@@ -194,18 +186,14 @@ function BrandMark() {
 }
 
 function DiscoveryView({
-  pageContext,
   attachments,
   onStart,
 }: {
-  pageContext: PageContext | null;
   attachments: AttachmentPayload[];
   onStart: () => void;
 }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <PageContextCard pageContext={pageContext} />
-
       <h2
         style={{
           fontSize: 19,
@@ -261,7 +249,6 @@ function DiscoveryView({
 }
 
 function SelectionView({
-  pageContext,
   attachments,
   selectedIds,
   onToggle,
@@ -269,7 +256,6 @@ function SelectionView({
   onNext,
   onBack,
 }: {
-  pageContext: PageContext | null;
   attachments: AttachmentPayload[];
   selectedIds: Set<string>;
   onToggle: (id: string) => void;
@@ -282,8 +268,6 @@ function SelectionView({
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <PageContextCard pageContext={pageContext} />
-
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <h2
           style={{
@@ -474,45 +458,6 @@ function ConsentView({
         >
           분석 시작
         </button>
-      </div>
-    </div>
-  );
-}
-
-function PageContextCard({ pageContext }: { pageContext: PageContext | null }) {
-  if (!pageContext) return null;
-
-  return (
-    <div
-      style={{
-        padding: 12,
-        borderRadius: RADIUS.md,
-        background: COLORS.bgInverseSurface,
-        color: COLORS.textOnInverse,
-      }}
-    >
-      <div
-        style={{
-          fontSize: 14,
-          fontWeight: 700,
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
-        {pageContext.title}
-      </div>
-      <div
-        style={{
-          marginTop: 4,
-          fontSize: 12,
-          color: COLORS.textInverseSecondary,
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        }}
-      >
-        {pageContext.url}
       </div>
     </div>
   );

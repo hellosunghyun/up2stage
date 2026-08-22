@@ -19,6 +19,16 @@ function makeId(index: number): string {
   return `discovered-${index}`;
 }
 
+function inferFileNameFromText(text: string): string | undefined {
+  const trimmed = text.trim();
+  const lower = trimmed.toLowerCase();
+  for (const ext of SUPPORTED_EXTENSIONS) {
+    if (lower.endsWith(`.${ext}`)) return trimmed;
+  }
+  const match = trimmed.match(new RegExp(`\\S+\\.(${SUPPORTED_EXTENSIONS.join("|")})$`, "i"));
+  return match ? match[0] : undefined;
+}
+
 function collectCandidate(
   map: Map<string, DiscoveredAttachment>,
   rawUrl: string,
@@ -30,19 +40,28 @@ function collectCandidate(
   const absolute = toAbsoluteUrl(rawUrl, baseUrl);
   if (!absolute) return;
 
-  const fileName = inferFileName(absolute);
-  const extension = inferExtension(fileName);
-  if (!extension || !isSupportedExtension(extension)) return;
-
-  const url = canonicalUrl(absolute);
-  const key = `${url}::${fileName}`;
-  if (map.has(key)) return;
-
   const sourceElementText =
     (element as HTMLElement).innerText?.trim() ||
     (element as HTMLElement).textContent?.trim() ||
     element.getAttribute("aria-label") ||
     "";
+
+  const fileNameFromUrl = inferFileName(absolute);
+  const fileNameFromText = inferFileNameFromText(sourceElementText);
+
+  let fileName = fileNameFromUrl;
+  let extension = inferExtension(fileName);
+
+  if (!extension && fileNameFromText) {
+    fileName = fileNameFromText;
+    extension = inferExtension(fileName);
+  }
+
+  if (!extension || !isSupportedExtension(extension)) return;
+
+  const url = canonicalUrl(absolute);
+  const key = `${url}::${fileName}`;
+  if (map.has(key)) return;
 
   map.set(key, {
     id: makeId(map.size),

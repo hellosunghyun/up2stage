@@ -69,6 +69,23 @@ describe("attachment discovery", () => {
     const found = discoverAttachments("https://example.org/");
     expect(found[0]?.sourceElementText).toBe("공고문 다운로드");
   });
+
+  it("finds attachments from link text when href has no file extension", () => {
+    document.body.innerHTML = '<a href="#n">공고문.pdf</a>';
+    const found = discoverAttachments("https://example.org/page");
+    expect(found).toHaveLength(1);
+    expect(found[0]?.fileName).toBe("공고문.pdf");
+    expect(found[0]?.extension).toBe("pdf");
+  });
+
+  it("finds attachments from full link text with spaces", () => {
+    document.body.innerHTML =
+      '<a href="javascript:void(0);">붙임 1. [공고문] 2026년 공고.pdf</a>';
+    const found = discoverAttachments("https://example.org/");
+    expect(found).toHaveLength(1);
+    expect(found[0]?.fileName).toBe("붙임 1. [공고문] 2026년 공고.pdf");
+    expect(found[0]?.extension).toBe("pdf");
+  });
 });
 
 describe("filename inference", () => {
