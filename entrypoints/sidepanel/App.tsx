@@ -20,6 +20,7 @@ const COLORS = {
   textPrimary: "#0a0d14",
   textOnInverse: "#ffffff",
   textInverseSecondary: "#8390a5",
+  textSecondary: "#6b7280",
   border: "#e5e7eb",
 };
 
@@ -105,7 +106,8 @@ export function App() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          borderBottom: `1px solid ${COLORS.border}`,
+          background: COLORS.bgInverse,
+          borderBottom: `1px solid ${COLORS.bgInverseSurface}`,
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -121,11 +123,11 @@ export function App() {
           flex: 1,
           overflowY: "auto",
           padding: "20px 16px",
-          background: COLORS.bgInverse,
+          background: COLORS.bgCanvas,
         }}
       >
         {error && (
-          <p style={{ color: COLORS.textInverseSecondary }}>{error}</p>
+          <p style={{ color: COLORS.textPrimary }}>{error}</p>
         )}
 
         {panel === "DISCOVERY" && (
@@ -208,7 +210,7 @@ function DiscoveryView({
         style={{
           fontSize: 19,
           fontWeight: 700,
-          color: COLORS.textOnInverse,
+          color: COLORS.textPrimary,
           margin: 0,
         }}
       >
@@ -217,7 +219,7 @@ function DiscoveryView({
       <p
         style={{
           fontSize: 14,
-          color: COLORS.textInverseSecondary,
+          color: COLORS.textSecondary,
           margin: 0,
         }}
       >
@@ -225,7 +227,7 @@ function DiscoveryView({
       </p>
 
       {attachments.length === 0 ? (
-        <p style={{ color: COLORS.textInverseSecondary }}>
+        <p style={{ color: COLORS.textSecondary }}>
           현재 페이지에서 지원하는 형식의 첨부 문서를 찾지 못했어요.
         </p>
       ) : (
@@ -287,7 +289,7 @@ function SelectionView({
           style={{
             fontSize: 19,
             fontWeight: 700,
-            color: COLORS.textOnInverse,
+            color: COLORS.textPrimary,
             margin: 0,
           }}
         >
@@ -297,7 +299,7 @@ function SelectionView({
           onClick={() => onSelectAll(!allSelected)}
           style={{
             fontSize: 13,
-            color: COLORS.brandLime,
+            color: COLORS.actionPrimary,
             background: "transparent",
             border: "none",
             cursor: "pointer",
@@ -307,7 +309,7 @@ function SelectionView({
         </button>
       </div>
 
-      <p style={{ fontSize: 14, color: COLORS.textInverseSecondary, margin: 0 }}>
+      <p style={{ fontSize: 14, color: COLORS.textSecondary, margin: 0 }}>
         함께 분석할 문서를 골라주세요.
       </p>
 
@@ -325,7 +327,7 @@ function SelectionView({
       <p
         style={{
           fontSize: 12,
-          color: COLORS.textInverseSecondary,
+          color: COLORS.textSecondary,
           margin: 0,
           display: "flex",
           alignItems: "center",
@@ -343,9 +345,9 @@ function SelectionView({
             flex: 1,
             padding: "14px 16px",
             borderRadius: RADIUS.md,
-            border: `1px solid ${COLORS.textInverseSecondary}`,
+            border: `1px solid ${COLORS.border}`,
             background: "transparent",
-            color: COLORS.textOnInverse,
+            color: COLORS.textPrimary,
             fontSize: 15,
             fontWeight: 700,
             cursor: "pointer",
@@ -361,7 +363,7 @@ function SelectionView({
             padding: "14px 16px",
             borderRadius: RADIUS.md,
             border: "none",
-            background: selectedCount === 0 ? "#2a2f3b" : COLORS.brandLime,
+            background: selectedCount === 0 ? COLORS.bgInverseSurface : COLORS.brandLime,
             color: selectedCount === 0 ? COLORS.textInverseSecondary : COLORS.textPrimary,
             fontSize: 15,
             fontWeight: 700,
@@ -396,7 +398,7 @@ function ConsentView({
         style={{
           fontSize: 19,
           fontWeight: 700,
-          color: COLORS.textOnInverse,
+          color: COLORS.textPrimary,
           margin: 0,
         }}
       >
@@ -412,7 +414,7 @@ function ConsentView({
       <p
         style={{
           fontSize: 14,
-          color: COLORS.textInverseSecondary,
+          color: COLORS.textSecondary,
           margin: 0,
         }}
       >
@@ -433,7 +435,7 @@ function ConsentView({
           onChange={onToggleConsent}
           style={{ marginTop: 2 }}
         />
-        <span style={{ fontSize: 13, color: COLORS.textOnInverse }}>
+        <span style={{ fontSize: 13, color: COLORS.textPrimary }}>
           위 문서를 AI 처리에 사용하는 데 동의합니다.
         </span>
       </label>
@@ -445,9 +447,9 @@ function ConsentView({
             flex: 1,
             padding: "14px 16px",
             borderRadius: RADIUS.md,
-            border: `1px solid ${COLORS.textInverseSecondary}`,
+            border: `1px solid ${COLORS.border}`,
             background: "transparent",
-            color: COLORS.textOnInverse,
+            color: COLORS.textPrimary,
             fontSize: 15,
             fontWeight: 700,
             cursor: "pointer",
@@ -463,7 +465,7 @@ function ConsentView({
             padding: "14px 16px",
             borderRadius: RADIUS.md,
             border: "none",
-            background: canStart ? COLORS.brandLime : "#2a2f3b",
+            background: canStart ? COLORS.brandLime : COLORS.bgInverseSurface,
             color: canStart ? COLORS.textPrimary : COLORS.textInverseSecondary,
             fontSize: 15,
             fontWeight: 700,
