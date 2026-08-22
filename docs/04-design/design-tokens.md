@@ -26,3 +26,5 @@ Figma에서 확인된 의미 토큰을 코드의 CSS 변수로 유지한다.
 - Evidence는 lime translucent, AI Guidance는 dark surface로 구분한다.
 - Warning/Conflict는 lime과 동일하게 보이지 않도록 별도 semantic token을 만든다.
 - Figma 값 변경 시 token 문서와 UI visual test를 함께 수정한다.
+- Side Panel, Viewer 등 확장 UI는 Figma의 color scheme를 통일해 적용한다. 흰색 캔버스와 어두운 surface를 임의로 섞지 않는다.
+- Figma에 없는 UI 요소는 사용자나 팀 합의 없이 추가하지 않는다.

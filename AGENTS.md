@@ -58,6 +58,9 @@
 - `references/`를 import하거나 제품 bundle에 포함하지 않는다.
 - 원문 전체, API Key, 사용자 조건값을 console/log에 남기지 않는다.
 - 백엔드, Cloud DB, 별도 인증 서버를 P0에 추가하지 않는다.
+- Content Script와 Extension Page 간 통신은 `@webext-core/messaging`의 `sendMessage`만으로 직접 전달하지 않는다. Background에서 `chrome.tabs.sendMessage`를, Content Script에서 `chrome.runtime.onMessage` 직접 listener를 사용한다.
+- Figma 디자인 토큰은 통일된 color scheme로 적용하고, 임의로 흰색 캔버스와 어두운 surface를 섞지 않는다.
+- `a[href]`가 실제 파일 URL이 아니어도 링크 텍스트에 지원 확장자가 있으면 첨부 문서 후보로 포함한다.
 
 ## 6. 변경 범위
 
@@ -165,3 +168,4 @@ push는 Phase 완료, 긴 턴 종료, 대규모 수정 직후 등 커밋이 의�
 - 사용자 선택 전 문서 전송
 - API Key persistent sync 저장
 - 기능 여러 개를 한 번에 구현한 뒤 마지막에 한 커밋
+- Figma에 없는 UI 요소를 임의로 추가

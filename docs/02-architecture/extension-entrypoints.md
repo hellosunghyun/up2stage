@@ -215,6 +215,8 @@ object[data]
 
 P0 Viewer는 PDF/HWP/HWPX/XLSX 중심이지만 Agent 입력 후보는 지원 포맷 전체를 탐색할 수 있다.
 
+`a[href]`가 `#n`, `javascript:void(0)`처럼 실제 파일 URL이 아닌 경우, 링크 텍스트에서 파일명과 확장자를 추론한다.
+
 ---
 
 ## 11.2 Attachment 후보 모델
@@ -269,5 +271,8 @@ interface Protocol {
 ```
 
 Message payload는 Zod validate.
+
+`@webext-core/messaging`의 `sendMessage`는 Extension Page(예: Side Panel)에서 Content Script로 직접 전달되지 않는다.
+Background에서 `chrome.tabs.sendMessage`로 active tab에 전송하고, Content Script에서 `chrome.runtime.onMessage` 직접 listener로 응답해야 한다.
 
 ---

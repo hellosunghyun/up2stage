@@ -17,6 +17,8 @@ Figma 기반 layout, state, component intent, accessibility 표현을 관리한�
 
 - Figma legacy Unfold를 새 copy로 확산하지 않는다.
 - UI 변경은 해당 Figma node와 acceptance를 확인한다.
+- Figma에 없는 UI 요소를 임의로 추가하지 않는다.
+- Side Panel, Viewer 등 확장 UI는 Figma의 color scheme를 통일해 적용한다.
 
 ## 완료 기준
 
