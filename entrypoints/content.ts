@@ -4,9 +4,15 @@ import { findMatchingRule } from "../src/features/contextual-overlay/rules";
 import { mountOverlay, unmountOverlay } from "../src/features/contextual-overlay/mount";
 import { discoverAttachments } from "../src/features/discovery/discover";
 
+type ContentMessageListener = (
+  message: unknown,
+  sender: chrome.runtime.MessageSender,
+  sendResponse: (response?: unknown) => void
+) => boolean;
+
 declare global {
   interface Window {
-    __up2stageInjected?: boolean;
+    __up2stageMessageListener?: ContentMessageListener;
   }
 }
 
@@ -19,11 +25,11 @@ function getMessageName(message: unknown): string | undefined {
 }
 
 function setupMessageHandler() {
-  chrome.runtime.onMessage.addListener((
-    message: unknown,
-    _sender: chrome.runtime.MessageSender,
-    sendResponse: (response?: unknown) => void
-  ) => {
+  if (window.__up2stageMessageListener) {
+    chrome.runtime.onMessage.removeListener(window.__up2stageMessageListener);
+  }
+
+  const listener: ContentMessageListener = (message, _sender, sendResponse) => {
     const name = getMessageName(message);
     console.log("[up2stage:content] onMessage:", name, message);
 
@@ -49,7 +55,10 @@ function setupMessageHandler() {
     }
 
     return false;
-  });
+  };
+
+  window.__up2stageMessageListener = listener;
+  chrome.runtime.onMessage.addListener(listener);
 }
 
 function checkAndRenderOverlay() {
@@ -73,11 +82,6 @@ function checkAndRenderOverlay() {
 export default defineContentScript({
   matches: ["http://*/*", "https://*/*", "file://*/*"],
   main() {
-    if (window.__up2stageInjected) {
-      console.log("[up2stage:content] already injected");
-      return;
-    }
-    window.__up2stageInjected = true;
     console.log("up to stage content script loaded");
     setupMessageHandler();
     checkAndRenderOverlay();

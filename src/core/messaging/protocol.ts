@@ -1,6 +1,8 @@
 import { defineExtensionMessaging } from "@webext-core/messaging";
 import { z } from "zod";
 
+z.config({ jitless: true });
+
 const OpenSidePanelSchema = z.object({ tabId: z.number().optional() });
 const OpenViewerSchema = z.object({
   caseId: z.string(),

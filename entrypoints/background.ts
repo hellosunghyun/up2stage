@@ -22,6 +22,29 @@ function friendlyMessagingError(message: string): string {
   return `메시지 전달 실패: ${message}`;
 }
 
+async function logDiscoveryDiagnostics(tabId: number): Promise<void> {
+  try {
+    const results = await chrome.scripting.executeScript({
+      target: { tabId },
+      world: "ISOLATED",
+      func: () => {
+        const supported = /\.(pdf|hwp|hwpx|xlsx|docx|pptx)\s*$/i;
+        const anchors = Array.from(document.querySelectorAll("a[href]"));
+        return {
+          url: window.location.href,
+          readyState: document.readyState,
+          anchors: anchors.length,
+          matchingAnchorTexts: anchors.filter((anchor) => supported.test(anchor.textContent?.trim() ?? "")).length,
+          iframes: document.querySelectorAll("iframe[src]").length,
+        };
+      },
+    });
+    console.log("[up2stage:background] discovery DOM diagnostics:", results[0]?.result);
+  } catch (e) {
+    console.log("[up2stage:background] discovery diagnostics unavailable:", e instanceof Error ? e.message : e);
+  }
+}
+
 async function sendToContent<T>(name: string): Promise<T> {
   const tabId = await getActiveTabId();
   console.log(`[up2stage:background] sendToContent tabId=${tabId}, name=${name}`);
@@ -29,6 +52,9 @@ async function sendToContent<T>(name: string): Promise<T> {
   try {
     const result = (await chrome.tabs.sendMessage(tabId, { name, data: undefined })) as T;
     console.log(`[up2stage:background] sendToContent response:`, result);
+    if (name === "discoverAttachments" && Array.isArray(result) && result.length === 0) {
+      await logDiscoveryDiagnostics(tabId);
+    }
     return result;
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
@@ -50,6 +76,9 @@ async function sendToContent<T>(name: string): Promise<T> {
       try {
         const result = (await chrome.tabs.sendMessage(tabId, { name, data: undefined })) as T;
         console.log(`[up2stage:background] sendToContent retry response:`, result);
+        if (name === "discoverAttachments" && Array.isArray(result) && result.length === 0) {
+          await logDiscoveryDiagnostics(tabId);
+        }
         return result;
       } catch (retryError) {
         const retryMessage = retryError instanceof Error ? retryError.message : String(retryError);
