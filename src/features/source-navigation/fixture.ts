@@ -1,3 +1,4 @@
+import * as XLSX from "xlsx";
 import type { DocumentRecord } from "../../models/document";
 import type { SourceRecord } from "../../models/source";
 import type { SourceRegistry } from "./navigate";
@@ -96,17 +97,32 @@ export const fixtureSources: SourceRecord[] = [
     caseId: "case_demo",
     documentId: "doc_sample_xlsx",
     page: 1,
-    elementId: "1",
+    elementId: "1:1",
     category: "table",
     text: "90",
     semanticNodeId: "src:doc_sample_xlsx:p1:e1",
   },
 ];
 
+function createXlsxFixtureBytes(): ArrayBuffer {
+  const wb = XLSX.utils.book_new();
+  const ws = XLSX.utils.aoa_to_sheet([
+    ["구분", "점수"],
+    ["A", "90"],
+    ["B", "85"],
+  ]);
+  XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
+  const written = XLSX.write(wb, {
+    bookType: "xlsx",
+    type: "array",
+  }) as number[];
+  return new Uint8Array(written).buffer;
+}
+
 export const fixtureBytes = new Map<string, ArrayBuffer>([
   ["doc_sample_pdf", new ArrayBuffer(0)],
   ["doc_sample_hwp", new ArrayBuffer(0)],
-  ["doc_sample_xlsx", new ArrayBuffer(0)],
+  ["doc_sample_xlsx", createXlsxFixtureBytes()],
 ]);
 
 export function findFixtureSource(sourceId: string): SourceRecord | undefined {

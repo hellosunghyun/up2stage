@@ -10,6 +10,8 @@ interface GridProps {
   workbook: XLSX.WorkBook;
   activeSheet: number;
   focusText: string;
+  focusRow: number | undefined;
+  focusCol: number | undefined;
   zoom: number;
   onCellClick: (row: number, col: number) => void;
 }
@@ -17,7 +19,15 @@ interface GridProps {
 const COL_WIDTH = 120;
 const ROW_HEIGHT = 28;
 
-function XlsxGrid({ workbook, activeSheet, focusText, zoom, onCellClick }: GridProps) {
+function XlsxGrid({
+  workbook,
+  activeSheet,
+  focusText,
+  focusRow,
+  focusCol,
+  zoom,
+  onCellClick,
+}: GridProps) {
   const parentRef = useRef<HTMLDivElement>(null);
   const sheetIndex = activeSheet ?? 0;
   const sheet = workbook.SheetNames[sheetIndex] ?? workbook.SheetNames[0];
@@ -45,7 +55,15 @@ function XlsxGrid({ workbook, activeSheet, focusText, zoom, onCellClick }: GridP
   });
 
   useEffect(() => {
-    if (focusText.length === 0 || !parentRef.current) return;
+    if (!parentRef.current) return;
+
+    if (focusRow !== undefined && focusCol !== undefined) {
+      rowVirtualizer.scrollToIndex(focusRow, { align: "center" });
+      colVirtualizer.scrollToIndex(focusCol, { align: "center" });
+      return;
+    }
+
+    if (focusText.length === 0) return;
     for (let i = 0; i < rowCount; i++) {
       const row = json[i];
       if (!row) continue;
@@ -58,7 +76,7 @@ function XlsxGrid({ workbook, activeSheet, focusText, zoom, onCellClick }: GridP
         }
       }
     }
-  }, [focusText, json, rowCount, rowVirtualizer, colVirtualizer]);
+  }, [focusText, focusRow, focusCol, json, rowCount, rowVirtualizer, colVirtualizer]);
 
   return (
     <div
@@ -84,7 +102,11 @@ function XlsxGrid({ workbook, activeSheet, focusText, zoom, onCellClick }: GridP
           return colVirtualizer.getVirtualItems().map((virtualCol) => {
             const value = row?.[virtualCol.index] ?? "";
             const focused =
-              focusText.length > 0 && value.includes(focusText);
+              (focusRow !== undefined &&
+                focusCol !== undefined &&
+                virtualRow.index === focusRow &&
+                virtualCol.index === focusCol) ||
+              (focusText.length > 0 && value.includes(focusText));
             return (
               <div
                 key={`${virtualRow.index}-${virtualCol.index}`}
@@ -124,6 +146,8 @@ export class XlsxRenderer implements DocumentRendererAdapter {
   private activeSheet = 0;
   private zoom = 1;
   private focusText = "";
+  private focusRow: number | undefined = undefined;
+  private focusCol: number | undefined = undefined;
 
   constructor(document: DocumentRecord, bytes: ArrayBuffer) {
     this.document = document;
@@ -163,6 +187,20 @@ export class XlsxRenderer implements DocumentRendererAdapter {
 
   async focusSource(source: SourceRecord): Promise<void> {
     this.focusText = source.text;
+    this.focusRow = undefined;
+    this.focusCol = undefined;
+
+    const eid = String(source.elementId);
+    const parts = eid.split(":").map(Number);
+    if (
+      parts.length === 2 &&
+      !Number.isNaN(parts[0]) &&
+      !Number.isNaN(parts[1])
+    ) {
+      this.focusRow = parts[0];
+      this.focusCol = parts[1];
+    }
+
     await this.goToPage(source.page);
   }
 
@@ -173,6 +211,8 @@ export class XlsxRenderer implements DocumentRendererAdapter {
 
   destroy(): void {
     this.focusText = "";
+    this.focusRow = undefined;
+    this.focusCol = undefined;
     this.root?.unmount();
     this.root = null;
     this.container = null;
@@ -185,6 +225,8 @@ export class XlsxRenderer implements DocumentRendererAdapter {
         workbook={this.workbook}
         activeSheet={this.activeSheet}
         focusText={this.focusText}
+        focusRow={this.focusRow}
+        focusCol={this.focusCol}
         zoom={this.zoom}
         onCellClick={() => undefined}
       />
