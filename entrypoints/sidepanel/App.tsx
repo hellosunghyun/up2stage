@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   messaging,
   type AttachmentPayload,
@@ -42,29 +42,41 @@ export function App() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [consentChecked, setConsentChecked] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const load = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      console.log("[up2stage:sidepanel] loading attachments...");
+      const docs = await messaging.discoverAttachments();
+      console.log("[up2stage:sidepanel] attachments loaded:", docs);
+      setAttachments(docs);
+      setSelectedIds(new Set(docs.map((d) => d.id)));
+      setPanel("DISCOVERY");
+    } catch (e) {
+      const friendly = e instanceof Error ? e.message : "문서를 불러오지 못했어요.";
+      console.log("[up2stage:sidepanel] attachments failed:", friendly);
+      setError(getUserFriendlyError(friendly));
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
-    let mounted = true;
-
-    async function load() {
-      try {
-        console.log("[up2stage:sidepanel] loading attachments...");
-        const docs = await messaging.discoverAttachments();
-        console.log("[up2stage:sidepanel] attachments loaded:", docs);
-        if (!mounted) return;
-        setAttachments(docs);
-        setSelectedIds(new Set(docs.map((d) => d.id)));
-      } catch (e) {
-        const friendly = e instanceof Error ? e.message : "문서를 불러오지 못했어요.";
-        console.log("[up2stage:sidepanel] attachments failed:", friendly);
-        if (!mounted) return;
-        setError(getUserFriendlyError(friendly));
-      }
-    }
-
     void load();
+  }, [load]);
+
+  useEffect(() => {
+    const port = chrome.runtime.connect({ name: "up2stage-sidepanel" });
+    port.onDisconnect.addListener(() => {
+      if (chrome.runtime.lastError) {
+        console.log("[up2stage:sidepanel] background disconnected, reloading...");
+        window.location.reload();
+      }
+    });
     return () => {
-      mounted = false;
+      port.disconnect();
     };
   }, []);
 
@@ -119,6 +131,26 @@ export function App() {
             up to stage
           </span>
         </div>
+
+        <button
+          onClick={() => {
+            void load();
+          }}
+          disabled={isLoading}
+          aria-label="첨부 문서 다시 찾기"
+          style={{
+            padding: "8px 12px",
+            borderRadius: RADIUS.sm,
+            border: `1px solid ${COLORS.textInverseSecondary}`,
+            background: "transparent",
+            color: isLoading ? COLORS.textInverseSecondary : COLORS.textOnInverse,
+            fontSize: 13,
+            fontWeight: 500,
+            cursor: isLoading ? "not-allowed" : "pointer",
+          }}
+        >
+          {isLoading ? "불러오는 중..." : "↻ 새로고침"}
+        </button>
       </header>
 
       <main
