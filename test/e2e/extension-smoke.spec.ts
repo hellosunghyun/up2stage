@@ -34,9 +34,22 @@ test("built extension exposes the Up to Stage Side Panel and Viewer", async () =
     worker ??= await context.waitForEvent("serviceworker");
     const extensionId = new URL(worker.url()).host;
     const runtimeErrors: string[] = [];
+    const consoleIssues: string[] = [];
+    const captureConsoleIssue = (surface: string, type: string, text: string) => {
+      const knownExtensionPreloadWarning =
+        type === "warning" &&
+        text.includes("preload") &&
+        (text.includes("cross-world extension resource mismatch") ||
+          text.includes("preloaded using link preload but not used"));
+      if (knownExtensionPreloadWarning) return;
+      if (type === "error" || type === "warning") {
+        consoleIssues.push(`${surface} ${type}: ${text}`);
+      }
+    };
 
     const panel = await context.newPage();
     panel.on("pageerror", (error) => runtimeErrors.push(`panel: ${error.message}`));
+    panel.on("console", (message) => captureConsoleIssue("panel", message.type(), message.text()));
     await panel.goto(`chrome-extension://${extensionId}/sidepanel.html`);
     await expect(panel).toHaveTitle("Up to Stage");
     await expect(panel.locator('img[alt="Up to Stage"]')).toBeVisible();
@@ -45,6 +58,7 @@ test("built extension exposes the Up to Stage Side Panel and Viewer", async () =
 
     const viewer = await context.newPage();
     viewer.on("pageerror", (error) => runtimeErrors.push(`viewer: ${error.message}`));
+    viewer.on("console", (message) => captureConsoleIssue("viewer", message.type(), message.text()));
     await viewer.goto(`chrome-extension://${extensionId}/viewer.html`);
     await expect(viewer.getByText("Case ID가 없어 문서를 열 수 없어요.")).toBeVisible();
 
@@ -172,12 +186,16 @@ test("built extension exposes the Up to Stage Side Panel and Viewer", async () =
       sourceButton.click()
     ]);
     sourceViewer.on("pageerror", (error) => runtimeErrors.push(`source-viewer: ${error.message}`));
+    sourceViewer.on("console", (message) =>
+      captureConsoleIssue("source-viewer", message.type(), message.text())
+    );
     await sourceViewer.waitForLoadState("domcontentloaded");
     await expect(sourceViewer).toHaveURL(new RegExp(`viewer\\.html\\?case=${caseId}.*source=`));
     await expect(sourceViewer.locator("aside")).toHaveCount(1);
     await expect(sourceViewer.getByText("주요 요약")).toHaveCount(0);
 
     expect(runtimeErrors).toEqual([]);
+    expect(consoleIssues).toEqual([]);
 
     if (process.env.QA_SCREENSHOT_PATH) {
       await viewer.screenshot({ path: process.env.QA_SCREENSHOT_PATH, fullPage: true });
