@@ -8,7 +8,7 @@ export default defineConfig({
   modules: ["@wxt-dev/module-react"],
   manifest: {
     name: "Up to Stage",
-    short_name: "up2stage",
+    short_name: "Up to Stage",
     version: "0.0.1",
     description:
       "Unfold Pages to Structured, Trusted, Accessible Guidance for Everyone.",
