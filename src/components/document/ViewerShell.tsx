@@ -66,17 +66,12 @@ export function ViewerShell({
   };
 
   useEffect(() => {
-    if (!workspaceRef.current || !selectedDocument) {
+    if (!workspaceRef.current || !selectedDocument || mode !== "original") {
       return;
     }
 
     rendererRef.current?.destroy();
     rendererRef.current = null;
-
-    if (mode !== "original") {
-      workspaceRef.current.innerHTML = "";
-      return;
-    }
 
     const bytes = documentBytes.get(selectedDocument.id) ?? new ArrayBuffer(0);
     const renderer = createRenderer(selectedDocument, bytes);
@@ -209,13 +204,13 @@ export function ViewerShell({
         </header>
 
         <div
-          ref={workspaceRef}
           style={{
             flex: 1,
             overflow: "auto",
             padding: 20
           }}
         >
+          {mode === "original" && <div ref={workspaceRef} style={{ minHeight: "100%" }} />}
           {mode === "structure" && (
             <div style={{ padding: 20 }}>
               <h2 style={{ fontSize: 16, marginBottom: 12 }}>문서 구조</h2>

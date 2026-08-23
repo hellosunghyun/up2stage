@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { ViewerShell } from "../../../src/components/document/ViewerShell";
 import { SourceRegistry } from "../../../src/core/evidence";
 import type { DocumentRecord, SourceRecord } from "../../../src/models/canonical";
@@ -57,5 +57,9 @@ describe("ViewerShell layout", () => {
     expect(screen.getByText("문서 목차")).toBeTruthy();
     expect(screen.queryByText("주요 요약")).toBeNull();
     expect(container.querySelectorAll("aside")).toHaveLength(1);
+
+    fireEvent.click(screen.getByRole("tab", { name: "구조 보기" }));
+    expect(screen.getByRole("heading", { name: "문서 구조" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "원문 근거" })).toBeTruthy();
   });
 });
