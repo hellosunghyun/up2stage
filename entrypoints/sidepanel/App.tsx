@@ -67,18 +67,7 @@ export function App() {
     void load();
   }, [load]);
 
-  useEffect(() => {
-    const port = chrome.runtime.connect({ name: "up2stage-sidepanel" });
-    port.onDisconnect.addListener(() => {
-      if (chrome.runtime.lastError) {
-        console.log("[up2stage:sidepanel] background disconnected, reloading...");
-        window.location.reload();
-      }
-    });
-    return () => {
-      port.disconnect();
-    };
-  }, []);
+  // TODO: 확장 프로그램 재로드 감지 시 Side Panel 새로고침은 별도 안정적 메커니즘으로 구현
 
   const selectedDocs = useMemo(
     () => getSelected(attachments, selectedIds),
