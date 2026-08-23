@@ -10,7 +10,7 @@
 - Solar는 candidate Source ID 중에서만 근거를 선택한다.
 - Quick Question은 Agent Extract 결과로 미리 생성하고 클릭 후 새 LLM 호출 없이 폼을 연다.
 - PDF/HWP(HWPX)/XLSX는 renderer adapter로 분리한다.
-- Viewer 기본 layout은 224px Outline + Flexible Workspace + 443px Guidance다.
+- Viewer 기본 layout은 224px Outline + Flexible Workspace다. Guidance와 Q&A는 Chrome Extension Side Panel을 사용한다.
 - 사용자 UI 명칭은 `Up to Stage`다.
 
 ## 변경 절차

@@ -16,7 +16,8 @@
 
 ## 폴더 규칙
 
-- 224px + flexible + 443px 구조를 기준으로 한다.
+- 224px Outline + flexible Workspace 구조를 기준으로 한다.
+- Guidance와 Q&A를 Viewer에 복제하지 않고 Chrome Extension Side Panel에 유지한다.
 - Source navigation은 `navigateToSource` 단일 경로를 사용한다.
 - 렌더러별 로직을 Viewer shell에 직접 넣지 않는다.
 

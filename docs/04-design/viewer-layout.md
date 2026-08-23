@@ -1,18 +1,16 @@
 # Viewer Layout 상세 Spec
 
-224px Outline + Flexible Workspace + 443px Guidance 구조를 정의한다.
+224px Outline + Flexible Workspace 구조를 정의한다. Guidance와 Q&A는 Chrome Extension Side Panel을 사용한다.
 
 # 55. Viewer Page Layout
 
-1440px 기준 Figma Layout:
+Viewer는 원문 탐색에 집중하는 2-column layout이다.
 
 ```text
-┌──────────────┬───────────────────────────────┬─────────────────────┐
-│ Outline      │ Document Workspace            │ Up to Stage Panel      │
-│              │                               │                     │
-│ 224px        │ flexible (~773px)             │ 443px               │
-│              │                               │                     │
-└──────────────┴───────────────────────────────┴─────────────────────┘
+┌──────────────┬─────────────────────────────────────────────────────┐
+│ Outline      │ Document Workspace                                  │
+│ 224px        │ flexible                                            │
+└──────────────┴─────────────────────────────────────────────────────┘
 ```
 
 Chrome toolbar 제외 컨텐츠 높이 약 `946px`.
@@ -24,8 +22,7 @@ Responsive:
   display: grid;
   grid-template-columns:
     var(--outline-width, 224px)
-    minmax(0, 1fr)
-    var(--guidance-width, 443px);
+    minmax(0, 1fr);
 }
 ```
 
@@ -331,17 +328,11 @@ open Viewer / navigateToSource(sourceId)
 
 ---
 
-# 66. Viewer Right Panel
+# 66. Chrome Extension Side Panel과의 경계
 
-폭:
+Guidance, Quick Check, Search/Solar Q&A는 Chrome Extension Side Panel에 유지한다.
 
-```text
-443px
-```
-
-Side Panel과 동일한 브랜드/컴포넌트 체계를 재사용.
-
-Mode별 content만 다르게 한다.
+Viewer에는 우측 Guidance 패널을 복제하지 않는다. Side Panel의 Source click이 Viewer를 열고 원문 위치로 이동한다.
 
 ---
 
@@ -367,7 +358,7 @@ Tabs:
 - semantic HTML
 - keyboard/screen reader navigation
 
-실제 구현에서는 중앙 Renderer의 display mode가 바뀌고 오른쪽 Panel context는 유지한다.
+실제 구현에서는 중앙 Renderer의 display mode만 바뀌고 Extension Side Panel의 대화 context는 별도로 유지한다.
 
 ---
 
