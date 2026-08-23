@@ -19,7 +19,7 @@ const VOID_TAGS = new Set([
 ]);
 
 interface RawElement {
-  id: string;
+  id: string | number;
   category: string;
   html: string;
   page: number;
@@ -99,6 +99,7 @@ function parseDocument(html: string): RawElement[] {
   const boundaries = findPageBoundaries(html);
 
   const rawElements: RawElement[] = [];
+  const fallbackIndexByPage = new Map<number, number>();
   let currentPage = 1;
   let nextBoundaryIndex = 0;
 
@@ -118,8 +119,9 @@ function parseDocument(html: string): RawElement[] {
     }
 
     const dataPage = extractAttr(attrs, "data-page");
+    const page = dataPage ? Number(dataPage) : currentPage;
     if (dataPage) {
-      currentPage = Number(dataPage);
+      currentPage = page;
     }
 
     if (tag === "footer") {
@@ -128,8 +130,22 @@ function parseDocument(html: string): RawElement[] {
       continue;
     }
 
+    if (VOID_TAGS.has(tag.toLowerCase())) {
+      continue;
+    }
+
     const id = extractAttr(attrs, "id");
-    if (!id || VOID_TAGS.has(tag.toLowerCase())) {
+    const dataCategory = extractAttr(attrs, "data-category");
+    const category = dataCategory ?? tag.toLowerCase();
+    let elementId: string | number;
+
+    if (id) {
+      elementId = normalizeElementId(id);
+    } else if (dataCategory) {
+      const nextIndex = (fallbackIndexByPage.get(page) ?? 0) + 1;
+      fallbackIndexByPage.set(page, nextIndex);
+      elementId = `${page}_${nextIndex}`;
+    } else {
       continue;
     }
 
@@ -143,16 +159,13 @@ function parseDocument(html: string): RawElement[] {
     }
 
     const htmlSlice = html.slice(startIndex, closeIndex);
-    const category = extractAttr(attrs, "data-category") ?? tag.toLowerCase();
     const text = stripTags(htmlSlice);
 
     rawElements.push({
-      id,
+      id: elementId,
       category,
       html: htmlSlice,
-      page: extractAttr(attrs, "data-page")
-        ? Number(extractAttr(attrs, "data-page"))
-        : currentPage,
+      page,
       text,
     });
 
@@ -172,7 +185,7 @@ export function buildSourcesFromParse({
   html,
 }: ParseSourceOptions): SourceRecord[] {
   return parseDocument(html).map((el) => {
-    const elementId = normalizeElementId(el.id);
+    const elementId = el.id;
     return {
       sourceId: buildSourceId(documentId, el.page, elementId),
       caseId,

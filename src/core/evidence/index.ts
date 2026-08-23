@@ -3,6 +3,7 @@ export * from "./source-id";
 export * from "./parse-source";
 export * from "./registry";
 export * from "./extract";
+export * from "./extract-adapter";
 export * from "./instruct";
 export * from "./guidance";
 export * from "./validator";

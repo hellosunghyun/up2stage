@@ -1,5 +1,26 @@
 import type { ExtractLocation, ExtractLocationMapping, SourceRecord } from "./types";
 
+const WHITESPACE_RE = /\s+/g;
+const INVISIBLE_RE = /[\u200B-\u200D\uFEFF]/g;
+
+function normalizeWhitespace(value: string): string {
+  return value.replace(WHITESPACE_RE, " ").trim();
+}
+
+function compact(value: string): string {
+  return value.replace(WHITESPACE_RE, "").replace(INVISIBLE_RE, "");
+}
+
+function matchesSource(raw: string, sourceText: string): boolean {
+  const normalizedText = normalizeWhitespace(sourceText);
+  const normalizedRaw = normalizeWhitespace(raw);
+  if (normalizedText.includes(normalizedRaw)) return true;
+
+  const compactText = compact(sourceText);
+  const compactRaw = compact(raw);
+  return compactText.includes(compactRaw) && compactRaw.length > 0;
+}
+
 export function mapExtractToSources(
   sources: readonly SourceRecord[],
   location: ExtractLocation
@@ -9,12 +30,9 @@ export function mapExtractToSources(
     return { ...location, sourceIds: [], unresolved: true };
   }
 
-  const normalized = raw.replace(/\s+/g, " ");
-
   const candidates = sources.filter((s) => {
     if (s.page !== location.page) return false;
-    const text = s.text.replace(/\s+/g, " ");
-    return text.includes(normalized);
+    return matchesSource(raw, s.text);
   });
 
   const sourceIds = candidates.map((s) => s.sourceId);
