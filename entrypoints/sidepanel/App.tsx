@@ -2,22 +2,13 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   messaging,
   type AttachmentPayload,
+  type PageContext
 } from "../../src/core/messaging/protocol";
-import {
-  canStartAnalysis,
-  getSelected,
-} from "../../src/features/document-selection/selection";
+import { canStartAnalysis, getSelected } from "../../src/features/document-selection/selection";
 import { ProcessingView } from "../../src/features/processing/ProcessingView";
-import {
-  createCase,
-  prepareAndStart,
-  resumeProcessing,
-} from "../../src/core/agent/processor";
+import { createCase, prepareAndStart, resumeProcessing } from "../../src/core/agent/processor";
 import { getApiKey, setApiKey as persistApiKey } from "../../src/core/storage/apiKey";
-import {
-  getCanonicalAgentResult,
-  getCase,
-} from "../../src/core/storage/repositories";
+import { getCanonicalAgentResult, getCase } from "../../src/core/storage/repositories";
 import type { ProcessingProgress } from "../../src/core/agent/processor";
 import { InitialGuidanceView } from "../../src/features/guidance/InitialGuidanceView";
 import { QuickQuestionForm } from "../../src/features/quick-check/QuickQuestionForm";
@@ -25,19 +16,16 @@ import { QuickConfirm } from "../../src/features/quick-check/QuickConfirm";
 import { Breakdown } from "../../src/features/quick-check/Breakdown";
 import {
   SuggestionChips,
-  type SuggestionChip,
+  type SuggestionChip
 } from "../../src/features/quick-check/SuggestionChips";
 import { evaluateDecision } from "../../src/core/decision/evaluate";
 import type { UserAnswer, DecisionResult } from "../../src/core/decision/types";
 import type { QuickQuestion } from "../../src/core/decision/types";
-import {
-  buildGuidanceViewData,
-  type GuidanceViewData,
-} from "../../src/features/guidance/adapter";
+import { buildGuidanceViewData, type GuidanceViewData } from "../../src/features/guidance/adapter";
 import { SourceRegistry } from "../../src/core/evidence";
 import {
   navigateToSource,
-  setNavigationRegistry,
+  setNavigationRegistry
 } from "../../src/features/source-navigation/navigate";
 import { COLORS, RADIUS } from "../../src/styles/tokens";
 import {
@@ -45,6 +33,7 @@ import {
   PanelFooter,
   PanelHeader,
   PanelShell,
+  ScreenIntro
 } from "../../src/components/PanelShell";
 
 type PanelState =
@@ -88,6 +77,7 @@ export function App() {
   const [decision, setDecision] = useState<DecisionResult | null>(null);
   const [guidanceData, setGuidanceData] = useState<GuidanceViewData | null>(null);
   const [questions, setQuestions] = useState<QuickQuestion[]>([]);
+  const [pageContext, setPageContext] = useState<PageContext | null>(null);
 
   const loadCompletedCase = useCallback(async (caseId: string) => {
     const result = await getCanonicalAgentResult(caseId);
@@ -107,14 +97,16 @@ export function App() {
     setIsLoading(true);
     setError(null);
     try {
-      const [docs, key, stored] = await Promise.all([
+      const [docs, page, key, stored] = await Promise.all([
         messaging.discoverAttachments(),
+        messaging.currentPageContext().catch(() => null),
         getApiKey(),
-        chrome.storage.session.get(CURRENT_CASE_KEY),
+        chrome.storage.session.get(CURRENT_CASE_KEY)
       ]);
       setAttachments(docs);
       setSelectedIds(new Set(docs.map((d) => d.id)));
       setApiKey(key);
+      setPageContext(page);
 
       const currentCaseId = stored[CURRENT_CASE_KEY] as string | undefined;
       if (currentCaseId) {
@@ -126,7 +118,7 @@ export function App() {
               caseId: caseRecord.id,
               overall: "processing",
               documents: [],
-              message: "진행 중인 분석을 이어 받고 있어요.",
+              message: "진행 중인 분석을 이어 받고 있어요."
             });
             void resumeProcessing(caseRecord.id, (p) => setProgress(p));
             return;
@@ -142,7 +134,7 @@ export function App() {
               caseId: caseRecord.id,
               overall: "failed",
               documents: [],
-              message: "분석에 실패했어요.",
+              message: "분석에 실패했어요."
             });
             return;
           }
@@ -169,13 +161,11 @@ export function App() {
 
   useEffect(() => {
     const notifyClosed = () => {
-      void chrome.tabs
-        .query({ active: true, currentWindow: true })
-        .then(([tab]) => {
-          if (tab?.id) {
-            void chrome.tabs.sendMessage(tab.id, { name: "sidePanelClosed" });
-          }
-        });
+      void chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
+        if (tab?.id) {
+          void chrome.tabs.sendMessage(tab.id, { name: "sidePanelClosed" });
+        }
+      });
     };
     window.addEventListener("beforeunload", notifyClosed);
     return () => window.removeEventListener("beforeunload", notifyClosed);
@@ -186,11 +176,7 @@ export function App() {
     void loadCompletedCase(progress.caseId)
       .then(() => setPanel("GUIDANCE"))
       .catch((cause: unknown) => {
-        setError(
-          cause instanceof Error
-            ? cause.message
-            : "완료된 분석 결과를 불러오지 못했어요."
-        );
+        setError(cause instanceof Error ? cause.message : "완료된 분석 결과를 불러오지 못했어요.");
       });
   }, [loadCompletedCase, progress?.caseId, progress?.overall]);
 
@@ -210,9 +196,7 @@ export function App() {
   };
 
   const selectAll = (value: boolean) => {
-    setSelectedIds(
-      value ? new Set(attachments.map((a) => a.id)) : new Set()
-    );
+    setSelectedIds(value ? new Set(attachments.map((a) => a.id)) : new Set());
   };
 
   const handleStartAnalysis = useCallback(async () => {
@@ -222,24 +206,16 @@ export function App() {
     }
     setPanel("PROCESSING");
     try {
-      const page = await messaging.currentPageContext();
-      const caseRecord = await createCase(
-        page.url,
-        page.title,
-        Array.from(selectedIds)
-      );
+      const page = pageContext ?? (await messaging.currentPageContext());
+      const caseRecord = await createCase(page.url, page.title, Array.from(selectedIds));
       await chrome.storage.session.set({ [CURRENT_CASE_KEY]: caseRecord.id });
-      await prepareAndStart(
-        caseRecord,
-        selectedDocs,
-        (p) => setProgress(p)
-      );
+      await prepareAndStart(caseRecord, selectedDocs, (p) => setProgress(p));
     } catch (e) {
       const message = e instanceof Error ? e.message : "분석을 시작하지 못했어요.";
       setError(message);
       setPanel("CONSENT_CONFIRM");
     }
-  }, [apiKey, selectedIds, selectedDocs]);
+  }, [apiKey, pageContext, selectedIds, selectedDocs]);
 
   const handleSaveApiKey = useCallback(async () => {
     const key = apiKeyInput.trim();
@@ -267,11 +243,7 @@ export function App() {
   return (
     <PanelShell
       header={
-        <PanelHeader
-          loading={isLoading}
-          onRefresh={() => void load()}
-          onMenu={openOptions}
-        />
+        <PanelHeader loading={isLoading} onRefresh={() => void load()} onMenu={openOptions} />
       }
       footer={
         panel === "GUIDANCE" || panel === "DECISION" ? (
@@ -291,217 +263,34 @@ export function App() {
         ) : undefined
       }
     >
-        {error && (
-          <p style={{ margin: 0, color: COLORS.brandLime }}>{getUserFriendlyError(error)}</p>
-        )}
+      {error && <p style={{ margin: 0, color: COLORS.brandLime }}>{getUserFriendlyError(error)}</p>}
 
-        {panel === "API_KEY" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <h2 style={{ fontSize: 19, fontWeight: 700, margin: 0 }}>
-              API Key를 입력해주세요
-            </h2>
-            <p style={{ fontSize: 14, color: COLORS.textInverseSecondary, margin: 0 }}>
-              Upstage AI 사용을 위해 API Key가 필요해요. Key는 이 브라우저 세션 동안만
-              메모리에 남습니다.
-            </p>
-            <input
-              type="password"
-              value={apiKeyInput}
-              onChange={(e) => setApiKeyInput(e.target.value)}
-              placeholder="up_..."
-              style={{
-                padding: "12px",
-                borderRadius: RADIUS.sm,
-                border: `1px solid ${COLORS.textInverseSecondary}`,
-                background: COLORS.bgInverseSurface,
-                color: COLORS.textOnInverse,
-                fontSize: 14,
-              }}
-            />
-            <button
-              onClick={() => {
-                void handleSaveApiKey();
-              }}
-              disabled={!apiKeyInput.trim()}
-              style={{
-                padding: "14px 16px",
-                borderRadius: RADIUS.md,
-                border: "none",
-                background: COLORS.brandLime,
-                color: COLORS.textPrimary,
-                fontSize: 15,
-                fontWeight: 700,
-                cursor: apiKeyInput.trim() ? "pointer" : "not-allowed",
-              }}
-            >
-              Key 확인 및 저장
-            </button>
-            <button
-              onClick={() => openOptions()}
-              style={{
-                padding: "12px",
-                borderRadius: RADIUS.sm,
-                border: `1px solid ${COLORS.textInverseSecondary}`,
-                background: "transparent",
-                color: COLORS.textOnInverse,
-                fontSize: 13,
-                cursor: "pointer",
-              }}
-            >
-              설정 페이지에서 입력
-            </button>
-          </div>
-        )}
-
-        {panel === "DISCOVERY" && (
-          <DiscoveryView
-            attachments={attachments}
-            onStart={() => setPanel("SELECTION")}
-          />
-        )}
-
-        {panel === "SELECTION" && (
-          <SelectionView
-            attachments={attachments}
-            selectedIds={selectedIds}
-            onToggle={toggleDoc}
-            onSelectAll={selectAll}
-            onNext={() => {
-              setConsentChecked(false);
-              setPanel("CONSENT_CONFIRM");
-            }}
-            onBack={() => setPanel("DISCOVERY")}
-          />
-        )}
-
-        {panel === "CONSENT_CONFIRM" && (
-          <ConsentView
-            selectedDocs={selectedDocs}
-            canStart={canStart}
-            consentChecked={consentChecked}
-            onToggleConsent={() => setConsentChecked((v) => !v)}
-            onStart={() => {
-              setError(null);
-              setAnswers({});
-              setDecision(null);
-              void handleStartAnalysis();
-            }}
-            onBack={() => setPanel("SELECTION")}
-          />
-        )}
-
-        {panel === "PROCESSING" && progress && (
-          <ProcessingView progress={progress} onReset={reset} />
-        )}
-
-        {panel === "GUIDANCE" && guidanceData && (
-          <InitialGuidanceView
-            guidance={guidanceData.guidance}
-            primaryNotice={guidanceData.primaryNotice}
-            {...(guidanceData.applicationForm
-              ? { applicationForm: guidanceData.applicationForm }
-              : {})}
-            {...(guidanceData.procedure
-              ? { procedure: guidanceData.procedure }
-              : {})}
-            checklistCautions={guidanceData.checklistCautions}
-            sourceGroups={guidanceData.sourceGroups}
-            onQuickCheck={() => setPanel("QUICK_FORM")}
-            onMissingClick={() => setPanel("QUICK_FORM")}
-            onSourceClick={(sourceId) => {
-              void navigateToSource(sourceId).catch((cause: unknown) => {
-                setError(cause instanceof Error ? cause.message : "원문을 열지 못했어요.");
-              });
+      {panel === "API_KEY" && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+          <h2 style={{ fontSize: 19, fontWeight: 700, margin: 0 }}>API Key를 입력해주세요</h2>
+          <p style={{ fontSize: 14, color: COLORS.textInverseSecondary, margin: 0 }}>
+            Upstage AI 사용을 위해 API Key가 필요해요. Key는 이 브라우저 세션 동안만 메모리에
+            남습니다.
+          </p>
+          <input
+            type="password"
+            value={apiKeyInput}
+            onChange={(e) => setApiKeyInput(e.target.value)}
+            placeholder="up_..."
+            style={{
+              padding: "12px",
+              borderRadius: RADIUS.sm,
+              border: `1px solid ${COLORS.textInverseSecondary}`,
+              background: COLORS.bgInverseSurface,
+              color: COLORS.textOnInverse,
+              fontSize: 14
             }}
           />
-        )}
-
-        {panel === "QUICK_FORM" && (
-          <QuickQuestionForm
-            questions={questions}
-            answers={answers}
-            onChange={(questionId, value) =>
-              setAnswers((prev) => ({ ...prev, [questionId]: value }))
-            }
-            onSubmit={() => setPanel("QUICK_CONFIRM")}
-            {...(autoFocusId ? { autoFocusId } : {})}
-          />
-        )}
-
-        {panel === "QUICK_CONFIRM" && (
-          <QuickConfirm
-            questions={questions}
-            answers={answers}
-            onBack={() => setPanel("QUICK_FORM")}
-            onConfirm={() => {
-              const result = evaluateDecision(questions, answers);
-              setDecision(result);
-              setPanel("DECISION");
-            }}
-          />
-        )}
-
-        {panel === "DECISION" && decision && (
-          <Breakdown
-            result={decision}
-            onMissingClick={(questionId) => {
-              setAutoFocusId(questionId);
-              setPanel("QUICK_FORM");
-            }}
-            onSourceClick={(sourceId) => {
-              void navigateToSource(sourceId).catch((cause: unknown) => {
-                setError(cause instanceof Error ? cause.message : "원문을 열지 못했어요.");
-              });
-            }}
-          />
-        )}
-    </PanelShell>
-  );
-}
-
-function DiscoveryView({
-  attachments,
-  onStart,
-}: {
-  attachments: AttachmentPayload[];
-  onStart: () => void;
-}) {
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <h2
-        style={{
-          fontSize: 19,
-          fontWeight: 700,
-          color: COLORS.textOnInverse,
-          margin: 0,
-        }}
-      >
-        복잡한 공고 문서, 바로 정리해볼까요?
-      </h2>
-      <p
-        style={{
-          fontSize: 14,
-          color: COLORS.textInverseSecondary,
-          margin: 0,
-        }}
-      >
-        직접 열어볼 필요 없이 관련 문서를 함께 분석할 수 있어요.
-      </p>
-
-      {attachments.length === 0 ? (
-        <p style={{ color: COLORS.textInverseSecondary }}>
-          현재 페이지에서 지원하는 형식의 첨부 문서를 찾지 못했어요.
-        </p>
-      ) : (
-        <>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {attachments.map((a) => (
-              <DocChip key={a.id} doc={a} />
-            ))}
-          </div>
-
           <button
-            onClick={onStart}
+            onClick={() => {
+              void handleSaveApiKey();
+            }}
+            disabled={!apiKeyInput.trim()}
             style={{
               padding: "14px 16px",
               borderRadius: RADIUS.md,
@@ -510,24 +299,227 @@ function DiscoveryView({
               color: COLORS.textPrimary,
               fontSize: 15,
               fontWeight: 700,
-              cursor: "pointer",
+              cursor: apiKeyInput.trim() ? "pointer" : "not-allowed"
             }}
           >
-            문서 선택하기
+            Key 확인 및 저장
           </button>
-        </>
+          <button
+            onClick={() => openOptions()}
+            style={{
+              padding: "12px",
+              borderRadius: RADIUS.sm,
+              border: `1px solid ${COLORS.textInverseSecondary}`,
+              background: "transparent",
+              color: COLORS.textOnInverse,
+              fontSize: 13,
+              cursor: "pointer"
+            }}
+          >
+            설정 페이지에서 입력
+          </button>
+        </div>
       )}
+
+      {panel === "DISCOVERY" && (
+        <DiscoveryView attachments={attachments} onStart={() => setPanel("SELECTION")} />
+      )}
+
+      {panel === "SELECTION" && (
+        <SelectionView
+          attachments={attachments}
+          selectedIds={selectedIds}
+          onToggle={toggleDoc}
+          onSelectAll={selectAll}
+          onNext={() => {
+            setConsentChecked(false);
+            setPanel("CONSENT_CONFIRM");
+          }}
+          onBack={() => setPanel("DISCOVERY")}
+        />
+      )}
+
+      {panel === "CONSENT_CONFIRM" && (
+        <ConsentView
+          selectedDocs={selectedDocs}
+          canStart={canStart}
+          consentChecked={consentChecked}
+          onToggleConsent={() => setConsentChecked((v) => !v)}
+          onStart={() => {
+            setError(null);
+            setAnswers({});
+            setDecision(null);
+            void handleStartAnalysis();
+          }}
+          onBack={() => setPanel("SELECTION")}
+        />
+      )}
+
+      {panel === "PROCESSING" && progress && <ProcessingView progress={progress} onReset={reset} />}
+
+      {panel === "GUIDANCE" && guidanceData && (
+        <InitialGuidanceView
+          guidance={guidanceData.guidance}
+          primaryNotice={guidanceData.primaryNotice}
+          {...(guidanceData.applicationForm
+            ? { applicationForm: guidanceData.applicationForm }
+            : {})}
+          {...(guidanceData.procedure ? { procedure: guidanceData.procedure } : {})}
+          checklistCautions={guidanceData.checklistCautions}
+          sourceGroups={guidanceData.sourceGroups}
+          onQuickCheck={() => setPanel("QUICK_FORM")}
+          onMissingClick={() => setPanel("QUICK_FORM")}
+          onSourceClick={(sourceId) => {
+            void navigateToSource(sourceId).catch((cause: unknown) => {
+              setError(cause instanceof Error ? cause.message : "원문을 열지 못했어요.");
+            });
+          }}
+        />
+      )}
+
+      {panel === "QUICK_FORM" && (
+        <QuickQuestionForm
+          questions={questions}
+          answers={answers}
+          onChange={(questionId, value) => setAnswers((prev) => ({ ...prev, [questionId]: value }))}
+          onSubmit={() => setPanel("QUICK_CONFIRM")}
+          {...(autoFocusId ? { autoFocusId } : {})}
+        />
+      )}
+
+      {panel === "QUICK_CONFIRM" && (
+        <QuickConfirm
+          questions={questions}
+          answers={answers}
+          onBack={() => setPanel("QUICK_FORM")}
+          onConfirm={() => {
+            const result = evaluateDecision(questions, answers);
+            setDecision(result);
+            setPanel("DECISION");
+          }}
+        />
+      )}
+
+      {panel === "DECISION" && decision && (
+        <Breakdown
+          result={decision}
+          onMissingClick={(questionId) => {
+            setAutoFocusId(questionId);
+            setPanel("QUICK_FORM");
+          }}
+          onSourceClick={(sourceId) => {
+            void navigateToSource(sourceId).catch((cause: unknown) => {
+              setError(cause instanceof Error ? cause.message : "원문을 열지 못했어요.");
+            });
+          }}
+        />
+      )}
+    </PanelShell>
+  );
+}
+
+export function DiscoveryView({
+  attachments,
+  onStart
+}: {
+  attachments: AttachmentPayload[];
+  onStart: () => void;
+}) {
+  return (
+    <div
+      style={{
+        minHeight: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        gap: 28
+      }}
+    >
+      <ScreenIntro
+        title="복잡한 공고 문서, 바로 정리해볼까요?"
+        description="직접 열어볼 필요 없이 자격요건과 주요 일정을 한곳에 모아 보여드려요."
+      />
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <DiscoveryAction
+          label="이 페이지의 문서찾기"
+          meta={
+            attachments.length > 0
+              ? `${attachments.length}개 문서를 찾았어요`
+              : "지원하는 첨부 문서를 찾지 못했어요"
+          }
+          onClick={onStart}
+          disabled={attachments.length === 0}
+          primary
+        />
+        <DiscoveryAction
+          label="이 페이지에 대해 질문하기"
+          meta="문서 분석 후 사용할 수 있어요"
+          disabled
+        />
+        <DiscoveryAction
+          label="원문 근거와 함께 확인하기"
+          meta="문서 분석 후 사용할 수 있어요"
+          disabled
+        />
+      </div>
     </div>
   );
 }
 
-function SelectionView({
+function DiscoveryAction({
+  label,
+  meta,
+  onClick,
+  disabled = false,
+  primary = false
+}: {
+  label: string;
+  meta: string;
+  onClick?: () => void;
+  disabled?: boolean;
+  primary?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      style={{
+        padding: "14px 16px",
+        borderRadius: RADIUS.md,
+        border: primary ? `1px solid ${COLORS.brandLime}` : `1px solid ${COLORS.bgInverseSurface}`,
+        background: COLORS.bgInverseSurface,
+        color: disabled ? COLORS.textInverseSecondary : COLORS.textOnInverse,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 12,
+        cursor: disabled ? "not-allowed" : "pointer",
+        textAlign: "left"
+      }}
+    >
+      <span style={{ fontSize: 14, fontWeight: 600 }}>{label}</span>
+      <span
+        style={{
+          fontSize: 10,
+          color: primary ? COLORS.brandLime : COLORS.textInverseSecondary,
+          whiteSpace: "nowrap"
+        }}
+      >
+        {meta}
+      </span>
+    </button>
+  );
+}
+
+export function SelectionView({
   attachments,
   selectedIds,
   onToggle,
   onSelectAll,
   onNext,
-  onBack,
+  onBack
 }: {
   attachments: AttachmentPayload[];
   selectedIds: Set<string>;
@@ -540,18 +532,36 @@ function SelectionView({
   const allSelected = attachments.length > 0 && selectedCount === attachments.length;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <h2
-          style={{
-            fontSize: 19,
-            fontWeight: 700,
-            color: COLORS.textOnInverse,
-            margin: 0,
-          }}
-        >
-          {selectedCount}개 선택됨
-        </h2>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <button
+        type="button"
+        onClick={onBack}
+        style={{
+          alignSelf: "flex-start",
+          padding: 0,
+          border: "none",
+          background: "transparent",
+          color: COLORS.textInverseSecondary,
+          fontSize: 12,
+          cursor: "pointer"
+        }}
+      >
+        ← 이 페이지의 문서찾기
+      </button>
+
+      <div
+        style={{
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "space-between",
+          gap: 16
+        }}
+      >
+        <ScreenIntro
+          eyebrow={`${selectedCount}개 선택됨`}
+          title="분석할 문서를 선택해 주세요"
+          description="이 공고와 관련된 문서를 고르면 지원 조건과 마감 정보를 원문 근거와 함께 정리해 드려요."
+        />
         <button
           onClick={() => onSelectAll(!allSelected)}
           style={{
@@ -559,16 +569,12 @@ function SelectionView({
             color: COLORS.actionPrimary,
             background: "transparent",
             border: "none",
-            cursor: "pointer",
+            cursor: "pointer"
           }}
         >
           {allSelected ? "전체 해제" : "전체 선택"}
         </button>
       </div>
-
-      <p style={{ fontSize: 14, color: COLORS.textInverseSecondary, margin: 0 }}>
-        함께 분석할 문서를 골라주세요.
-      </p>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {attachments.map((a) => (
@@ -581,42 +587,31 @@ function SelectionView({
         ))}
       </div>
 
-      <p
+      <div
         style={{
-          fontSize: 12,
-          color: COLORS.textInverseSecondary,
-          margin: 0,
+          padding: "14px 16px",
+          borderRadius: RADIUS.md,
+          background: COLORS.bgInverseSurface,
           display: "flex",
-          alignItems: "center",
-          gap: 6,
+          alignItems: "flex-start",
+          gap: 10
         }}
       >
         <span style={{ color: COLORS.actionPrimary }}>ⓘ</span>
-        선택한 문서는 Upstage AI로 전송되어 분석됩니다.
-      </p>
+        <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+          <strong style={{ fontSize: 12 }}>선택한 문서는 Upstage AI로 분석돼요.</strong>
+          <span style={{ fontSize: 11, color: COLORS.textInverseSecondary }}>
+            결과는 원문 근거와 함께 확인할 수 있어요.
+          </span>
+        </div>
+      </div>
 
       <div style={{ display: "flex", gap: 8 }}>
-        <button
-          onClick={onBack}
-          style={{
-            flex: 1,
-            padding: "14px 16px",
-            borderRadius: RADIUS.md,
-            border: `1px solid ${COLORS.textInverseSecondary}`,
-            background: "transparent",
-            color: COLORS.textOnInverse,
-            fontSize: 15,
-            fontWeight: 700,
-            cursor: "pointer",
-          }}
-        >
-          이전
-        </button>
         <button
           onClick={onNext}
           disabled={selectedCount === 0}
           style={{
-            flex: 2,
+            flex: 1,
             padding: "14px 16px",
             borderRadius: RADIUS.md,
             border: "none",
@@ -624,23 +619,23 @@ function SelectionView({
             color: selectedCount === 0 ? COLORS.textInverseSecondary : COLORS.textPrimary,
             fontSize: 15,
             fontWeight: 700,
-            cursor: selectedCount === 0 ? "not-allowed" : "pointer",
+            cursor: selectedCount === 0 ? "not-allowed" : "pointer"
           }}
         >
-          선택한 문서 분석하기
+          분석하기
         </button>
       </div>
     </div>
   );
 }
 
-function ConsentView({
+export function ConsentView({
   selectedDocs,
   canStart,
   consentChecked,
   onToggleConsent,
   onStart,
-  onBack,
+  onBack
 }: {
   selectedDocs: AttachmentPayload[];
   canStart: boolean;
@@ -650,17 +645,11 @@ function ConsentView({
   onBack: () => void;
 }) {
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      <h2
-        style={{
-          fontSize: 19,
-          fontWeight: 700,
-          color: COLORS.textOnInverse,
-          margin: 0,
-        }}
-      >
-        선택한 문서를 확인해주세요.
-      </h2>
+    <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <ScreenIntro
+        title="선택한 문서를 확인해 주세요"
+        description="분석을 시작하기 전에 Upstage AI로 전송할 문서를 한 번 더 확인해 주세요."
+      />
 
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         {selectedDocs.map((a) => (
@@ -668,22 +657,26 @@ function ConsentView({
         ))}
       </div>
 
-      <p
+      <div
         style={{
-          fontSize: 14,
-          color: COLORS.textInverseSecondary,
-          margin: 0,
+          padding: "14px 16px",
+          borderRadius: RADIUS.md,
+          background: COLORS.bgInverseSurface,
+          fontSize: 12,
+          lineHeight: 1.6,
+          color: COLORS.textInverseSecondary
         }}
       >
-        이 문서는 Upstage를 통해 처리됩니다.
-      </p>
+        선택한 문서는 Upstage를 통해 처리되며, 분석 결과에는 원문으로 돌아갈 수 있는 근거가 함께
+        제공됩니다.
+      </div>
 
       <label
         style={{
           display: "flex",
           alignItems: "flex-start",
           gap: 10,
-          cursor: "pointer",
+          cursor: "pointer"
         }}
       >
         <input
@@ -692,8 +685,11 @@ function ConsentView({
           onChange={onToggleConsent}
           style={{ marginTop: 2 }}
         />
-        <span style={{ fontSize: 13, color: COLORS.textOnInverse }}>
+        <span style={{ fontSize: 13, lineHeight: 1.5, color: COLORS.textOnInverse }}>
           위 문서를 AI 처리에 사용하는 데 동의합니다.
+          <small style={{ display: "block", marginTop: 3, color: COLORS.textInverseSecondary }}>
+            동의하지 않으면 분석을 시작하지 않습니다.
+          </small>
         </span>
       </label>
 
@@ -709,7 +705,7 @@ function ConsentView({
             color: COLORS.textOnInverse,
             fontSize: 15,
             fontWeight: 700,
-            cursor: "pointer",
+            cursor: "pointer"
           }}
         >
           이전
@@ -726,7 +722,7 @@ function ConsentView({
             color: canStart ? COLORS.textPrimary : COLORS.textInverseSecondary,
             fontSize: 15,
             fontWeight: 700,
-            cursor: canStart ? "pointer" : "not-allowed",
+            cursor: canStart ? "pointer" : "not-allowed"
           }}
         >
           분석 시작
@@ -746,7 +742,7 @@ function DocChip({ doc }: { doc: AttachmentPayload }) {
         padding: "12px",
         borderRadius: RADIUS.md,
         background: COLORS.bgInverseSurface,
-        color: COLORS.textOnInverse,
+        color: COLORS.textOnInverse
       }}
     >
       <span
@@ -756,12 +752,14 @@ function DocChip({ doc }: { doc: AttachmentPayload }) {
           background: COLORS.bgInverse,
           color: COLORS.actionPrimary,
           fontSize: 10,
-          fontWeight: 700,
+          fontWeight: 700
         }}
       >
         {doc.extension?.toUpperCase() ?? "FILE"}
       </span>
-      <span style={{ fontSize: 13, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+      <span
+        style={{ fontSize: 13, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}
+      >
         {doc.fileName}
       </span>
     </div>
@@ -771,15 +769,17 @@ function DocChip({ doc }: { doc: AttachmentPayload }) {
 function DocSelectRow({
   doc,
   selected,
-  onToggle,
+  onToggle
 }: {
   doc: AttachmentPayload;
   selected: boolean;
   onToggle: () => void;
 }) {
   return (
-    <div
+    <button
+      type="button"
       onClick={onToggle}
+      aria-pressed={selected}
       style={{
         display: "flex",
         alignItems: "center",
@@ -790,6 +790,9 @@ function DocSelectRow({
         background: COLORS.bgInverseSurface,
         color: COLORS.textOnInverse,
         cursor: "pointer",
+        border: selected ? `1px solid ${COLORS.bgInverseSurface}` : `1px solid transparent`,
+        width: "100%",
+        textAlign: "left"
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
@@ -803,7 +806,7 @@ function DocSelectRow({
             justifyContent: "center",
             background: selected ? COLORS.brandLime : "transparent",
             border: selected ? "none" : `1px solid ${COLORS.textInverseSecondary}`,
-            flexShrink: 0,
+            flexShrink: 0
           }}
         >
           {selected && <span style={{ color: COLORS.bgInverse, fontSize: 11 }}>✓</span>}
@@ -816,12 +819,19 @@ function DocSelectRow({
             color: COLORS.actionPrimary,
             fontSize: 10,
             fontWeight: 700,
-            flexShrink: 0,
+            flexShrink: 0
           }}
         >
           {doc.extension?.toUpperCase() ?? "FILE"}
         </span>
-        <span style={{ fontSize: 13, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+        <span
+          style={{
+            fontSize: 13,
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis"
+          }}
+        >
           {doc.fileName}
         </span>
       </div>
@@ -834,11 +844,11 @@ function DocSelectRow({
           background: selected ? COLORS.brandLime : COLORS.bgInverse,
           color: selected ? COLORS.textPrimary : COLORS.textInverseSecondary,
           whiteSpace: "nowrap",
-          flexShrink: 0,
+          flexShrink: 0
         }}
       >
         {selected ? "선택됨" : "선택 안 함"}
       </span>
-    </div>
+    </button>
   );
 }
