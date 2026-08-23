@@ -45,7 +45,8 @@ const SCHEMA_ROLES: Record<string, DocumentRole> = Object.fromEntries(
 function safeJsonParse<T = unknown>(value: string | undefined): T | undefined {
   if (!value) return undefined;
   try {
-    return JSON.parse(value) as T;
+    const parsed = JSON.parse(value) as unknown;
+    return (typeof parsed === "string" ? JSON.parse(parsed) : parsed) as T;
   } catch {
     return undefined;
   }
@@ -379,6 +380,102 @@ function documentForPage(
   });
 }
 
+function extractAnchor(descriptor: ExtractDescriptor): string | undefined {
+  const keys = ["title", "form_title", "document_title", "guide_title"];
+  for (const key of keys) {
+    const value = descriptor.additional?.[key];
+    if (
+      value &&
+      typeof value === "object" &&
+      typeof (value as Record<string, unknown>)._value === "string"
+    ) {
+      return (value as Record<string, unknown>)._value as string;
+    }
+  }
+  return undefined;
+}
+
+function fontSize(source: SourceRecord): number {
+  const match = source.html?.match(/font-size\s*:\s*(\d+(?:\.\d+)?)px/i);
+  return match ? Number(match[1]) : 0;
+}
+
+function assignSourcesToDocuments(
+  rawSources: readonly SourceRecord[],
+  documents: readonly DocumentRecord[],
+  descriptors: readonly ExtractDescriptor[],
+  parseAdditional: Record<string, unknown> | undefined
+): SourceRecord[] {
+  const orderedDocuments = orderDocumentsByParseInput([...documents], parseAdditional);
+  const starts = new Map<string, number>();
+  const firstDocument = orderedDocuments[0];
+  if (firstDocument) starts.set(firstDocument.id, 0);
+
+  for (const descriptor of descriptors) {
+    const anchor = extractAnchor(descriptor);
+    const page = descriptor.pageRange?.[0];
+    const document = page ? documentForPage(orderedDocuments, page) : undefined;
+    if (!anchor || !document) continue;
+    const index = rawSources.findIndex((source) => source.text.includes(anchor));
+    if (index >= 0) starts.set(document.id, index);
+  }
+
+  for (let index = 0; index < orderedDocuments.length; index++) {
+    const document = orderedDocuments[index];
+    if (!document || starts.has(document.id)) continue;
+    const previous = [...orderedDocuments]
+      .slice(0, index)
+      .reverse()
+      .find((candidate) => starts.has(candidate.id));
+    const next = orderedDocuments
+      .slice(index + 1)
+      .find((candidate) => starts.has(candidate.id));
+    const lower = previous ? (starts.get(previous.id) ?? -1) + 1 : 0;
+    const upper = next ? starts.get(next.id) ?? rawSources.length : rawSources.length;
+    const candidates = rawSources
+      .map((source, sourceIndex) => ({ source, sourceIndex }))
+      .filter(({ sourceIndex }) => sourceIndex >= lower && sourceIndex < upper);
+    const maximumFontSize = candidates.reduce(
+      (maximum, candidate) => Math.max(maximum, fontSize(candidate.source)),
+      0
+    );
+    const boundary = candidates.find(
+      (candidate) => fontSize(candidate.source) === maximumFontSize
+    );
+    if (boundary) starts.set(document.id, boundary.sourceIndex);
+  }
+
+  const orderedStarts = orderedDocuments
+    .map((document) => ({ document, start: starts.get(document.id) }))
+    .filter(
+      (entry): entry is { document: DocumentRecord; start: number } =>
+        entry.start !== undefined
+    )
+    .sort((a, b) => a.start - b.start);
+
+  return rawSources.flatMap((source, sourceIndex): SourceRecord[] => {
+    const owner = [...orderedStarts]
+      .reverse()
+      .find((entry) => entry.start <= sourceIndex)?.document;
+    if (!owner) return [];
+    const pageRange = owner.pageRange;
+    const page =
+      pageRange && (source.page < pageRange[0] || source.page > pageRange[1])
+        ? pageRange[0]
+        : source.page;
+    const sourceId = buildSourceId(owner.id, page, source.elementId);
+    return [
+      {
+        ...source,
+        documentId: owner.id,
+        page,
+        sourceId,
+        semanticNodeId: sourceId,
+      },
+    ];
+  });
+}
+
 function sourceToParseElement(source: SourceRecord): ParseElement {
   return {
     id: `pe:${source.sourceId}`,
@@ -514,19 +611,12 @@ export function adaptAgentJob(
   );
   inferDocumentRanges(classified, descriptors, totalPages, parseAdditional);
 
-  const sources = rawSources.flatMap((source): SourceRecord[] => {
-    const document = documentForPage(classified, source.page);
-    if (!document) return [];
-    return [
-      {
-        ...source,
-        documentId: document.id,
-        sourceId: buildSourceId(document.id, source.page, source.elementId),
-        semanticNodeId: buildSourceId(document.id, source.page, source.elementId),
-      },
-    ];
-  });
-  const parseElements = sources.map(sourceToParseElement);
+  const sources = assignSourcesToDocuments(
+    rawSources,
+    classified,
+    descriptors,
+    parseAdditional
+  );
 
   // 3. Extract records are linked by page range, never by raw component access.
   for (const descriptor of descriptors) {
@@ -551,14 +641,45 @@ export function adaptAgentJob(
     }
   }
 
-  const registry = new SourceRegistry().register(sources);
+  const pageCorrections = new Map<string, { page: number; score: number }>();
+  for (const extract of extracts) {
+    const firstPass = buildExtractLocationMap(
+      sources.filter((source) => source.documentId === extract.documentId),
+      extract.additionalValues
+    );
+    for (const mapping of firstPass.values()) {
+      for (const sourceId of mapping.sourceIds) {
+        const current = pageCorrections.get(sourceId);
+        if (!current || mapping.rawValue.length > current.score) {
+          pageCorrections.set(sourceId, {
+            page: mapping.page,
+            score: mapping.rawValue.length,
+          });
+        }
+      }
+    }
+  }
+
+  const pageNormalizedSources = sources.map((source): SourceRecord => {
+    const page = pageCorrections.get(source.sourceId)?.page ?? source.page;
+    const sourceId = buildSourceId(source.documentId, page, source.elementId);
+    return {
+      ...source,
+      page,
+      sourceId,
+      semanticNodeId: sourceId,
+    };
+  });
+  const registry = new SourceRegistry().register(pageNormalizedSources);
   const extractMaps = new Map<
     string,
     ReturnType<typeof buildExtractLocationMap>
   >();
   for (const extract of extracts) {
     const map = buildExtractLocationMap(
-      sources.filter((source) => source.documentId === extract.documentId),
+      pageNormalizedSources.filter(
+        (source) => source.documentId === extract.documentId
+      ),
       extract.additionalValues
     );
     extractMaps.set(extract.schemaName, map);
@@ -569,6 +690,7 @@ export function adaptAgentJob(
     }
   }
   const resolvedSources = registry.all();
+  const parseElements = resolvedSources.map(sourceToParseElement);
 
   // 4. Guidance citations resolve only to Source IDs already in the Registry.
   const instructItem = job.output.find((o) => o.model.startsWith("Instruct - "));

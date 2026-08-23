@@ -113,4 +113,30 @@ describe("InitialGuidanceView", () => {
     expect(screen.getByText("자기소개서 작성 전 확인")).toBeTruthy();
     expect(screen.getByText("신청방법 안내")).toBeTruthy();
   });
+
+  it("opens a canonical source from a Guidance card", () => {
+    const onSourceClick = vi.fn();
+    render(
+      <InitialGuidanceView
+        guidance={GUIDANCE}
+        primaryNotice={PRIMARY}
+        sourceGroups={{
+          overview: [],
+          topRequirements: ["src:doc-notice:p2:e7"],
+          nearestDeadline: [],
+          requiredSubmissions: [],
+          topCautions: [],
+          nextActions: [],
+          keyDates: [],
+          applicationForm: [],
+          procedure: [],
+        }}
+        onQuickCheck={() => {}}
+        onSourceClick={onSourceClick}
+      />
+    );
+
+    fireEvent.click(screen.getByText("src:doc-notice:p2:e7"));
+    expect(onSourceClick).toHaveBeenCalledWith("src:doc-notice:p2:e7");
+  });
 });

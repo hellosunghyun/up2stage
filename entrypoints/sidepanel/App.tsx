@@ -14,7 +14,10 @@ import {
   resumeProcessing,
 } from "../../src/core/agent/processor";
 import { getApiKey, setApiKey as persistApiKey } from "../../src/core/storage/apiKey";
-import { getCase } from "../../src/core/storage/repositories";
+import {
+  getCanonicalAgentResult,
+  getCase,
+} from "../../src/core/storage/repositories";
 import type { ProcessingProgress } from "../../src/core/agent/processor";
 import { InitialGuidanceView } from "../../src/features/guidance/InitialGuidanceView";
 import { QuickQuestionForm } from "../../src/features/quick-check/QuickQuestionForm";
@@ -26,13 +29,16 @@ import {
 } from "../../src/features/quick-check/SuggestionChips";
 import { evaluateDecision } from "../../src/core/decision/evaluate";
 import type { UserAnswer, DecisionResult } from "../../src/core/decision/types";
+import type { QuickQuestion } from "../../src/core/decision/types";
 import {
-  DEMO_INITIAL_GUIDANCE,
-  DEMO_PRIMARY_NOTICE,
-  DEMO_APPLICATION_FORM,
-  DEMO_PROCEDURE,
-  DEMO_QUICK_QUESTIONS,
-} from "./fixture";
+  buildGuidanceViewData,
+  type GuidanceViewData,
+} from "../../src/features/guidance/adapter";
+import { SourceRegistry } from "../../src/core/evidence";
+import {
+  navigateToSource,
+  setNavigationRegistry,
+} from "../../src/features/source-navigation/navigate";
 
 type PanelState =
   | "DISCOVERY"
@@ -92,6 +98,22 @@ export function App() {
   const [answers, setAnswers] = useState<Record<string, UserAnswer>>({});
   const [autoFocusId, setAutoFocusId] = useState<string | undefined>(undefined);
   const [decision, setDecision] = useState<DecisionResult | null>(null);
+  const [guidanceData, setGuidanceData] = useState<GuidanceViewData | null>(null);
+  const [questions, setQuestions] = useState<QuickQuestion[]>([]);
+
+  const loadCompletedCase = useCallback(async (caseId: string) => {
+    const result = await getCanonicalAgentResult(caseId);
+    if (!result) {
+      throw new Error("완료된 Agent 결과를 찾지 못했어요.");
+    }
+    const viewData = buildGuidanceViewData(result);
+    if (!viewData) {
+      throw new Error("Initial Guidance 결과를 찾지 못했어요.");
+    }
+    setNavigationRegistry(new SourceRegistry().register(result.sources));
+    setGuidanceData(viewData);
+    setQuestions(result.quickQuestions);
+  }, []);
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -122,12 +144,17 @@ export function App() {
             return;
           }
           if (caseRecord.status === "processed" || caseRecord.status === "failed") {
+            if (caseRecord.status === "processed") {
+              await loadCompletedCase(caseRecord.id);
+              setPanel("GUIDANCE");
+              return;
+            }
             setPanel("PROCESSING");
             setProgress({
               caseId: caseRecord.id,
-              overall: caseRecord.status === "processed" ? "complete" : "failed",
+              overall: "failed",
               documents: [],
-              message: caseRecord.status === "processed" ? "분석이 완료되었어요." : "분석에 실패했어요.",
+              message: "분석에 실패했어요.",
             });
             return;
           }
@@ -146,17 +173,24 @@ export function App() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [loadCompletedCase]);
 
   useEffect(() => {
     void load();
   }, [load]);
 
   useEffect(() => {
-    if (progress?.overall === "complete") {
-      setPanel("GUIDANCE");
-    }
-  }, [progress?.overall]);
+    if (progress?.overall !== "complete") return;
+    void loadCompletedCase(progress.caseId)
+      .then(() => setPanel("GUIDANCE"))
+      .catch((cause: unknown) => {
+        setError(
+          cause instanceof Error
+            ? cause.message
+            : "완료된 분석 결과를 불러오지 못했어요."
+        );
+      });
+  }, [loadCompletedCase, progress?.caseId, progress?.overall]);
 
   const selectedDocs = useMemo(
     () => getSelected(attachments, selectedIds),
@@ -222,6 +256,8 @@ export function App() {
   const reset = useCallback(() => {
     void chrome.storage.session.remove(CURRENT_CASE_KEY);
     setProgress(null);
+    setGuidanceData(null);
+    setQuestions([]);
     setPanel("DISCOVERY");
     void load();
   }, [load]);
@@ -388,24 +424,31 @@ export function App() {
           <ProcessingView progress={progress} onReset={reset} />
         )}
 
-        {panel === "GUIDANCE" && (
+        {panel === "GUIDANCE" && guidanceData && (
           <InitialGuidanceView
-            guidance={DEMO_INITIAL_GUIDANCE}
-            primaryNotice={DEMO_PRIMARY_NOTICE}
-            applicationForm={DEMO_APPLICATION_FORM}
-            procedure={DEMO_PROCEDURE}
-            checklistCautions={[]}
+            guidance={guidanceData.guidance}
+            primaryNotice={guidanceData.primaryNotice}
+            {...(guidanceData.applicationForm
+              ? { applicationForm: guidanceData.applicationForm }
+              : {})}
+            {...(guidanceData.procedure
+              ? { procedure: guidanceData.procedure }
+              : {})}
+            checklistCautions={guidanceData.checklistCautions}
+            sourceGroups={guidanceData.sourceGroups}
             onQuickCheck={() => setPanel("QUICK_FORM")}
             onMissingClick={() => setPanel("QUICK_FORM")}
-            onSourceClick={(sourceId) =>
-              console.log("[up2stage:sidepanel] source:", sourceId)
-            }
+            onSourceClick={(sourceId) => {
+              void navigateToSource(sourceId).catch((cause: unknown) => {
+                setError(cause instanceof Error ? cause.message : "원문을 열지 못했어요.");
+              });
+            }}
           />
         )}
 
         {panel === "QUICK_FORM" && (
           <QuickQuestionForm
-            questions={DEMO_QUICK_QUESTIONS}
+            questions={questions}
             answers={answers}
             onChange={(questionId, value) =>
               setAnswers((prev) => ({ ...prev, [questionId]: value }))
@@ -417,11 +460,11 @@ export function App() {
 
         {panel === "QUICK_CONFIRM" && (
           <QuickConfirm
-            questions={DEMO_QUICK_QUESTIONS}
+            questions={questions}
             answers={answers}
             onBack={() => setPanel("QUICK_FORM")}
             onConfirm={() => {
-              const result = evaluateDecision(DEMO_QUICK_QUESTIONS, answers);
+              const result = evaluateDecision(questions, answers);
               setDecision(result);
               setPanel("DECISION");
             }}
@@ -435,9 +478,11 @@ export function App() {
               setAutoFocusId(questionId);
               setPanel("QUICK_FORM");
             }}
-            onSourceClick={(sourceId) =>
-              console.log("[up2stage:sidepanel] source:", sourceId)
-            }
+            onSourceClick={(sourceId) => {
+              void navigateToSource(sourceId).catch((cause: unknown) => {
+                setError(cause instanceof Error ? cause.message : "원문을 열지 못했어요.");
+              });
+            }}
           />
         )}
       </main>

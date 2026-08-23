@@ -12,6 +12,7 @@ import type {
   PrimaryNoticeExtract,
   ApplicationFormExtract,
   ProcedureExtract,
+  GuidanceSourceGroups,
 } from "./types";
 
 interface InitialGuidanceViewProps {
@@ -20,6 +21,7 @@ interface InitialGuidanceViewProps {
   applicationForm?: ApplicationFormExtract;
   procedure?: ProcedureExtract;
   checklistCautions?: string[];
+  sourceGroups?: GuidanceSourceGroups;
   onQuickCheck: () => void;
   onMissingClick?: (label: string) => void;
   onSourceClick?: (sourceId: string) => void;
@@ -31,6 +33,7 @@ export function InitialGuidanceView({
   applicationForm,
   procedure,
   checklistCautions = [],
+  sourceGroups,
   onQuickCheck,
   onMissingClick,
   onSourceClick,
@@ -96,6 +99,7 @@ export function InitialGuidanceView({
           </ul>
         }
         accent="lime"
+        sourceIds={sourceGroups?.topRequirements}
         {...sourceClickProps}
       />
 
@@ -109,6 +113,7 @@ export function InitialGuidanceView({
           </div>
         }
         accent="warning"
+        sourceIds={sourceGroups?.nearestDeadline}
         {...sourceClickProps}
       />
 
@@ -116,6 +121,7 @@ export function InitialGuidanceView({
         title="필수 제출물"
         body={<SubmissionChecklist items={allSubmissions} />}
         accent="neutral"
+        sourceIds={sourceGroups?.requiredSubmissions}
         {...sourceClickProps}
       />
 
@@ -124,6 +130,7 @@ export function InitialGuidanceView({
           title="일정"
           body={<Timeline items={primaryNotice.key_dates} />}
           accent="neutral"
+          sourceIds={sourceGroups?.keyDates}
           {...sourceClickProps}
         />
       )}
@@ -132,6 +139,7 @@ export function InitialGuidanceView({
         title="놓치면 안 되는 것"
         body={<CautionList items={allCautions} />}
         accent="warning"
+        sourceIds={sourceGroups?.topCautions}
         {...sourceClickProps}
       />
 
@@ -140,6 +148,7 @@ export function InitialGuidanceView({
           title={`${applicationForm.form_title} 작성 전 확인`}
           body={<ApplicationFormCheck extract={applicationForm} />}
           accent="neutral"
+          sourceIds={sourceGroups?.applicationForm}
           {...sourceClickProps}
         />
       )}
@@ -149,6 +158,7 @@ export function InitialGuidanceView({
           title={procedure.guide_title}
           body={<ProcedureSteps extract={procedure} />}
           accent="neutral"
+          sourceIds={sourceGroups?.procedure}
           {...sourceClickProps}
         />
       )}
@@ -157,6 +167,7 @@ export function InitialGuidanceView({
         title="지금 해야 할 일"
         body={<NextActions items={guidance.nextActions} />}
         accent="lime"
+        sourceIds={sourceGroups?.nextActions}
         {...sourceClickProps}
       />
 

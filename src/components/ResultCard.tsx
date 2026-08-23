@@ -4,7 +4,7 @@ import { COLORS, RADIUS } from "../styles/tokens";
 export interface ResultCardProps {
   title: string;
   body: ReactNode;
-  sourceIds?: string[];
+  sourceIds?: string[] | undefined;
   accent?: "lime" | "neutral" | "warning";
   onSourceClick?: (sourceId: string) => void;
 }

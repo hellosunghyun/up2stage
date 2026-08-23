@@ -4,7 +4,16 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: [".output/**", ".wxt/**", "node_modules/**", "references/**", "*.config.mjs"] },
+  {
+    ignores: [
+      ".output/**",
+      ".wxt/**",
+      "node_modules/**",
+      "references/**",
+      "*.config.mjs",
+      "test/fixtures/upstage/*.mjs",
+    ],
+  },
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   {

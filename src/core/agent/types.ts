@@ -35,6 +35,7 @@ export const outputItemSchema = z.object({
       completed: z.number(),
       percentage: z.number(),
     })
+    .nullable()
     .optional(),
 });
 

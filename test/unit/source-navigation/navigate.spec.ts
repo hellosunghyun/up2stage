@@ -1,7 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
-import type { SourceRecord } from "../../models/canonical";
-import { fixtureSourceRegistry, fixtureSources } from "./fixture";
-import { navigateToSource } from "./navigate";
+import type { SourceRecord } from "../../../src/models/canonical";
+import {
+  fixtureSourceRegistry,
+  fixtureSources,
+} from "../../fixtures/source-navigation/viewer";
+import { navigateToSource } from "../../../src/features/source-navigation/navigate";
 
 function mockViewer() {
   return {

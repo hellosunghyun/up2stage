@@ -54,3 +54,15 @@ export interface TimelineItem {
   label: string;
   isDeadline?: boolean;
 }
+
+export interface GuidanceSourceGroups {
+  overview: string[];
+  topRequirements: string[];
+  nearestDeadline: string[];
+  requiredSubmissions: string[];
+  topCautions: string[];
+  nextActions: string[];
+  keyDates: string[];
+  applicationForm: string[];
+  procedure: string[];
+}

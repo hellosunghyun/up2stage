@@ -1,6 +1,6 @@
 import * as XLSX from "xlsx";
-import type { DocumentRecord, SourceRecord } from "../../models/canonical";
-import type { SourceRegistry } from "./navigate";
+import type { DocumentRecord, SourceRecord } from "../../../src/models/canonical";
+import type { SourceRegistry } from "../../../src/features/source-navigation/navigate";
 
 export const fixtureDocuments: DocumentRecord[] = [
   {
