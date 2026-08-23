@@ -97,8 +97,8 @@ export function App() {
         height: "100vh",
         fontFamily:
           '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        color: COLORS.textPrimary,
-        background: COLORS.bgCanvas,
+        color: COLORS.textOnInverse,
+        background: COLORS.bgInverse,
       }}
     >
       <header
