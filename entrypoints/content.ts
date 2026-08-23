@@ -18,37 +18,39 @@ function getMessageName(message: unknown): string | undefined {
   return undefined;
 }
 
-chrome.runtime.onMessage.addListener((
-  message: unknown,
-  _sender: chrome.runtime.MessageSender,
-  sendResponse: (response?: unknown) => void
-) => {
-  const name = getMessageName(message);
-  console.log("[up2stage:content] onMessage:", name, message);
+function setupMessageHandler() {
+  chrome.runtime.onMessage.addListener((
+    message: unknown,
+    _sender: chrome.runtime.MessageSender,
+    sendResponse: (response?: unknown) => void
+  ) => {
+    const name = getMessageName(message);
+    console.log("[up2stage:content] onMessage:", name, message);
 
-  if (name === "currentPageContext") {
-    void Promise.resolve({
-      url: window.location.href,
-      title: document.title,
-    }).then(sendResponse);
-    return true;
-  }
+    if (name === "currentPageContext") {
+      void Promise.resolve({
+        url: window.location.href,
+        title: document.title,
+      }).then(sendResponse);
+      return true;
+    }
 
-  if (name === "discoverAttachments") {
-    void Promise.resolve(discoverAttachments())
-      .then((result) => {
-        console.log("[up2stage:content] discoverAttachments result:", result.length);
-        sendResponse(result);
-      })
-      .catch((e) => {
-        console.error("[up2stage:content] discoverAttachments failed:", e);
-        sendResponse([]);
-      });
-    return true;
-  }
+    if (name === "discoverAttachments") {
+      void Promise.resolve(discoverAttachments())
+        .then((result) => {
+          console.log("[up2stage:content] discoverAttachments result:", result.length);
+          sendResponse(result);
+        })
+        .catch((e) => {
+          console.error("[up2stage:content] discoverAttachments failed:", e);
+          sendResponse([]);
+        });
+      return true;
+    }
 
-  return false;
-});
+    return false;
+  });
+}
 
 function checkAndRenderOverlay() {
   const url = new URL(window.location.href);
@@ -72,10 +74,12 @@ export default defineContentScript({
   matches: ["http://*/*", "https://*/*", "file://*/*"],
   main() {
     if (window.__up2stageInjected) {
+      console.log("[up2stage:content] already injected");
       return;
     }
     window.__up2stageInjected = true;
     console.log("up to stage content script loaded");
+    setupMessageHandler();
     checkAndRenderOverlay();
   },
 });

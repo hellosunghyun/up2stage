@@ -25,6 +25,17 @@ function friendlyMessagingError(message: string): string {
 async function sendToContent<T>(name: string): Promise<T> {
   const tabId = await getActiveTabId();
   console.log(`[up2stage:background] sendToContent tabId=${tabId}, name=${name}`);
+
+  try {
+    await chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      files: ["content-scripts/content.js"],
+    });
+    console.log("[up2stage:background] content script ensured");
+  } catch (e) {
+    console.log("[up2stage:background] executeScript skipped:", e instanceof Error ? e.message : e);
+  }
+
   try {
     const result = (await chrome.tabs.sendMessage(tabId, { name, data: undefined })) as T;
     console.log(`[up2stage:background] sendToContent response:`, result);
