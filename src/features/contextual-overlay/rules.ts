@@ -13,6 +13,11 @@ export const defaultContextRules: ContextRule[] = [
       url.hostname === "example.org" &&
       url.pathname.startsWith("/scholarship/"),
   },
+  {
+    id: "hissf-or.kr",
+    label: "HIS Safety Foundation",
+    match: (url) => url.hostname === "hissf.or.kr",
+  },
 ];
 
 export function findMatchingRule(

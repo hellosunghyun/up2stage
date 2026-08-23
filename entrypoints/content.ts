@@ -68,6 +68,7 @@ function checkAndRenderOverlay() {
   if (matched) {
     mountOverlay({
       onOpen: () => {
+        unmountOverlay();
         void messaging.openSidePanel({});
       },
       onClose: () => {

@@ -3,79 +3,67 @@ export interface OverlayOptions {
   onClose: () => void;
 }
 
+function getExtensionUrl(path: string): string {
+  return chrome.runtime.getURL(path);
+}
+
+function createCombinedBrandImage(): SVGSVGElement {
+  const svgNs = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNs, "svg");
+  svg.setAttribute("viewBox", "0 0 150 32");
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", "Up to Stage");
+  svg.style.height = "32px";
+  svg.style.width = "auto";
+  svg.style.display = "block";
+
+  const symbol = document.createElementNS(svgNs, "image");
+  symbol.setAttribute("x", "0");
+  symbol.setAttribute("y", "0");
+  symbol.setAttribute("width", "32");
+  symbol.setAttribute("height", "32");
+  symbol.setAttribute("href", getExtensionUrl("icons/icon-32.png"));
+  symbol.setAttribute("preserveAspectRatio", "xMidYMid meet");
+  svg.appendChild(symbol);
+
+  const logo = document.createElementNS(svgNs, "image");
+  logo.setAttribute("x", "40");
+  logo.setAttribute("y", "4");
+  logo.setAttribute("width", "110");
+  logo.setAttribute("height", "24");
+  logo.setAttribute("href", getExtensionUrl("logo.png"));
+  logo.setAttribute("preserveAspectRatio", "xMidYMid meet");
+  svg.appendChild(logo);
+
+  return svg;
+}
+
 export function createContextualOverlay({
   onOpen,
-  onClose,
 }: OverlayOptions): HTMLElement {
-  const overlay = document.createElement("div");
+  const overlay = document.createElement("button");
+  overlay.type = "button";
   overlay.id = "up2stage-overlay";
-  overlay.setAttribute("role", "dialog");
-  overlay.setAttribute("aria-label", "Up to Stage 안내");
+  overlay.setAttribute("aria-label", "Up to Stage 안내 열기");
   overlay.style.all = "initial";
   overlay.style.position = "fixed";
   overlay.style.right = "24px";
   overlay.style.bottom = "24px";
-  overlay.style.width = "336px";
   overlay.style.zIndex = "2147483647";
-  overlay.style.padding = "20px";
-  overlay.style.borderRadius = "12px";
+  overlay.style.display = "flex";
+  overlay.style.alignItems = "center";
+  overlay.style.gap = "0";
+  overlay.style.padding = "8px 16px";
+  overlay.style.border = "none";
+  overlay.style.borderRadius = "9999px";
   overlay.style.background = "#111722";
-  overlay.style.color = "#ffffff";
-  overlay.style.boxShadow = "0 8px 32px rgba(0, 0, 0, 0.24)";
-  overlay.style.fontFamily =
-    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+  overlay.style.boxShadow = "0 4px 24px rgba(0, 0, 0, 0.24)";
+  overlay.style.cursor = "pointer";
   overlay.style.boxSizing = "border-box";
+  overlay.addEventListener("click", onOpen);
 
-  const brand = document.createElement("div");
-  brand.textContent = "Up to Stage";
-  brand.style.fontWeight = "700";
-  brand.style.fontSize = "14px";
-  brand.style.marginBottom = "8px";
-  brand.style.color = "#ffffff";
+  const brand = createCombinedBrandImage();
   overlay.appendChild(brand);
-
-  const body = document.createElement("p");
-  body.innerHTML =
-    "이 페이지와 관련된 문서를 확인할 수 있어요.<br/>조건, 마감, 제출서류를 함께 정리합니다.";
-  body.style.margin = "0";
-  body.style.fontSize = "14px";
-  body.style.lineHeight = "1.5";
-  body.style.marginBottom = "16px";
-  body.style.color = "#ffffff";
-  overlay.appendChild(body);
-
-  const actions = document.createElement("div");
-  actions.style.display = "flex";
-  actions.style.gap = "12px";
-  actions.style.justifyContent = "flex-end";
-  overlay.appendChild(actions);
-
-  const openButton = document.createElement("button");
-  openButton.type = "button";
-  openButton.textContent = "관련 문서 확인하기 →";
-  openButton.style.background = "#d2ff95";
-  openButton.style.color = "#0a0d14";
-  openButton.style.border = "none";
-  openButton.style.borderRadius = "8px";
-  openButton.style.padding = "8px 12px";
-  openButton.style.fontSize = "13px";
-  openButton.style.fontWeight = "600";
-  openButton.style.cursor = "pointer";
-  openButton.addEventListener("click", onOpen);
-  actions.appendChild(openButton);
-
-  const closeButton = document.createElement("button");
-  closeButton.type = "button";
-  closeButton.textContent = "닫기";
-  closeButton.style.background = "transparent";
-  closeButton.style.color = "#ffffff";
-  closeButton.style.border = "1px solid #8390a5";
-  closeButton.style.borderRadius = "8px";
-  closeButton.style.padding = "8px 12px";
-  closeButton.style.fontSize = "13px";
-  closeButton.style.cursor = "pointer";
-  closeButton.addEventListener("click", onClose);
-  actions.appendChild(closeButton);
 
   return overlay;
 }

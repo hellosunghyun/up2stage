@@ -29,4 +29,17 @@ describe("contextual-overlay rules", () => {
     const matched = findMatchingRule(url, defaultContextRules);
     expect(matched).toBeDefined();
   });
+
+  it("matches the hiss.or.kr host", () => {
+    const url = new URL("http://hissf.or.kr/");
+    const matched = findMatchingRule(url);
+    expect(matched).toBeDefined();
+    expect(matched?.id).toBe("hissf-or.kr");
+  });
+
+  it("does not match a non-hissf host", () => {
+    const url = new URL("http://other.or.kr/");
+    const matched = findMatchingRule(url);
+    expect(matched).toBeUndefined();
+  });
 });
