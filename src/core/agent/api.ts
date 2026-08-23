@@ -12,6 +12,38 @@ function withAuth(apiKey: string, init?: RequestInit): RequestInit {
   };
 }
 
+const MIME_TYPES: Record<string, string> = {
+  pdf: "application/pdf",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  bmp: "image/bmp",
+  tif: "image/tiff",
+  tiff: "image/tiff",
+  heic: "image/heic",
+  doc: "application/msword",
+  docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ppt: "application/vnd.ms-powerpoint",
+  pptx: "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+  xls: "application/vnd.ms-excel",
+  xlsx: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  hwp: "application/x-hwp",
+  hwpx: "application/x-hwp",
+  msg: "application/vnd.ms-outlook",
+  eml: "message/rfc822",
+  mht: "message/rfc822",
+  html: "text/html",
+};
+
+function normalizeMimeType(fileName: string, mimeType?: string): string {
+  const cleaned = mimeType?.split(";")[0]?.trim().toLowerCase();
+  if (cleaned && cleaned !== "application/octet-stream") {
+    return mimeType!.split(";")[0]!.trim();
+  }
+  const ext = fileName.split(".").pop()?.toLowerCase();
+  return ext ? (MIME_TYPES[ext] ?? "application/octet-stream") : "application/octet-stream";
+}
+
 async function unwrap<T>(res: Response, parser: (data: unknown) => T): Promise<T> {
   if (!res.ok) {
     let message = `Upstage API ${res.status}`;
@@ -36,7 +68,7 @@ export async function uploadFile(
   mimeType?: string
 ): Promise<UpstageFile> {
   const form = new FormData();
-  form.append("file", new Blob([bytes], { type: mimeType ?? "application/octet-stream" }), fileName);
+  form.append("file", new Blob([bytes], { type: normalizeMimeType(fileName, mimeType) }), fileName);
   form.append("purpose", "user_data");
 
   const res = await fetch(`${BASE_URL}/files`, withAuth(apiKey, { method: "POST", body: form }));
