@@ -125,12 +125,12 @@ export function App() {
         style={{
           flex: 1,
           overflowY: "auto",
-          padding: 0,
+          padding: "16px",
           background: COLORS.bgInverse,
         }}
       >
         {error && (
-          <p style={{ padding: "16px", color: COLORS.brandLime }}>{getUserFriendlyError(error)}</p>
+          <p style={{ margin: 0, color: COLORS.brandLime }}>{getUserFriendlyError(error)}</p>
         )}
 
         {panel === "DISCOVERY" && (
