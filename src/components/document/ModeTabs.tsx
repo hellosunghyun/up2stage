@@ -1,3 +1,4 @@
+import type { RefObject } from "react";
 import { COLORS, RADIUS } from "../../styles/tokens";
 
 type ViewerMode = "structure" | "original" | "accessibility";
@@ -5,6 +6,7 @@ type ViewerMode = "structure" | "original" | "accessibility";
 export interface ModeTabsProps {
   mode: ViewerMode;
   onChange: (mode: ViewerMode) => void;
+  accessibilityTabRef?: RefObject<HTMLButtonElement | null> | undefined;
 }
 
 const labels: Record<ViewerMode, string> = {
@@ -13,7 +15,7 @@ const labels: Record<ViewerMode, string> = {
   accessibility: "접근성 보기",
 };
 
-export function ModeTabs({ mode, onChange }: ModeTabsProps) {
+export function ModeTabs({ mode, onChange, accessibilityTabRef }: ModeTabsProps) {
   return (
     <div
       role="tablist"
@@ -25,8 +27,12 @@ export function ModeTabs({ mode, onChange }: ModeTabsProps) {
         return (
           <button
             key={m}
+            id={`viewer-mode-${m}`}
+            ref={m === "accessibility" ? accessibilityTabRef : undefined}
             role="tab"
             aria-selected={active}
+            aria-controls="viewer-workspace-panel"
+            tabIndex={0}
             type="button"
             onClick={() => onChange(m)}
             style={{

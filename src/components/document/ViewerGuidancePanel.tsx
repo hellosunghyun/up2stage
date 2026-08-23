@@ -52,7 +52,7 @@ export function ViewerGuidancePanel({
 
   return (
     <aside
-      aria-label={`Up to Stage case ${caseId}`}
+      aria-label={`AI 안내 및 근거 · Up to Stage case ${caseId}`}
       style={{
         borderLeft: `1px solid ${COLORS.bgInverseSurface}`,
         background: COLORS.bgInverse,

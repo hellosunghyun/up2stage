@@ -8,13 +8,15 @@ import {
   getSourcesForCase,
   getCanonicalAgentResult
 } from "../../src/core/storage/repositories";
-import type { DocumentRecord, SourceRecord } from "../../src/models/canonical";
+import type { DocumentRecord, ParseElement, SourceRecord } from "../../src/models/canonical";
 import { buildGuidanceViewData } from "../../src/features/guidance/adapter";
 import type { ViewerGuidanceData } from "../../src/components/document/ViewerGuidancePanel";
+import "./style.css";
 
 interface ViewerData {
   documents: DocumentRecord[];
   sources: SourceRecord[];
+  parseElements: ParseElement[];
   bytes: Map<string, ArrayBuffer>;
   registry: SourceRegistry;
   guidance?: ViewerGuidanceData;
@@ -63,6 +65,7 @@ function App() {
         setData({
           documents,
           sources,
+          parseElements: agentResult?.parseElements ?? [],
           bytes: new Map(files.map((file) => [file.documentId, file.bytes])),
           registry: new SourceRegistry().register(sources),
           ...(guidance ? { guidance } : {})
@@ -85,6 +88,7 @@ function App() {
       caseId={caseId}
       documents={data.documents}
       sources={data.sources}
+      parseElements={data.parseElements}
       documentBytes={data.bytes}
       sourceRegistry={data.registry}
       initialDocumentId={documentId}

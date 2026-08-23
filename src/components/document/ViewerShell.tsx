@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import type { DocumentRecord, SourceRecord } from "../../models/canonical";
+import type { DocumentRecord, ParseElement, SourceRecord } from "../../models/canonical";
 import { createRenderer } from "../../renderers/registry";
 import type { DocumentRendererAdapter } from "../../renderers/types";
 import type { SourceRegistry } from "../../features/source-navigation/navigate";
 import { navigateToSource, type ViewerHost } from "../../features/source-navigation/navigate";
-import { AccessibilityView } from "./AccessibilityView";
+import { AccessibilityView } from "../../features/accessibility";
 import { DocumentSelector } from "./DocumentSelector";
 import { ModeTabs } from "./ModeTabs";
 import { Outline } from "./Outline";
@@ -17,6 +17,7 @@ export interface ViewerShellProps {
   caseId: string;
   documents: DocumentRecord[];
   sources: SourceRecord[];
+  parseElements: ParseElement[];
   documentBytes: Map<string, ArrayBuffer>;
   sourceRegistry: SourceRegistry;
   initialDocumentId: string | undefined;
@@ -28,6 +29,7 @@ export function ViewerShell({
   caseId,
   documents,
   sources,
+  parseElements,
   documentBytes,
   sourceRegistry,
   initialDocumentId,
@@ -42,8 +44,11 @@ export function ViewerShell({
   const [activePage, setActivePage] = useState(1);
   const [activeSource, setActiveSource] = useState<SourceRecord | null>(null);
   const [selectedOutlineId, setSelectedOutlineId] = useState<string | undefined>(initialSourceId);
-  const workspaceRef = useRef<HTMLDivElement>(null);
+  const [accessibilityFocusId, setAccessibilityFocusId] = useState<string | undefined>();
+  const [lastAccessibilityFocusId, setLastAccessibilityFocusId] = useState<string | undefined>();
+  const rendererContainerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<DocumentRendererAdapter | null>(null);
+  const accessibilityTabRef = useRef<HTMLButtonElement>(null);
 
   const selectedDocument = documents.find((d) => d.id === selectedDocumentId) ?? documents[0];
 
@@ -64,31 +69,28 @@ export function ViewerShell({
     outlineSelect(nodeId: string) {
       setSelectedOutlineId(nodeId);
     },
-    accessibilityFocus(_nodeId: string | undefined) {
-      void _nodeId;
-      // Phase 8 outlet slot
+    accessibilityFocus(nodeId: string | undefined) {
+      if (!nodeId) return;
+      setAccessibilityFocusId(nodeId);
+      setLastAccessibilityFocusId(nodeId);
+      setMode("accessibility");
     }
   };
 
   useEffect(() => {
-    if (!workspaceRef.current || !selectedDocument) {
+    if (!rendererContainerRef.current || !selectedDocument || mode !== "original") {
       return;
     }
 
     rendererRef.current?.destroy();
     rendererRef.current = null;
 
-    if (mode !== "original") {
-      workspaceRef.current.innerHTML = "";
-      return;
-    }
-
     const bytes = documentBytes.get(selectedDocument.id) ?? new ArrayBuffer(0);
     const renderer = createRenderer(selectedDocument, bytes);
     rendererRef.current = renderer;
 
     void (async () => {
-      await renderer.mount(workspaceRef.current as HTMLDivElement);
+      await renderer.mount(rendererContainerRef.current as HTMLDivElement);
       await renderer.goToPage(activePage);
       if (activeSource?.documentId === selectedDocument.id) {
         await renderer.focusSource(activeSource);
@@ -111,6 +113,20 @@ export function ViewerShell({
     const next = Math.max(0.5, Math.min(zoom + delta, 3));
     setZoom(next);
     rendererRef.current?.setZoom(next);
+  };
+
+  const handleSemanticSourceFocus = (source: SourceRecord) => {
+    setActiveSource(source);
+    setActivePage(source.page);
+    setSelectedOutlineId(source.semanticNodeId ?? source.sourceId);
+    setLastAccessibilityFocusId(source.semanticNodeId ?? source.sourceId);
+  };
+
+  const handleModeChange = (nextMode: ViewerMode) => {
+    setMode(nextMode);
+    if (nextMode === "accessibility" && lastAccessibilityFocusId) {
+      setAccessibilityFocusId(lastAccessibilityFocusId);
+    }
   };
 
   return (
@@ -174,7 +190,11 @@ export function ViewerShell({
                 setActiveSource(null);
               }}
             />
-            <ModeTabs mode={mode} onChange={setMode} />
+            <ModeTabs
+              mode={mode}
+              onChange={handleModeChange}
+              accessibilityTabRef={accessibilityTabRef}
+            />
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <button
@@ -214,13 +234,19 @@ export function ViewerShell({
         </header>
 
         <div
-          ref={workspaceRef}
+          id="viewer-workspace-panel"
+          role="tabpanel"
+          aria-labelledby={`viewer-mode-${mode}`}
+          tabIndex={-1}
           style={{
             flex: 1,
             overflow: "auto",
             padding: 20
           }}
         >
+          {mode === "original" && (
+            <div ref={rendererContainerRef} style={{ minHeight: "100%" }} />
+          )}
           {mode === "structure" && (
             <div style={{ padding: 20 }}>
               <h2 style={{ fontSize: 16, marginBottom: 12 }}>문서 구조</h2>
@@ -248,10 +274,14 @@ export function ViewerShell({
           )}
           {mode === "accessibility" && selectedDocument && (
             <AccessibilityView
+              parseElements={parseElements}
               sources={sources}
               documentId={selectedDocument.id}
-              sourceRegistry={sourceRegistry}
-              viewer={viewer}
+              documentLabel={selectedDocument.fileName}
+              activeNodeId={lastAccessibilityFocusId}
+              focusRequestId={accessibilityFocusId}
+              onSourceFocus={handleSemanticSourceFocus}
+              onEscape={() => accessibilityTabRef.current?.focus()}
             />
           )}
         </div>
