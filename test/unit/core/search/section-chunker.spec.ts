@@ -108,6 +108,18 @@ describe("SectionChunker", () => {
     expect(chunks[1]?.sourceIds.some((id) => chunks[0]?.sourceIds.includes(id))).toBe(true);
   });
 
+  it("splits one oversized source element without creating a new Source ID", async () => {
+    const input = fixture([{ text: "한문장".repeat(250) }]);
+    const chunks = await chunkDocument({
+      caseId,
+      ...input,
+      limits: { targetTokens: 80, maxTokens: 100, minTokens: 10, overlapTokens: 20 },
+    });
+    expect(chunks.length).toBeGreaterThan(1);
+    expect(chunks.every((chunk) => chunk.sourceIds.every((id) => id === input.sources[0]?.sourceId)))
+      .toBe(true);
+  });
+
   it("does not split only because the page changes", async () => {
     const input = fixture([
       { text: "같은 문단의 앞부분", page: 1 },

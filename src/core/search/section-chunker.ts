@@ -61,6 +61,47 @@ function classifyBoundary(element: ParseElement, text: string): ChunkElement["bo
   return "none";
 }
 
+function splitTextAtTokenLimit(text: string, maxTokens: number): string[] {
+  const parts: string[] = [];
+  let remaining = text;
+  while (estimateTokens(remaining) > maxTokens) {
+    let low = 1;
+    let high = remaining.length;
+    while (low < high) {
+      const middle = Math.ceil((low + high) / 2);
+      if (estimateTokens(remaining.slice(0, middle)) <= maxTokens) low = middle;
+      else high = middle - 1;
+    }
+    const minimumBreakpoint = Math.floor(low * 0.7);
+    let cut = low;
+    for (let index = low; index >= minimumBreakpoint; index--) {
+      if (/[\s.!?。！？;；]/.test(remaining[index - 1] ?? "")) {
+        cut = index;
+        break;
+      }
+    }
+    const part = normalizeText(remaining.slice(0, cut));
+    if (part) parts.push(part);
+    remaining = remaining.slice(cut).trimStart();
+  }
+  const tail = normalizeText(remaining);
+  if (tail) parts.push(tail);
+  return parts;
+}
+
+function splitOversizedElement(
+  element: ChunkElement,
+  maxTokens: number
+): ChunkElement[] {
+  if (element.tokens <= maxTokens) return [element];
+  return splitTextAtTokenLimit(element.text, maxTokens).map((text, index) => ({
+    ...element,
+    text,
+    tokens: estimateTokens(text),
+    boundary: index === 0 ? element.boundary : "none",
+  }));
+}
+
 function updateSectionPath(
   current: readonly string[],
   element: ChunkElement
@@ -173,6 +214,7 @@ export async function chunkDocument({
         boundary: classifyBoundary(parseElement, text),
       };
     })
+    .flatMap((element) => splitOversizedElement(element, limits.maxTokens))
     .filter((element) => element.text.length > 0);
 
   const pendingChunks: PendingChunk[] = [];
