@@ -35,10 +35,11 @@ export function ViewerShell({
   const [mode, setMode] = useState<ViewerMode>("original");
   const [zoom, setZoom] = useState(1.25);
   const [activePage, setActivePage] = useState(1);
-  const [activeSource, setActiveSource] = useState<SourceRecord | null>(null);
   const [selectedOutlineId, setSelectedOutlineId] = useState<string | undefined>(initialSourceId);
   const workspaceRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<DocumentRendererAdapter | null>(null);
+  const activePageRef = useRef(1);
+  const activeSourceRef = useRef<SourceRecord | null>(null);
 
   const selectedDocument = documents.find((d) => d.id === selectedDocumentId) ?? documents[0];
 
@@ -49,11 +50,12 @@ export function ViewerShell({
       setSelectedDocumentId(documentId);
     },
     async goToPage(page: number) {
+      activePageRef.current = page;
       setActivePage(page);
       await rendererRef.current?.goToPage(page);
     },
     async focusSource(source: SourceRecord) {
-      setActiveSource(source);
+      activeSourceRef.current = source;
       await rendererRef.current?.focusSource(source);
     },
     outlineSelect(nodeId: string) {
@@ -76,20 +78,24 @@ export function ViewerShell({
     const bytes = documentBytes.get(selectedDocument.id) ?? new ArrayBuffer(0);
     const renderer = createRenderer(selectedDocument, bytes);
     rendererRef.current = renderer;
+    let cancelled = false;
 
     void (async () => {
       await renderer.mount(workspaceRef.current as HTMLDivElement);
-      await renderer.goToPage(activePage);
-      if (activeSource?.documentId === selectedDocument.id) {
-        await renderer.focusSource(activeSource);
+      if (cancelled) return;
+      await renderer.goToPage(activePageRef.current);
+      const source = activeSourceRef.current;
+      if (source?.documentId === selectedDocument.id) {
+        await renderer.focusSource(source);
       }
     })();
 
     return () => {
+      cancelled = true;
       rendererRef.current?.destroy();
       rendererRef.current = null;
     };
-  }, [selectedDocument, mode, documentBytes, activePage, activeSource]);
+  }, [selectedDocument, mode, documentBytes]);
 
   useEffect(() => {
     if (initialSourceId) {
@@ -160,8 +166,9 @@ export function ViewerShell({
               selectedId={selectedDocument?.id ?? ""}
               onSelect={(id) => {
                 setSelectedDocumentId(id);
+                activePageRef.current = 1;
                 setActivePage(1);
-                setActiveSource(null);
+                activeSourceRef.current = null;
               }}
             />
             <ModeTabs mode={mode} onChange={setMode} />

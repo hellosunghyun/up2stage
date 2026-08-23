@@ -1,4 +1,4 @@
-import { mkdtemp, rm } from "node:fs/promises";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
 import { createServer } from "node:http";
 import os from "node:os";
 import path from "node:path";
@@ -18,6 +18,12 @@ test("built extension exposes the Up to Stage Side Panel and Viewer", async () =
   });
   const address = webServer.address();
   if (!address || typeof address === "string") throw new Error("검증용 서버를 시작하지 못했습니다");
+  const realPdfBase64 = process.env.QA_REAL_PDF === "1"
+    ? (await readFile(path.resolve("references/upstage/track/upstage-track-brief.pdf"))).toString(
+        "base64"
+      )
+    : undefined;
+  const testFileName = realPdfBase64 ? "검증용 원문.pdf" : "검증용 원문.unsupported";
   const context = await chromium.launchPersistentContext(profile, {
     headless: false,
     ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
@@ -70,7 +76,7 @@ test("built extension exposes the Up to Stage Side Panel and Viewer", async () =
     await viewer.goto(`chrome-extension://${extensionId}/viewer.html?case=${caseId}`);
     await expect(viewer.getByText("저장된 문서를 찾지 못했어요.")).toBeVisible();
     await viewer.evaluate(
-      async ({ caseId, documentId, sourceId }) => {
+      async ({ caseId, documentId, sourceId, realPdfBase64, testFileName }) => {
         const database = await new Promise<IDBDatabase>((resolve, reject) => {
           const request = indexedDB.open("up2stage");
           request.onsuccess = () => resolve(request.result);
@@ -98,10 +104,10 @@ test("built extension exposes the Up to Stage Side Panel and Viewer", async () =
           transaction.objectStore("documents").put({
             id: documentId,
             caseId,
-            fileName: "검증용 원문.unsupported",
-            extension: "unsupported",
+            fileName: testFileName,
+            extension: realPdfBase64 ? "pdf" : "unsupported",
             contentHash: "viewer-e2e-hash",
-            renderType: "unsupported",
+            renderType: realPdfBase64 ? "pdf" : "unsupported",
             processingStatus: "complete",
             createdAt: 0
           });
@@ -117,7 +123,10 @@ test("built extension exposes the Up to Stage Side Panel and Viewer", async () =
           transaction.objectStore("documentFiles").put({
             documentId,
             caseId,
-            bytes: new ArrayBuffer(0),
+            bytes: realPdfBase64
+              ? Uint8Array.from(atob(realPdfBase64), (character) => character.charCodeAt(0)).buffer
+              : new ArrayBuffer(0),
+            mimeType: realPdfBase64 ? "application/pdf" : undefined,
             createdAt: 0
           });
           transaction.objectStore("guidance").put({
@@ -148,13 +157,21 @@ test("built extension exposes the Up to Stage Side Panel and Viewer", async () =
         database.close();
         await chrome.storage.session.set({ up2stage_currentCaseId: caseId });
       },
-      { caseId, documentId, sourceId }
+      { caseId, documentId, sourceId, realPdfBase64, testFileName }
     );
 
     await viewer.goto(viewerUrl);
     await expect(viewer).toHaveTitle("Up to Stage 문서 보기");
     await expect(viewer.getByText("문서 목차", { exact: true })).toBeVisible();
-    await expect(viewer.getByText("지원하지 않는 형식")).toBeVisible();
+    if (realPdfBase64) {
+      await expect(viewer.locator("canvas").first()).toBeVisible({ timeout: 20_000 });
+      await expect(viewer.getByText("지원하지 않는 형식")).toHaveCount(0);
+      if (process.env.QA_PDF_SCREENSHOT_PATH) {
+        await viewer.screenshot({ path: process.env.QA_PDF_SCREENSHOT_PATH, fullPage: true });
+      }
+    } else {
+      await expect(viewer.getByText("지원하지 않는 형식")).toBeVisible();
+    }
     await expect(viewer.locator("aside")).toHaveCount(1);
     await expect(viewer.getByText("주요 요약")).toHaveCount(0);
     const viewerGrid = await viewer.locator("#root > div").evaluate((element) => ({
@@ -179,7 +196,7 @@ test("built extension exposes the Up to Stage Side Panel and Viewer", async () =
     await sourcePage.bringToFront();
     await panel.reload();
     await expect(panel.getByText("문서를 모두 확인했어요")).toBeVisible();
-    const sourceButton = panel.getByRole("button", { name: "검증용 원문.unsupported · p.1" });
+    const sourceButton = panel.getByRole("button", { name: `${testFileName} · p.1` });
     await expect(sourceButton).toBeVisible();
     const [sourceViewer] = await Promise.all([
       context.waitForEvent("page"),
