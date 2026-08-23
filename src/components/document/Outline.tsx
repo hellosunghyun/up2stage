@@ -1,3 +1,4 @@
+import { COLORS, RADIUS } from "../../styles/tokens";
 import type { SourceRecord } from "../../models/canonical";
 import { navigateToSource } from "../../features/source-navigation/navigate";
 import type { SourceRegistry, ViewerHost } from "../../features/source-navigation/navigate";
@@ -47,12 +48,12 @@ export function Outline({
             style={{
               display: "flex",
               alignItems: "center",
-              gap: 8,
+              gap: 6,
               padding: "8px 10px",
               border: "none",
-              borderRadius: 8,
-              background: isSelected ? "rgba(91,82,255,0.12)" : "transparent",
-              color: isSelected ? "#5b52ff" : "#0a0d14",
+              borderRadius: RADIUS.sm,
+              background: isSelected ? COLORS.bgInverseSurface : "transparent",
+              color: isSelected ? COLORS.brandLime : COLORS.textOnInverse,
               textAlign: "left",
               cursor: "pointer",
               fontSize: 13,
@@ -65,7 +66,8 @@ export function Outline({
                 textAlign: "center",
                 fontSize: 11,
                 fontWeight: 700,
-                color: isSelected ? "#5b52ff" : "#8390a5",
+                color: COLORS.textInverseSecondary,
+                flexShrink: 0,
               }}
             >
               {categoryMarker(source.category)}

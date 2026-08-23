@@ -838,34 +838,36 @@ function DocSelectRow({
         gap: 8,
         padding: "12px",
         borderRadius: RADIUS.md,
-        background: selected ? COLORS.brandLime : COLORS.bgInverseSurface,
-        color: selected ? COLORS.textPrimary : COLORS.textOnInverse,
+        background: COLORS.bgInverseSurface,
+        color: COLORS.textOnInverse,
         cursor: "pointer",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
         <div
           style={{
             width: 16,
             height: 16,
-            borderRadius: 4,
+            borderRadius: RADIUS.sm,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            background: selected ? COLORS.bgInverse : "transparent",
+            background: selected ? COLORS.brandLime : "transparent",
             border: selected ? "none" : `1px solid ${COLORS.textInverseSecondary}`,
+            flexShrink: 0,
           }}
         >
-          {selected && <span style={{ color: COLORS.brandLime, fontSize: 12 }}>✓</span>}
+          {selected && <span style={{ color: COLORS.bgInverse, fontSize: 11 }}>✓</span>}
         </div>
         <span
           style={{
             padding: "4px 8px",
             borderRadius: 9999,
             background: COLORS.bgInverse,
-            color: selected ? COLORS.textPrimary : COLORS.actionPrimary,
+            color: COLORS.actionPrimary,
             fontSize: 10,
             fontWeight: 700,
+            flexShrink: 0,
           }}
         >
           {doc.extension?.toUpperCase() ?? "FILE"}
@@ -880,9 +882,10 @@ function DocSelectRow({
           fontWeight: 700,
           padding: "4px 8px",
           borderRadius: 9999,
-          background: selected ? COLORS.bgInverse : COLORS.bgInverse,
-          color: selected ? COLORS.brandLime : COLORS.textInverseSecondary,
+          background: selected ? COLORS.brandLime : COLORS.bgInverse,
+          color: selected ? COLORS.textPrimary : COLORS.textInverseSecondary,
           whiteSpace: "nowrap",
+          flexShrink: 0,
         }}
       >
         {selected ? "선택됨" : "선택 안 함"}

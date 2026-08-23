@@ -1,4 +1,4 @@
-import { COLORS } from "../../styles/tokens";
+import { COLORS, RADIUS } from "../../styles/tokens";
 
 export type SuggestionChip =
   | "eligibility"
@@ -23,11 +23,11 @@ export function SuggestionChips({ onSelect }: SuggestionChipsProps) {
           key={chip.key}
           onClick={() => onSelect(chip.key)}
           style={{
-            padding: "10px 14px",
-            borderRadius: 9999,
-            border: `1px solid ${COLORS.textInverseSecondary}`,
-            background: "transparent",
-            color: COLORS.textOnInverse,
+            padding: "9px 12px",
+            borderRadius: RADIUS.sm,
+            border: "none",
+            background: COLORS.bgInverseSurface,
+            color: COLORS.actionPrimary,
             fontSize: 13,
             cursor: "pointer",
             whiteSpace: "nowrap",
