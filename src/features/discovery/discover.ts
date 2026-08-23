@@ -68,7 +68,7 @@ function collectCandidate(
   let fileName = fileNameFromUrl;
   let extension = inferExtension(fileName);
 
-  if (!extension && fileNameFromText) {
+  if ((!extension || !isSupportedExtension(extension)) && fileNameFromText) {
     fileName = fileNameFromText;
     extension = inferExtension(fileName);
   }

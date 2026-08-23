@@ -86,6 +86,14 @@ describe("attachment discovery", () => {
     expect(found[0]?.fileName).toBe("붙임 1. [공고문] 2026년 공고.pdf");
     expect(found[0]?.extension).toBe("pdf");
   });
+
+  it("uses link text when a placeholder URL resolves to an unsupported extension", () => {
+    document.body.innerHTML = '<a href="#n">붙임 1. 장학금 선발 공고.pdf</a>';
+    const found = discoverAttachments("http://hissf.or.kr/scholarship/business/view.do?idx=notice");
+    expect(found).toHaveLength(1);
+    expect(found[0]?.fileName).toBe("붙임 1. 장학금 선발 공고.pdf");
+    expect(found[0]?.extension).toBe("pdf");
+  });
 });
 
 describe("filename inference", () => {
