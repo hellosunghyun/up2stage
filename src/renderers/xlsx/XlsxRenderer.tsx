@@ -2,6 +2,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import * as XLSX from "xlsx";
 import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
+import { COLORS } from "../../styles/tokens";
 import type { DocumentRecord, SourceRecord } from "../../models/canonical";
 import type { DocumentRendererAdapter } from "../types";
 
@@ -84,7 +85,7 @@ function XlsxGrid({
         height: "100%",
         width: "100%",
         overflow: "auto",
-        background: "#fff",
+        background: COLORS.bgCanvas,
         transform: `scale(${zoom})`,
         transformOrigin: "top left",
       }}
@@ -117,13 +118,13 @@ function XlsxGrid({
                   left: `${virtualCol.start}px`,
                   width: `${virtualCol.size}px`,
                   height: `${virtualRow.size}px`,
-                  border: "1px solid #e5e7eb",
+                  border: `1px solid ${COLORS.border}`,
                   padding: "4px 8px",
                   fontSize: 13,
                   whiteSpace: "nowrap",
                   overflow: "hidden",
                   boxSizing: "border-box",
-                  background: focused ? "rgba(210,255,149,0.42)" : "#fff",
+                  background: focused ? "rgba(210,255,149,0.42)" : COLORS.bgCanvas,
                 }}
               >
                 {value}
@@ -160,7 +161,7 @@ export class XlsxRenderer implements DocumentRendererAdapter {
   mount(container: HTMLElement): Promise<void> {
     this.container = container;
     container.style.overflow = "hidden";
-    container.style.background = "#f7f7fc";
+    container.style.background = COLORS.bgSurface;
 
     this.root = createRoot(container);
     try {

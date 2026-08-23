@@ -128,8 +128,8 @@ export function ViewerShell({
         height: "100vh",
         fontFamily:
           '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        color: "#0a0d14",
-        background: "#f7f7fc",
+        color: COLORS.textPrimary,
+        background: COLORS.bgSurface,
       }}
     >
       <aside
@@ -170,8 +170,8 @@ export function ViewerShell({
             alignItems: "center",
             justifyContent: "space-between",
             padding: "12px 20px",
-            borderBottom: "1px solid #e5e7eb",
-            background: "#ffffff",
+            borderBottom: `1px solid ${COLORS.border}`,
+            background: COLORS.bgCanvas,
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
@@ -192,9 +192,9 @@ export function ViewerShell({
               onClick={() => handleZoom(-0.25)}
               style={{
                 padding: "6px 12px",
-                border: "1px solid #e5e7eb",
-                borderRadius: 8,
-                background: "#fff",
+                border: `1px solid ${COLORS.border}`,
+                borderRadius: RADIUS.sm,
+                background: COLORS.bgCanvas,
                 cursor: "pointer",
                 fontSize: 13,
               }}
@@ -210,9 +210,9 @@ export function ViewerShell({
               onClick={() => handleZoom(0.25)}
               style={{
                 padding: "6px 12px",
-                border: "1px solid #e5e7eb",
-                borderRadius: 8,
-                background: "#fff",
+                border: `1px solid ${COLORS.border}`,
+                borderRadius: RADIUS.sm,
+                background: COLORS.bgCanvas,
                 cursor: "pointer",
                 fontSize: 13,
               }}
@@ -249,7 +249,7 @@ export function ViewerShell({
                       style={{
                         background: "transparent",
                         border: "none",
-                        color: "#5b52ff",
+                        color: COLORS.actionPrimary,
                         cursor: "pointer",
                         fontSize: 14,
                         padding: 0,

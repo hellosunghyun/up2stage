@@ -31,7 +31,7 @@ export function Timeline({ items, max = 4 }: TimelineProps) {
                 height: 8,
                 borderRadius: "50%",
                 marginTop: 6,
-                background: isDeadline ? COLORS.brandLime : "#5b52ff",
+                background: isDeadline ? COLORS.brandLime : COLORS.actionPrimary,
                 flexShrink: 0,
               }}
             />

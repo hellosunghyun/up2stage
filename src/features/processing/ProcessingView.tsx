@@ -1,23 +1,5 @@
 import type { ProcessingProgress } from "../../core/agent/processor";
-
-const COLORS = {
-  bgCanvas: "#ffffff",
-  bgInverse: "#0a0d14",
-  bgInverseSurface: "#111722",
-  brandLime: "#d2ff95",
-  actionPrimary: "#5b52ff",
-  textPrimary: "#0a0d14",
-  textOnInverse: "#ffffff",
-  textInverseSecondary: "#8390a5",
-  textSecondary: "#6b7280",
-  border: "#e5e7eb",
-};
-
-const RADIUS = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-};
+import { COLORS, RADIUS } from "../../styles/tokens";
 
 function statusIcon(status: string): string {
   if (status === "complete" || status === "uploaded") return "✓";

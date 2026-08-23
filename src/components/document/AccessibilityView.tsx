@@ -1,3 +1,4 @@
+import { COLORS } from "../../styles/tokens";
 import { navigateToSource } from "../../features/source-navigation/navigate";
 import type { SourceRecord } from "../../models/canonical";
 import type {
@@ -37,7 +38,7 @@ function SourceItem({
         background: "transparent",
         border: "none",
         padding: 0,
-        color: "#0a0d14",
+        color: COLORS.textPrimary,
         cursor: "pointer",
         textAlign: "left",
         font: "inherit",
