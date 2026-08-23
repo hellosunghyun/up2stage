@@ -1,4 +1,4 @@
-# up to stage
+![Up to Stage](public/logo.png)
 
 > Unfold Pages to Structured, Trusted, Accessible Guidance for Everyone.
 

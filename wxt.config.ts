@@ -12,11 +12,23 @@ export default defineConfig({
     version: "0.0.1",
     description:
       "Unfold Pages to Structured, Trusted, Accessible Guidance for Everyone.",
+    icons: {
+      16: "icons/icon-16.png",
+      32: "icons/icon-32.png",
+      48: "icons/icon-48.png",
+      128: "icons/icon-128.png",
+    },
     permissions: ["activeTab", "sidePanel", "storage", "scripting"],
     host_permissions: ["https://api.upstage.ai/*", "http://hissf.or.kr/*"],
     optional_host_permissions: ["https://*/*", "http://*/*"],
     action: {
-      default_title: "Up to Stage 열기"
-    }
+      default_title: "Up to Stage 열기",
+      default_icon: {
+        16: "icons/icon-16.png",
+        32: "icons/icon-32.png",
+        48: "icons/icon-48.png",
+        128: "icons/icon-128.png",
+      },
+    },
   }
 });

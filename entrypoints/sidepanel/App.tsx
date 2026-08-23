@@ -114,12 +114,11 @@ export function App() {
           borderBottom: `1px solid ${COLORS.bgInverseSurface}`,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <BrandMark />
-          <span style={{ fontWeight: 700, fontSize: 20, color: COLORS.textOnInverse }}>
-            up to stage
-          </span>
-        </div>
+        <img
+          src={chrome.runtime.getURL("logo.png")}
+          alt="Up to Stage"
+          style={{ height: 40, width: "auto", objectFit: "contain" }}
+        />
 
         <button
           onClick={() => {
@@ -188,29 +187,6 @@ export function App() {
           />
         )}
       </main>
-    </div>
-  );
-}
-
-function BrandMark() {
-  return (
-    <div
-      style={{
-        width: 20,
-        height: 20,
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      <div
-        style={{
-          width: 14,
-          height: 14,
-          background: COLORS.actionPrimary,
-          transform: "rotate(45deg)",
-        }}
-      />
     </div>
   );
 }
