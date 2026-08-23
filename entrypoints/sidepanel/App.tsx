@@ -288,7 +288,7 @@ export function App() {
       >
         <img
           src={chrome.runtime.getURL("logo.png")}
-          alt="up to stage"
+          alt="Up to Stage"
           style={{ height: 60, width: "auto", objectFit: "contain" }}
         />
 

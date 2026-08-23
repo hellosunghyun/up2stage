@@ -93,7 +93,7 @@ async function sendToContent<T>(name: string): Promise<T> {
 }
 
 export default defineBackground(() => {
-  console.log("up to stage background started");
+  console.log("Up to Stage background started");
 
   messaging.onOpenSidePanel(async (data, sender) => {
     const tabId = data.tabId ?? sender.tab?.id;

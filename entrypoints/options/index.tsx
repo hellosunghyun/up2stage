@@ -42,7 +42,7 @@ function App() {
         maxWidth: 720,
       }}
     >
-      <h1 style={{ fontSize: 20, margin: 0 }}>up to stage 설정</h1>
+      <h1 style={{ fontSize: 20, margin: 0 }}>Up to Stage 설정</h1>
       <p style={{ fontSize: 14, color: "#666" }}>
         API 연결, 캐시 삭제, 진단 설정 등 제품 전역 설정을 이곳에서 관리합니다.
       </p>

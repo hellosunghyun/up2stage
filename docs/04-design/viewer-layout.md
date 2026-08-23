@@ -8,7 +8,7 @@
 
 ```text
 ┌──────────────┬───────────────────────────────┬─────────────────────┐
-│ Outline      │ Document Workspace            │ up to stage Panel      │
+│ Outline      │ Document Workspace            │ Up to Stage Panel      │
 │              │                               │                     │
 │ 224px        │ flexible (~773px)             │ 443px               │
 │              │                               │                     │

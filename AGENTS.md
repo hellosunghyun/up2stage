@@ -8,7 +8,7 @@
 
 ## 2. 프로젝트 정체성
 
-- 사용자 노출 이름: `up to stage`
+- 사용자 노출 이름: `Up to Stage`
 - 코드·패키지·환경변수·파일명: `UP2STAGE` 또는 `up2stage`
 - Figma와 과거 자료의 `Unfold`는 이전 이름이다. 새 사용자 UI에 `Unfold`를 추가하지 않는다.
 - 핵심 가치: `Structured · Trusted · Accessible`

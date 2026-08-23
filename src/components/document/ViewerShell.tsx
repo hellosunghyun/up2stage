@@ -278,7 +278,7 @@ export function ViewerShell({
         }}
       >
         <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 16 }}>
-          up to stage
+          Up to Stage
         </div>
         <div style={{ fontSize: 12, color: "#8390a5", marginBottom: 16 }}>
           case {caseId}

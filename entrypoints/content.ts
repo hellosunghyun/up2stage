@@ -82,7 +82,7 @@ function checkAndRenderOverlay() {
 export default defineContentScript({
   matches: ["http://*/*", "https://*/*", "file://*/*"],
   main() {
-    console.log("up to stage content script loaded");
+    console.log("Up to Stage content script loaded");
     setupMessageHandler();
     checkAndRenderOverlay();
   },

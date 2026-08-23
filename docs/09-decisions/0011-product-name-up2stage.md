@@ -5,13 +5,13 @@
 
 ## Context
 
-ADR-0010에서 사용자 노출 이름을 `up to stage`로 변경했으나, 발음과 검색 흐름, 그리고 코드·패키지 식별자와의 일관성을 위해 한 단어 형태의 `up2stage`가 더 단순하고 명확하다는 결론이 났다.
+ADR-0010에서 사용자 노출 이름을 `Up to Stage`로 변경했으나, 발음과 검색 흐름, 그리고 코드·패키지 식별자와의 일관성을 위해 한 단어 형태의 `up2stage`가 더 단순하고 명확하다는 결론이 났다.
 
 ## Decision
 
 - 사용자에게 노출되는 제품명은 `up2stage`로 통일한다.
 - 코드·패키지·파일명·manifest short_name 등 기술 식별자는 이미 `up2stage`이므로 그대로 유지한다.
-- ADR-0009 'Unfold를 UP²STAGE로 치환한다'와 ADR-0010 '사용자 UI 명칭을 up to stage로 변경한다'는 본 ADR로 대체된다.
+- ADR-0009 'Unfold를 UP²STAGE로 치환한다'와 ADR-0010 '사용자 UI 명칭을 Up to Stage로 변경한다'는 본 ADR로 대체된다.
 
 ## Consequences
 

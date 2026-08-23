@@ -35,7 +35,7 @@ Content width     395~403px
 
 ### Header
 - 높이 약 64px
-- 좌측: up to stage mark + name
+- 좌측: Up to Stage mark + name
 - 우측: More menu
 - 고정
 
@@ -442,7 +442,7 @@ Adapter 책임:
 
 # 23. Source Registry
 
-up to stage의 핵심 데이터 구조.
+Up to Stage의 핵심 데이터 구조.
 
 Parse Element를 받은 직후 Source ID를 생성한다.
 

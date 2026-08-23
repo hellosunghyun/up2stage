@@ -1,8 +1,8 @@
-<img src="public/logo.png" alt="up to stage" width="220" />
+<img src="public/logo.png" alt="Up to Stage" width="220" />
 
 > From Pages to Structured, Trusted, Accessible Guidance for Everyone.
 
-**up to stage**는 하나의 기회나 행정 절차를 이해하기 위해 여러 웹페이지와 PDF·HWP·HWPX·XLSX 문서를 직접 열고 비교해야 하는 문제를 해결하는 Chrome Extension 기반 Document Intelligence 제품입니다.
+**Up to Stage**는 하나의 기회나 행정 절차를 이해하기 위해 여러 웹페이지와 PDF·HWP·HWPX·XLSX 문서를 직접 열고 비교해야 하는 문제를 해결하는 Chrome Extension 기반 Document Intelligence 제품입니다.
 
 이 프로젝트는 **JunctionX Korea 2026 — GOODMORNING 팀**에서 제작합니다.
 
@@ -11,7 +11,7 @@
 > **Opportunity for Everyone.**  
 > 정보가 존재하는 것과, 누구나 실제로 발견하고 이해하고 검증하고 행동할 수 있는 것은 다릅니다.
 
-up to stage는 현재 보고 있는 웹페이지와 그 페이지에 연결된 여러 문서를 하나의 Case로 묶고, 문서별 역할과 구조를 이해한 뒤 사용자에게 필요한 핵심 안내·개인화된 조건 확인·원문 근거·접근 가능한 문서 탐색 경험을 제공합니다.
+Up to Stage는 현재 보고 있는 웹페이지와 그 페이지에 연결된 여러 문서를 하나의 Case로 묶고, 문서별 역할과 구조를 이해한 뒤 사용자에게 필요한 핵심 안내·개인화된 조건 확인·원문 근거·접근 가능한 문서 탐색 경험을 제공합니다.
 
 ---
 
@@ -29,7 +29,7 @@ up to stage는 현재 보고 있는 웹페이지와 그 페이지에 연결된 �
 - 자신의 조건에 대입해 지원 가능성을 판단하고
 - 중요한 판단이 실제로 어디에서 나온 것인지 다시 원문을 찾아 확인합니다.
 
-up to stage는 이 과정을 다음과 같이 바꿉니다.
+Up to Stage는 이 과정을 다음과 같이 바꿉니다.
 
 ```mermaid
 flowchart TD
@@ -54,7 +54,7 @@ P0에서는 데모 안정성을 위해 **URL Rule 기반 Contextual Overlay**를
 flowchart TD
     A[현재 웹페이지] --> B[Contextual Overlay 표시]
     B --> C["관련 문서를 함께 확인할 수 있어요"]
-    C --> D[up to stage Side Panel 열기]
+    C --> D[Up to Stage Side Panel 열기]
 ```
 
 Overlay는 제품 본체가 아니라 현재 페이지에서 분석 경험으로 진입하는 가벼운 trigger입니다.
@@ -80,7 +80,7 @@ flowchart TD
 
 ## 3. 문서마다 다른 방식으로 이해
 
-up to stage는 모든 파일에 동일한 Extraction Schema를 적용하지 않습니다.
+Up to Stage는 모든 파일에 동일한 Extraction Schema를 적용하지 않습니다.
 
 문서의 역할을 먼저 판단한 뒤, 역할에 맞는 Extract를 연결합니다.
 
@@ -150,7 +150,7 @@ Agent가 문서를 분석할 때 미리 다음을 추출합니다.
 
 > **Every Answer Has a Place.**
 
-Parse 결과의 원문 element에 up to stage가 자체적으로 `Source ID`를 부여합니다.
+Parse 결과의 원문 element에 Up to Stage가 자체적으로 `Source ID`를 부여합니다.
 
 ```mermaid
 flowchart TD
@@ -177,7 +177,7 @@ Solar도 이미 존재하는 Source ID 중 근거를 선택하는 역할만 합�
 | ------------------------------- | ------------------- | -------- |
 | Document Outline                | 문서 구조 기반 목차 | ~224px   |
 | Original Document Viewer        | 원본 문서 렌더링    | flexible |
-| up to stage Guidance / Evidence | 안내와 근거         | ~443px   |
+| Up to Stage Guidance / Evidence | 안내와 근거         | ~443px   |
 
 Viewer에서는 다음을 제공합니다.
 
@@ -196,7 +196,7 @@ Viewer에서는 다음을 제공합니다.
 
 # Architecture
 
-up to stage는 **Studio가 문서를 이해하고, Extension이 Case와 사용자 경험을 조직하는 구조**로 설계되어 있습니다.
+Up to Stage는 **Studio가 문서를 이해하고, Extension이 Case와 사용자 경험을 조직하는 구조**로 설계되어 있습니다.
 
 ```mermaid
 flowchart TB
@@ -226,7 +226,7 @@ flowchart TB
 
     Upstage --> Runtime
 
-    subgraph Runtime[up to stage Runtime]
+    subgraph Runtime[Up to Stage Runtime]
         D1[Agent Output Adapter]
         D2[Case Registry]
         D3[Source Registry]
@@ -378,7 +378,7 @@ XLSX는 텍스트 드래그보다 sheet/cell 기반 탐색을 우선합니다.
 
 # Accessibility
 
-up to stage는 접근성을 별도의 부가 기능으로 다루지 않습니다.
+Up to Stage는 접근성을 별도의 부가 기능으로 다루지 않습니다.
 
 문서에 대해 세 레이어를 구분합니다.
 
@@ -559,7 +559,7 @@ flowchart LR
 
 # Security & Privacy Principles
 
-up to stage는 문서 기반 제품이기 때문에 사용자 동의와 데이터 경계를 명확하게 둡니다.
+Up to Stage는 문서 기반 제품이기 때문에 사용자 동의와 데이터 경계를 명확하게 둡니다.
 
 | 원칙                          | 설명                                                     |
 | ----------------------------- | -------------------------------------------------------- |
@@ -722,7 +722,7 @@ feat: 현재 페이지의 관련 문서를 발견
 
 ## GOODMORNING
 
-**JunctionX Korea 2026**에서 up to stage를 제작하는 팀입니다.
+**JunctionX Korea 2026**에서 Up to Stage를 제작하는 팀입니다.
 
 - Min Hyeok Lee
 - Sung hyun Kim
@@ -734,7 +734,7 @@ feat: 현재 페이지의 관련 문서를 발견
 
 # Vision
 
-오늘은 사용자가 up to stage를 현재 사이트로 가져옵니다.
+오늘은 사용자가 Up to Stage를 현재 사이트로 가져옵니다.
 
 ```mermaid
 flowchart LR

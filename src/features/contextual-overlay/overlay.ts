@@ -10,7 +10,7 @@ export function createContextualOverlay({
   const overlay = document.createElement("div");
   overlay.id = "up2stage-overlay";
   overlay.setAttribute("role", "dialog");
-  overlay.setAttribute("aria-label", "up to stage 안내");
+  overlay.setAttribute("aria-label", "Up to Stage 안내");
   overlay.style.all = "initial";
   overlay.style.position = "fixed";
   overlay.style.right = "24px";
@@ -27,7 +27,7 @@ export function createContextualOverlay({
   overlay.style.boxSizing = "border-box";
 
   const brand = document.createElement("div");
-  brand.textContent = "up to stage";
+  brand.textContent = "Up to Stage";
   brand.style.fontWeight = "700";
   brand.style.fontSize = "14px";
   brand.style.marginBottom = "8px";
