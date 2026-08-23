@@ -1,6 +1,6 @@
-<img src="public/logo.png" alt="Up to Stage" width="220" />
+<img src="public/logo.png" alt="up to stage" width="220" />
 
-> Unfold Pages to Structured, Trusted, Accessible Guidance for Everyone.
+> From Pages to Structured, Trusted, Accessible Guidance for Everyone.
 
 **up to stage**는 하나의 기회나 행정 절차를 이해하기 위해 여러 웹페이지와 PDF·HWP·HWPX·XLSX 문서를 직접 열고 비교해야 하는 문제를 해결하는 Chrome Extension 기반 Document Intelligence 제품입니다.
 

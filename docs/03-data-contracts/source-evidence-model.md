@@ -4,7 +4,7 @@ Every Answer Has a Place를 구현하는 핵심 계약이다.
 
 # 23. Source Registry
 
-UP²STAGE의 핵심 데이터 구조.
+up to stage의 핵심 데이터 구조.
 
 Parse Element를 받은 직후 Source ID를 생성한다.
 

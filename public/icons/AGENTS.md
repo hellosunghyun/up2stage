@@ -15,7 +15,7 @@ Extension icon source와 exported sizes를 보관할 위치다.
 ## 규칙
 
 - 임시 placeholder를 최종 asset처럼 사용하지 않는다.
-- 브랜드명은 UP²STAGE를 사용한다.
+- 브랜드명은 up to stage를 사용한다.
 
 ## 완료 기준
 

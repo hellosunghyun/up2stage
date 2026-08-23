@@ -2,7 +2,7 @@
 
 ## 브랜드
 
-- UI/문서 제목: `UP²STAGE`
+- UI/문서 제목: `up to stage`
 - code constant: `UP2STAGE`
 - package/folder: `up2stage`
 - legacy `Unfold`: references에서만 허용

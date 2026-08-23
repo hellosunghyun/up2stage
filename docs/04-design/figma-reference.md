@@ -6,7 +6,7 @@ https://www.figma.com/design/5o84w5nHj5TNfxgQTRtY33/jucntionX-Design?node-id=78-
 
 ## 브랜딩 주의
 
-Figma에는 과거 이름 `Unfold`가 남아 있다. 구현 시 사용자 노출 이름은 `UP²STAGE`로 치환한다.
+Figma에는 과거 이름 `Unfold`가 남아 있다. 구현 시 사용자 노출 이름은 `up to stage`로 치환한다.
 Layout, spacing, component intent는 유지하되 legacy copy를 그대로 복사하지 않는다.
 
 ## 주요 노드

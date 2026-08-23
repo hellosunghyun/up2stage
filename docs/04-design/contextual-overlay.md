@@ -52,7 +52,7 @@ z-index: 높은 extension overlay layer
 내용:
 
 ```text
-◆ UP²STAGE
+◆ up to stage
 
 이 페이지와 관련된 문서를 확인할 수 있어요.
 조건, 마감, 제출서류를 함께 정리합니다.
