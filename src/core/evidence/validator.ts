@@ -6,6 +6,8 @@ export interface EvidenceValidatorInput {
   currentCaseId: string;
   documentIds: readonly string[];
   registry: SourceRegistry;
+  allowedSourceIds?: readonly string[];
+  requireEvidence?: boolean;
 }
 
 export function validateEvidenceSourceIds({
@@ -13,11 +15,18 @@ export function validateEvidenceSourceIds({
   currentCaseId,
   documentIds,
   registry,
+  allowedSourceIds,
+  requireEvidence = false,
 }: EvidenceValidatorInput): EvidenceValidationResult {
   const valid: string[] = [];
   const invalid: string[] = [];
+  const allowed = allowedSourceIds ? new Set(allowedSourceIds) : undefined;
 
-  for (const sourceId of sourceIds) {
+  for (const sourceId of new Set(sourceIds)) {
+    if (allowed && !allowed.has(sourceId)) {
+      invalid.push(sourceId);
+      continue;
+    }
     const source = registry.get(sourceId);
     if (!source) {
       invalid.push(sourceId);
@@ -35,5 +44,9 @@ export function validateEvidenceSourceIds({
     }
   }
 
-  return { valid, invalid, insufficient: valid.length === 0 && sourceIds.length > 0 };
+  return {
+    valid,
+    invalid,
+    insufficient: valid.length === 0 && (requireEvidence || sourceIds.length > 0),
+  };
 }

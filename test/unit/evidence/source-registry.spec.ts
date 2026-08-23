@@ -223,6 +223,31 @@ describe("Evidence validator", () => {
     });
     expect(result.invalid).toEqual(["src:doc_abc:p1:e1"]);
   });
+
+  it("rejects a registered source outside the retrieved candidate set", () => {
+    const result = validateEvidenceSourceIds({
+      sourceIds: ["src:doc_abc:p1:e1"],
+      currentCaseId: CASE_ID,
+      documentIds: [DOCUMENT_ID],
+      registry,
+      allowedSourceIds: ["src:doc_abc:p1:e2"],
+      requireEvidence: true,
+    });
+    expect(result.valid).toEqual([]);
+    expect(result.invalid).toEqual(["src:doc_abc:p1:e1"]);
+    expect(result.insufficient).toBe(true);
+  });
+
+  it("marks an empty evidence list insufficient when evidence is required", () => {
+    const result = validateEvidenceSourceIds({
+      sourceIds: [],
+      currentCaseId: CASE_ID,
+      documentIds: [DOCUMENT_ID],
+      registry,
+      requireEvidence: true,
+    });
+    expect(result.insufficient).toBe(true);
+  });
 });
 
 describe("Source preview", () => {
