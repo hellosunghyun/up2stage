@@ -7,35 +7,14 @@ function getExtensionUrl(path: string): string {
   return chrome.runtime.getURL(path);
 }
 
-function createCombinedBrandImage(): SVGSVGElement {
-  const svgNs = "http://www.w3.org/2000/svg";
-  const svg = document.createElementNS(svgNs, "svg");
-  svg.setAttribute("viewBox", "0 0 150 32");
-  svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", "Up to Stage");
-  svg.style.height = "32px";
-  svg.style.width = "auto";
-  svg.style.display = "block";
-
-  const symbol = document.createElementNS(svgNs, "image");
-  symbol.setAttribute("x", "0");
-  symbol.setAttribute("y", "0");
-  symbol.setAttribute("width", "32");
-  symbol.setAttribute("height", "32");
-  symbol.setAttribute("href", getExtensionUrl("icons/icon-32.png"));
-  symbol.setAttribute("preserveAspectRatio", "xMidYMid meet");
-  svg.appendChild(symbol);
-
-  const logo = document.createElementNS(svgNs, "image");
-  logo.setAttribute("x", "40");
-  logo.setAttribute("y", "4");
-  logo.setAttribute("width", "110");
-  logo.setAttribute("height", "24");
-  logo.setAttribute("href", getExtensionUrl("logo.png"));
-  logo.setAttribute("preserveAspectRatio", "xMidYMid meet");
-  svg.appendChild(logo);
-
-  return svg;
+function createBrandImage(): HTMLImageElement {
+  const img = document.createElement("img");
+  img.src = getExtensionUrl("logo.png");
+  img.alt = "";
+  img.style.height = "32px";
+  img.style.width = "auto";
+  img.style.display = "block";
+  return img;
 }
 
 export function createContextualOverlay({
@@ -62,7 +41,7 @@ export function createContextualOverlay({
   overlay.style.boxSizing = "border-box";
   overlay.addEventListener("click", onOpen);
 
-  const brand = createCombinedBrandImage();
+  const brand = createBrandImage();
   overlay.appendChild(brand);
 
   return overlay;
