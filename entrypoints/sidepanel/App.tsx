@@ -180,6 +180,20 @@ export function App() {
   }, [load]);
 
   useEffect(() => {
+    const notifyClosed = () => {
+      void chrome.tabs
+        .query({ active: true, currentWindow: true })
+        .then(([tab]) => {
+          if (tab?.id) {
+            void chrome.tabs.sendMessage(tab.id, { name: "sidePanelClosed" });
+          }
+        });
+    };
+    window.addEventListener("beforeunload", notifyClosed);
+    return () => window.removeEventListener("beforeunload", notifyClosed);
+  }, []);
+
+  useEffect(() => {
     if (progress?.overall !== "complete") return;
     void loadCompletedCase(progress.caseId)
       .then(() => setPanel("GUIDANCE"))

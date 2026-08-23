@@ -54,6 +54,11 @@ function setupMessageHandler() {
       return true;
     }
 
+    if (name === "sidePanelClosed") {
+      checkAndRenderOverlay();
+      return false;
+    }
+
     return false;
   };
 
