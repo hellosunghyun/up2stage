@@ -1,10 +1,17 @@
 import type { ProcessingProgress } from "../../core/agent/processor";
 import { COLORS, RADIUS } from "../../styles/tokens";
+import { CurrentPageCard, ScreenIntro, type PageSummary } from "../../components/PanelShell";
 
 function statusIcon(status: string): string {
   if (status === "complete" || status === "uploaded") return "✓";
   if (status === "failed" || status === "download_failed" || status === "upload_failed") return "✕";
-  if (status === "pending" || status === "downloading" || status === "uploading" || status === "analyzing") return "◌";
+  if (
+    status === "pending" ||
+    status === "downloading" ||
+    status === "uploading" ||
+    status === "analyzing"
+  )
+    return "◌";
   return "·";
 }
 
@@ -19,7 +26,7 @@ function statusLabel(status: string): string {
     analyzing: "분석 중",
     complete: "완료",
     processed: "완료",
-    failed: "실패",
+    failed: "실패"
   };
   return labels[status] ?? "처리 중";
 }
@@ -27,15 +34,15 @@ function statusLabel(status: string): string {
 export function ProcessingView({
   progress,
   onReset,
+  page
 }: {
   progress: ProcessingProgress;
   onReset: () => void;
+  page?: PageSummary | null;
 }) {
   const { overall, message, documents } = progress;
   const completed = documents.filter(
-    (d) =>
-      d.processingStatus === "uploaded" ||
-      d.processingStatus === "complete"
+    (d) => d.processingStatus === "uploaded" || d.processingStatus === "complete"
   ).length;
 
   return (
@@ -43,23 +50,34 @@ export function ProcessingView({
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: 16,
-        color: COLORS.textOnInverse,
+        gap: 20,
+        color: COLORS.textOnInverse
       }}
     >
-      <h2 style={{ fontSize: 19, fontWeight: 700, margin: 0 }}>문서를 분석하고 있어요</h2>
-      <p style={{ fontSize: 14, color: COLORS.textInverseSecondary, margin: 0 }}>
-        문서의 역할과 핵심 정보를 정리합니다.
-      </p>
+      <CurrentPageCard page={page} />
+      <ScreenIntro
+        title="문서를 분석하고 있어요"
+        description="지원 조건, 필요한 서류, 마감일을 확인하고 있어요."
+      />
 
       <div
         style={{
           padding: "14px",
           borderRadius: RADIUS.md,
-          background: COLORS.bgInverseSurface,
+          background: COLORS.bgInverseSurface
         }}
       >
-        <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>{message}</p>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span aria-hidden="true" style={{ color: COLORS.actionPrimary, fontSize: 20 }}>
+            ◌
+          </span>
+          <div>
+            <p style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>{message}</p>
+            <p style={{ margin: "3px 0 0", fontSize: 11, color: COLORS.brandLime }}>
+              {documents.length}개 문서 분석 중
+            </p>
+          </div>
+        </div>
         {overall === "preparing" && (
           <p style={{ margin: "8px 0 0", fontSize: 12, color: COLORS.textInverseSecondary }}>
             {completed} / {documents.length} 문서 준비 완료
@@ -71,7 +89,7 @@ export function ProcessingView({
         style={{
           display: "flex",
           flexDirection: "column",
-          gap: 8,
+          gap: 8
         }}
       >
         {documents.map((doc) => (
@@ -83,7 +101,7 @@ export function ProcessingView({
               justifyContent: "space-between",
               padding: "12px",
               borderRadius: RADIUS.md,
-              background: COLORS.bgInverseSurface,
+              background: COLORS.bgInverseSurface
             }}
           >
             <div
@@ -91,22 +109,45 @@ export function ProcessingView({
                 display: "flex",
                 alignItems: "center",
                 gap: 10,
-                overflow: "hidden",
+                overflow: "hidden"
               }}
             >
-              <span style={{ fontSize: 14, flexShrink: 0 }}>{statusIcon(doc.processingStatus)}</span>
+              <span style={{ fontSize: 14, flexShrink: 0 }}>
+                {statusIcon(doc.processingStatus)}
+              </span>
+              <span
+                style={{
+                  padding: "3px 7px",
+                  borderRadius: 999,
+                  background: COLORS.actionPrimary,
+                  color: COLORS.textOnInverse,
+                  fontSize: 9,
+                  fontWeight: 700
+                }}
+              >
+                {doc.extension.toUpperCase()}
+              </span>
               <span
                 style={{
                   fontSize: 13,
                   whiteSpace: "nowrap",
                   overflow: "hidden",
-                  textOverflow: "ellipsis",
+                  textOverflow: "ellipsis"
                 }}
               >
                 {doc.fileName}
               </span>
             </div>
-            <span style={{ fontSize: 11, color: COLORS.textInverseSecondary, flexShrink: 0 }}>
+            <span
+              style={{
+                padding: "4px 8px",
+                borderRadius: 999,
+                background: COLORS.actionPrimary,
+                color: COLORS.textOnInverse,
+                fontSize: 10,
+                flexShrink: 0
+              }}
+            >
               {statusLabel(doc.processingStatus)}
             </span>
           </div>
@@ -126,7 +167,7 @@ export function ProcessingView({
               color: COLORS.textOnInverse,
               fontSize: 15,
               fontWeight: 700,
-              cursor: "pointer",
+              cursor: "pointer"
             }}
           >
             처음으로
@@ -140,9 +181,18 @@ export function ProcessingView({
         </p>
       )}
 
-      <p style={{ fontSize: 12, color: COLORS.textInverseSecondary, margin: 0 }}>
-        문서 종류와 분량에 따라 시간이 걸릴 수 있어요.
-      </p>
+      <div
+        style={{
+          padding: "14px 16px",
+          borderRadius: RADIUS.md,
+          background: COLORS.bgInverseSurface,
+          fontSize: 11,
+          lineHeight: 1.5,
+          color: COLORS.textInverseSecondary
+        }}
+      >
+        선택한 문서를 Upstage AI로 분석하고 있어요. 완료되면 결과와 원문 근거를 함께 볼 수 있어요.
+      </div>
     </div>
   );
 }

@@ -9,7 +9,7 @@ export interface PageSummary {
 export function PanelShell({
   header,
   children,
-  footer,
+  footer
 }: {
   header: ReactNode;
   children: ReactNode;
@@ -22,10 +22,9 @@ export function PanelShell({
         flexDirection: "column",
         height: "100vh",
         minWidth: 360,
-        fontFamily:
-          '"Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+        fontFamily: '"Noto Sans KR", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
         color: COLORS.textOnInverse,
-        background: COLORS.bgInverse,
+        background: COLORS.bgInverse
       }}
     >
       {header}
@@ -35,7 +34,7 @@ export function PanelShell({
           minHeight: 0,
           overflowY: "auto",
           padding: "20px",
-          background: COLORS.bgInverse,
+          background: COLORS.bgInverse
         }}
       >
         {children}
@@ -48,7 +47,7 @@ export function PanelShell({
 export function PanelHeader({
   loading,
   onRefresh,
-  onMenu,
+  onMenu
 }: {
   loading: boolean;
   onRefresh: () => void;
@@ -62,7 +61,7 @@ export function PanelHeader({
     background: "transparent",
     color: COLORS.textOnInverse,
     fontSize: 20,
-    cursor: "pointer",
+    cursor: "pointer"
   } as const;
 
   return (
@@ -75,7 +74,7 @@ export function PanelHeader({
         alignItems: "center",
         justifyContent: "space-between",
         background: COLORS.bgInverse,
-        borderBottom: `1px solid ${COLORS.bgInverseSurface}`,
+        borderBottom: `1px solid ${COLORS.bgInverseSurface}`
       }}
     >
       <img
@@ -93,7 +92,7 @@ export function PanelHeader({
           style={{
             ...iconButtonStyle,
             color: loading ? COLORS.textInverseSecondary : COLORS.textOnInverse,
-            cursor: loading ? "not-allowed" : "pointer",
+            cursor: loading ? "not-allowed" : "pointer"
           }}
         >
           ↻
@@ -112,7 +111,7 @@ export function PanelHeader({
   );
 }
 
-export function CurrentPageCard({ page }: { page?: PageSummary | null }) {
+export function CurrentPageCard({ page }: { page?: PageSummary | null | undefined }) {
   if (!page) return null;
 
   let host = "현재 페이지";
@@ -133,19 +132,17 @@ export function CurrentPageCard({ page }: { page?: PageSummary | null }) {
         background: COLORS.bgInverseSurface,
         display: "flex",
         flexDirection: "column",
-        gap: 4,
+        gap: 4
       }}
     >
-      <span style={{ fontSize: 11, color: COLORS.textInverseSecondary }}>
-        현재 페이지
-      </span>
+      <span style={{ fontSize: 11, color: COLORS.textInverseSecondary }}>현재 페이지</span>
       <strong
         style={{
           fontSize: 13,
           color: COLORS.textOnInverse,
           overflow: "hidden",
           textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
+          whiteSpace: "nowrap"
         }}
       >
         {page.title}
@@ -156,7 +153,7 @@ export function CurrentPageCard({ page }: { page?: PageSummary | null }) {
           color: COLORS.actionPrimary,
           overflow: "hidden",
           textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
+          whiteSpace: "nowrap"
         }}
       >
         {host}
@@ -172,7 +169,7 @@ export function PanelFooter({ children }: { children: ReactNode }) {
         flexShrink: 0,
         padding: "12px 20px 16px",
         borderTop: `1px solid ${COLORS.bgInverseSurface}`,
-        background: COLORS.bgInverse,
+        background: COLORS.bgInverse
       }}
     >
       {children}
@@ -195,7 +192,7 @@ export function ChatComposer() {
         alignItems: "center",
         justifyContent: "space-between",
         color: COLORS.textInverseSecondary,
-        fontSize: 13,
+        fontSize: 13
       }}
     >
       <span>궁금한 것을 물어보세요</span>
@@ -209,7 +206,7 @@ export function ChatComposer() {
 export function ScreenIntro({
   eyebrow,
   title,
-  description,
+  description
 }: {
   eyebrow?: string;
   title: string;
@@ -226,22 +223,20 @@ export function ScreenIntro({
             background: COLORS.brandLime,
             color: COLORS.textPrimary,
             fontSize: 11,
-            fontWeight: 700,
+            fontWeight: 700
           }}
         >
           {eyebrow}
         </span>
       )}
-      <h2 style={{ fontSize: 22, lineHeight: 1.35, fontWeight: 700, margin: 0 }}>
-        {title}
-      </h2>
+      <h2 style={{ fontSize: 22, lineHeight: 1.35, fontWeight: 700, margin: 0 }}>{title}</h2>
       {description && (
         <p
           style={{
             fontSize: 13,
             lineHeight: 1.55,
             color: COLORS.textInverseSecondary,
-            margin: 0,
+            margin: 0
           }}
         >
           {description}

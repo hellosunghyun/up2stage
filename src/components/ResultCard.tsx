@@ -5,6 +5,7 @@ export interface ResultCardProps {
   title: string;
   body: ReactNode;
   sourceIds?: string[] | undefined;
+  sourceLabels?: Record<string, string> | undefined;
   accent?: "lime" | "neutral" | "warning";
   onSourceClick?: (sourceId: string) => void;
 }
@@ -12,15 +13,16 @@ export interface ResultCardProps {
 const ACCENT: Record<NonNullable<ResultCardProps["accent"]>, string> = {
   lime: COLORS.brandLime,
   neutral: "transparent",
-  warning: COLORS.warning,
+  warning: COLORS.warning
 };
 
 export function ResultCard({
   title,
   body,
   sourceIds,
+  sourceLabels,
   accent = "lime",
-  onSourceClick,
+  onSourceClick
 }: ResultCardProps) {
   return (
     <section
@@ -32,20 +34,26 @@ export function ResultCard({
         padding: "16px",
         display: "flex",
         flexDirection: "column",
-        gap: 12,
+        gap: 8
       }}
     >
       <h3
         style={{
           margin: 0,
-          fontSize: 15,
+          fontSize: 13,
           fontWeight: 700,
-          lineHeight: 1.4,
+          lineHeight: 1.4
         }}
       >
         {title}
       </h3>
-      <div style={{ fontSize: 14, lineHeight: 1.6, color: COLORS.textOnInverse }}>
+      <div
+        style={{
+          fontSize: 12,
+          lineHeight: 1.55,
+          color: COLORS.textInverseSecondary
+        }}
+      >
         {body}
       </div>
       {sourceIds && sourceIds.length > 0 && (
@@ -55,16 +63,15 @@ export function ResultCard({
               key={sourceId}
               onClick={() => onSourceClick?.(sourceId)}
               style={{
-                padding: "4px 8px",
-                borderRadius: RADIUS.sm,
-                border: `1px solid ${COLORS.textInverseSecondary}`,
+                padding: 0,
+                border: "none",
                 background: "transparent",
-                color: COLORS.textInverseSecondary,
+                color: COLORS.actionPrimary,
                 fontSize: 11,
-                cursor: onSourceClick ? "pointer" : "default",
+                cursor: onSourceClick ? "pointer" : "default"
               }}
             >
-              {sourceId}
+              {sourceLabels?.[sourceId] ?? sourceId}
             </button>
           ))}
         </div>

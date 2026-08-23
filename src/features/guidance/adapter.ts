@@ -1,18 +1,15 @@
-import type {
-  CanonicalAgentResult,
-  ExtractRecord,
-} from "../../models/canonical";
+import type { CanonicalAgentResult, ExtractRecord } from "../../models/canonical";
 import {
   buildExtractLocationMap,
   collectSourceIdsFromText,
-  type CitationResolution,
+  type CitationResolution
 } from "../../core/evidence";
 import type {
   ApplicationFormExtract,
   GuidanceSourceGroups,
   InitialGuidance,
   PrimaryNoticeExtract,
-  ProcedureExtract,
+  ProcedureExtract
 } from "./types";
 
 export interface GuidanceViewData {
@@ -22,6 +19,7 @@ export interface GuidanceViewData {
   procedure: ProcedureExtract | undefined;
   checklistCautions: string[];
   sourceGroups: GuidanceSourceGroups;
+  sourceLabels: Record<string, string>;
 }
 
 function strings(value: unknown): string[] {
@@ -68,9 +66,7 @@ function guidanceSourceIds(
   return [...new Set(values.flatMap((item) => collectSourceIdsFromText(item, resolutions)))];
 }
 
-export function buildGuidanceViewData(
-  result: CanonicalAgentResult
-): GuidanceViewData | undefined {
+export function buildGuidanceViewData(result: CanonicalAgentResult): GuidanceViewData | undefined {
   const record = result.guidance;
   if (!record) return undefined;
 
@@ -81,7 +77,7 @@ export function buildGuidanceViewData(
   const resolutions: CitationResolution[] = record.citations.map((citation) => ({
     index: citation.index,
     sourceIds: citation.sourceIds,
-    unresolved: citation.sourceIds.length === 0,
+    unresolved: citation.sourceIds.length === 0
   }));
 
   const guidance: InitialGuidance = {
@@ -92,7 +88,7 @@ export function buildGuidanceViewData(
     topCautions: record.topCautions,
     nextActions: record.nextActions,
     missingInformation: record.missingInformation,
-    personalizationStatus: record.personalizationStatus,
+    personalizationStatus: record.personalizationStatus
   };
 
   const primaryRaw = primary?.rawJson ?? {};
@@ -107,7 +103,7 @@ export function buildGuidanceViewData(
     quick_questions: strings(primaryRaw.quick_questions),
     critical_cautions: strings(primaryRaw.critical_cautions),
     next_actions_seed: strings(primaryRaw.next_actions_seed),
-    contacts: strings(primaryRaw.contacts),
+    contacts: strings(primaryRaw.contacts)
   };
 
   const applicationRaw = application?.rawJson;
@@ -119,7 +115,7 @@ export function buildGuidanceViewData(
         required_signatures: strings(applicationRaw.required_signatures),
         required_attachments: strings(applicationRaw.required_attachments),
         format_constraints: strings(applicationRaw.format_constraints),
-        form_cautions: strings(applicationRaw.form_cautions),
+        form_cautions: strings(applicationRaw.form_cautions)
       }
     : undefined;
 
@@ -131,7 +127,7 @@ export function buildGuidanceViewData(
         channels: strings(procedureRaw.channels),
         file_rules: strings(procedureRaw.file_rules),
         completion_checks: strings(procedureRaw.completion_checks),
-        procedure_cautions: strings(procedureRaw.procedure_cautions),
+        procedure_cautions: strings(procedureRaw.procedure_cautions)
       }
     : undefined;
 
@@ -152,13 +148,20 @@ export function buildGuidanceViewData(
       applicationForm: [
         ...sourceIdsForPrefix(result, application, "required_fields"),
         ...sourceIdsForPrefix(result, application, "format_constraints"),
-        ...sourceIdsForPrefix(result, application, "form_cautions"),
+        ...sourceIdsForPrefix(result, application, "form_cautions")
       ],
       procedure: [
         ...sourceIdsForPrefix(result, procedure, "steps"),
         ...sourceIdsForPrefix(result, procedure, "completion_checks"),
-        ...sourceIdsForPrefix(result, procedure, "procedure_cautions"),
-      ],
+        ...sourceIdsForPrefix(result, procedure, "procedure_cautions")
+      ]
     },
+    sourceLabels: Object.fromEntries(
+      result.sources.map((source) => {
+        const document = result.documents.find((candidate) => candidate.id === source.documentId);
+        const documentName = document?.fileName ?? "원문";
+        return [source.sourceId, `${documentName} · p.${source.page}`];
+      })
+    )
   };
 }

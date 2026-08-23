@@ -355,7 +355,9 @@ export function App() {
         />
       )}
 
-      {panel === "PROCESSING" && progress && <ProcessingView progress={progress} onReset={reset} />}
+      {panel === "PROCESSING" && progress && (
+        <ProcessingView progress={progress} onReset={reset} page={pageContext} />
+      )}
 
       {panel === "GUIDANCE" && guidanceData && (
         <InitialGuidanceView
@@ -367,6 +369,7 @@ export function App() {
           {...(guidanceData.procedure ? { procedure: guidanceData.procedure } : {})}
           checklistCautions={guidanceData.checklistCautions}
           sourceGroups={guidanceData.sourceGroups}
+          sourceLabels={guidanceData.sourceLabels}
           onQuickCheck={() => setPanel("QUICK_FORM")}
           onMissingClick={() => setPanel("QUICK_FORM")}
           onSourceClick={(sourceId) => {
