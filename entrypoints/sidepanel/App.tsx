@@ -40,6 +40,12 @@ import {
   setNavigationRegistry,
 } from "../../src/features/source-navigation/navigate";
 import { COLORS, RADIUS } from "../../src/styles/tokens";
+import {
+  ChatComposer,
+  PanelFooter,
+  PanelHeader,
+  PanelShell,
+} from "../../src/components/PanelShell";
 
 type PanelState =
   | "DISCOVERY"
@@ -259,64 +265,32 @@ export function App() {
   }, [load]);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        flexDirection: "column",
-        height: "100vh",
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        color: COLORS.textOnInverse,
-        background: COLORS.bgInverse,
-      }}
-    >
-      <header
-        style={{
-          flexShrink: 0,
-          height: 64,
-          padding: "0 20px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          background: COLORS.bgInverse,
-          borderBottom: `1px solid ${COLORS.bgInverseSurface}`,
-        }}
-      >
-        <img
-          src={chrome.runtime.getURL("logo.png")}
-          alt="Up to Stage"
-          style={{ height: 60, width: "auto", objectFit: "contain" }}
+    <PanelShell
+      header={
+        <PanelHeader
+          loading={isLoading}
+          onRefresh={() => void load()}
+          onMenu={openOptions}
         />
-
-        <button
-          onClick={() => {
-            void load();
-          }}
-          disabled={isLoading}
-          aria-label="첨부 문서 다시 찾기"
-          style={{
-            padding: "8px 12px",
-            borderRadius: RADIUS.sm,
-            border: `1px solid ${COLORS.textInverseSecondary}`,
-            background: "transparent",
-            color: isLoading ? COLORS.textInverseSecondary : COLORS.textOnInverse,
-            fontSize: 13,
-            fontWeight: 500,
-            cursor: isLoading ? "not-allowed" : "pointer",
-          }}
-        >
-          {isLoading ? "불러오는 중..." : "↻ 새로고침"}
-        </button>
-      </header>
-
-      <main
-        style={{
-          flex: 1,
-          overflowY: "auto",
-          padding: "16px",
-          background: COLORS.bgInverse,
-        }}
-      >
+      }
+      footer={
+        panel === "GUIDANCE" || panel === "DECISION" ? (
+          <PanelFooter>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <SuggestionChips
+                onSelect={(chip: SuggestionChip) => {
+                  if (chip === "eligibility") {
+                    setAutoFocusId(undefined);
+                    setPanel("QUICK_FORM");
+                  }
+                }}
+              />
+              <ChatComposer />
+            </div>
+          </PanelFooter>
+        ) : undefined
+      }
+    >
         {error && (
           <p style={{ margin: 0, color: COLORS.brandLime }}>{getUserFriendlyError(error)}</p>
         )}
@@ -481,28 +455,7 @@ export function App() {
             }}
           />
         )}
-      </main>
-
-      {(panel === "GUIDANCE" || panel === "DECISION") && (
-        <div
-          style={{
-            flexShrink: 0,
-            padding: "12px 16px",
-            borderTop: `1px solid ${COLORS.bgInverseSurface}`,
-            background: COLORS.bgInverse,
-          }}
-        >
-          <SuggestionChips
-            onSelect={(chip: SuggestionChip) => {
-              if (chip === "eligibility") {
-                setAutoFocusId(undefined);
-                setPanel("QUICK_FORM");
-              }
-            }}
-          />
-        </div>
-      )}
-    </div>
+    </PanelShell>
   );
 }
 
