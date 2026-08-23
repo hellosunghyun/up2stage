@@ -178,25 +178,14 @@ export function App() {
   const handleSaveApiKey = useCallback(async () => {
     const key = apiKeyInput.trim();
     if (!key) return;
-    try {
-      const res = await fetch(`${import.meta.env.WXT_UPSTAGE_API_BASE_URL ?? "https://api.upstage.ai/v2"}/models`, {
-        headers: { Authorization: `Bearer ${key}` },
-      });
-      if (res.ok) {
-        await persistApiKey(key);
-        setApiKey(key);
-        setApiKeyInput("");
-        setError(null);
-        if (attachments.length > 0) {
-          setPanel("DISCOVERY");
-        } else {
-          void load();
-        }
-      } else {
-        setError("API Key가 유효하지 않아요. 다시 확인해주세요.");
-      }
-    } catch {
-      setError("API Key 확인 중 오류가 발생했어요.");
+    await persistApiKey(key);
+    setApiKey(key);
+    setApiKeyInput("");
+    setError(null);
+    if (attachments.length > 0) {
+      setPanel("DISCOVERY");
+    } else {
+      void load();
     }
   }, [apiKeyInput, attachments.length, load]);
 

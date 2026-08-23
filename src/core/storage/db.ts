@@ -1,4 +1,5 @@
 import Dexie, { type Table } from "dexie";
+import type { AgentJob } from "../agent/types";
 import type {
   CaseRecord,
   DocumentRecord,
@@ -15,6 +16,13 @@ export interface DocumentCacheRecord {
   createdAt: number;
 }
 
+export interface AgentJobRecord {
+  id: string;
+  caseId: string;
+  raw: AgentJob;
+  createdAt: number;
+}
+
 class Up2StageDB extends Dexie {
   cases!: Table<CaseRecord, string>;
   documents!: Table<DocumentRecord, string>;
@@ -22,6 +30,7 @@ class Up2StageDB extends Dexie {
   extracts!: Table<ExtractRecord, string>;
   guidance!: Table<GuidanceRecord, string>;
   documentCache!: Table<DocumentCacheRecord, number>;
+  agentJobs!: Table<AgentJobRecord, string>;
 
   constructor() {
     super("up2stage");
@@ -32,6 +41,7 @@ class Up2StageDB extends Dexie {
       extracts: "&id, [caseId+documentId], caseId",
       guidance: "&id, caseId",
       documentCache: "++id, &[contentHash+agentVersion]",
+      agentJobs: "&id, caseId",
     });
   }
 }

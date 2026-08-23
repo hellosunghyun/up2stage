@@ -17,7 +17,7 @@ export type UpstageFile = z.infer<typeof upstageFileSchema>;
 export const outputTextSchema = z.object({
   type: z.literal("output_text"),
   text: z.string(),
-  additional_values: z.string().optional(),
+  additional_values: z.unknown().optional(),
 });
 
 export type OutputText = z.infer<typeof outputTextSchema>;

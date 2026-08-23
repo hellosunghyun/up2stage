@@ -46,7 +46,9 @@ function getAdditionalValues(
 ): Record<string, unknown> | undefined {
   if (!item) return undefined;
   const raw = item.content.find((c) => c.type === "output_text")?.additional_values;
-  return safeJsonParse<Record<string, unknown>>(raw);
+  if (raw == null) return undefined;
+  if (typeof raw === "string") return safeJsonParse<Record<string, unknown>>(raw);
+  return raw as Record<string, unknown>;
 }
 
 function toDocumentType(value: string | undefined): DocumentRole | undefined {

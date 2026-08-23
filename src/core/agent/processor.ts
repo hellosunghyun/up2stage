@@ -5,6 +5,7 @@ import {
   getCase,
   getCaseWithDocuments,
   getOrCreateCachedFileId,
+  saveAgentJob,
   saveCase,
   saveDocuments,
   saveExtracts,
@@ -107,6 +108,7 @@ export async function prepareAndStart(
     try {
       const downloaded = await downloadAttachment(attachment);
       doc.contentHash = downloaded.contentHash;
+      doc.mimeType = downloaded.mimeType;
       doc.size = downloaded.bytes.byteLength;
 
       doc.processingStatus = "uploading";
@@ -116,7 +118,7 @@ export async function prepareAndStart(
         doc.contentHash,
         AGENT_VERSION,
         async () => {
-          const file = await uploadFile(apiKey, doc.fileName, downloaded.bytes);
+          const file = await uploadFile(apiKey, doc.fileName, downloaded.bytes, downloaded.mimeType);
           return file.id;
         }
       );
@@ -141,6 +143,7 @@ export async function prepareAndStart(
 
   const fileIds = ready.map((d) => d.upstageFileId!);
   const job = await createAgentJob({ apiKey, fileIds });
+  await saveAgentJob(caseRecord.id, job);
   await updateCase(caseRecord.id, { status: "processing", agentJobId: job.id, agentStatus: job.status, updatedAt: Date.now() });
 
   onProgress({
@@ -189,6 +192,7 @@ async function pollAndStore(
   do {
     await new Promise((resolve) => setTimeout(resolve, 3000));
     job = await retrieveAgentJob(apiKey, caseRecord.agentJobId);
+    await saveAgentJob(caseId, job);
     onProgress({
       caseId,
       overall: toOverall(job.status),

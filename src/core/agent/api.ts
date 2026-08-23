@@ -32,10 +32,11 @@ async function unwrap<T>(res: Response, parser: (data: unknown) => T): Promise<T
 export async function uploadFile(
   apiKey: string,
   fileName: string,
-  bytes: ArrayBuffer
+  bytes: ArrayBuffer,
+  mimeType?: string
 ): Promise<UpstageFile> {
   const form = new FormData();
-  form.append("file", new Blob([bytes], { type: "application/octet-stream" }), fileName);
+  form.append("file", new Blob([bytes], { type: mimeType ?? "application/octet-stream" }), fileName);
   form.append("purpose", "user_data");
 
   const res = await fetch(`${BASE_URL}/files`, withAuth(apiKey, { method: "POST", body: form }));

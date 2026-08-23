@@ -1,4 +1,5 @@
 import { db, type DocumentCacheRecord } from "./db";
+import type { AgentJob } from "../agent/types";
 import type {
   CaseRecord,
   DocumentRecord,
@@ -6,6 +7,26 @@ import type {
   GuidanceRecord,
   ParseElement,
 } from "../../models/canonical";
+
+export async function saveAgentJob(
+  caseId: string,
+  job: AgentJob
+): Promise<string> {
+  await db.agentJobs.put({
+    id: job.id,
+    caseId,
+    raw: job,
+    createdAt: Date.now(),
+  });
+  return job.id;
+}
+
+export async function getAgentJob(
+  jobId: string
+): Promise<{ raw: AgentJob } | undefined> {
+  const record = await db.agentJobs.get(jobId);
+  return record ? { raw: record.raw } : undefined;
+}
 
 export async function saveCase(record: CaseRecord): Promise<string> {
   await db.cases.put(record);
