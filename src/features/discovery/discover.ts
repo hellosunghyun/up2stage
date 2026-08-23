@@ -49,7 +49,9 @@ function collectCandidate(
   const sourceElementText =
     (element as HTMLElement).innerText?.trim() ||
     (element as HTMLElement).textContent?.trim() ||
+    element.getAttribute("title") ||
     element.getAttribute("aria-label") ||
+    element.getAttribute("download") ||
     "";
 
   const fileNameFromUrl = inferFileName(absolute);
