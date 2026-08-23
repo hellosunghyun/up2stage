@@ -112,7 +112,7 @@ describe("Semantic Normalizer", () => {
 
     expect(figure).toMatchObject({
       type: "figure",
-      text: "선발 절차 도식",
+      text: "문서에 포함된 그림",
       children: [
         {
           id: "src:doc-1:p1:e2",
@@ -122,5 +122,19 @@ describe("Semantic Normalizer", () => {
         }
       ]
     });
+  });
+
+  it("does not promote an AI-generated figure description to an original caption", () => {
+    const [figure] = normalizeSemanticDocument([
+      parseElement({
+        category: "figure",
+        type: "figure",
+        text: "AI가 생성한 이미지 설명",
+        html: '<figure><img alt="AI가 생성한 이미지 설명"></figure>'
+      })
+    ]);
+
+    expect(figure).toMatchObject({ type: "figure", text: "문서에 포함된 그림" });
+    expect(figure?.children).toBeUndefined();
   });
 });

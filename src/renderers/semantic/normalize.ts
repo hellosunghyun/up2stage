@@ -170,7 +170,9 @@ function normalizeElement(element: ParseElement): SemanticRenderNode | undefined
       };
     }
     case "figure":
-      return { ...base, type: "figure", text: text || "문서에 포함된 그림" };
+      // Parse figure text에는 AI 생성 이미지 설명이 섞일 수 있다. ParseElement만으로 원문
+      // 여부를 증명할 수 없으므로 별도 caption node만 그림 설명으로 사용한다.
+      return { ...base, type: "figure", text: "문서에 포함된 그림" };
     case "caption":
       return text ? { ...base, type: "caption", text } : undefined;
   }

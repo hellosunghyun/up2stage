@@ -7,6 +7,7 @@ import { chromium, expect, test, type BrowserContext, type Page } from "@playwri
 const extensionPath = path.resolve(".output/chrome-mv3");
 const CASE_ID = "case-accessibility-e2e";
 const DOCUMENT_ID = "doc-accessibility-e2e";
+const SOURCE_ID = `src:${DOCUMENT_ID}:p1:e1`;
 
 async function launchExtension(profile: string): Promise<BrowserContext> {
   const headless = process.env.PLAYWRIGHT_HEADLESS === "true";
@@ -193,16 +194,19 @@ test("@a11y source navigation focuses a semantic document without axe violations
       DOCUMENT_ID,
       DOCUMENT_ID
     ]);
-    await viewer.goto(`chrome-extension://${id}/viewer.html?case=${CASE_ID}`);
+    const params = new URLSearchParams({
+      case: CASE_ID,
+      document: DOCUMENT_ID,
+      source: SOURCE_ID
+    });
+    await viewer.goto(`chrome-extension://${id}/viewer.html?${params.toString()}`);
 
-    await expect(viewer.getByRole("tab", { name: "원문 보기" })).toHaveAttribute(
-      "aria-selected",
-      "true"
+    await expect(viewer.locator("aside")).toHaveCount(1);
+    await expect(viewer.getByLabel(/AI 안내 및 근거/)).toHaveCount(0);
+    const shellColumns = await viewer.getByTestId("viewer-shell").evaluate((element) =>
+      getComputedStyle(element).gridTemplateColumns.split(" ").filter(Boolean)
     );
-    await viewer.getByText("문서별 근거 보기").click();
-    const sourceButtons = viewer.locator("details button");
-    await expect(sourceButtons).toHaveCount(3);
-    await sourceButtons.first().click();
+    expect(shellColumns).toHaveLength(2);
 
     await expect(viewer.getByRole("tab", { name: "접근성 보기" })).toHaveAttribute(
       "aria-selected",
@@ -221,7 +225,12 @@ test("@a11y source navigation focuses a semantic document without axe violations
     await heading.locator("..").press("Enter");
     await expect(viewer.getByText("1쪽 원문 근거를 선택했습니다.")).toBeAttached();
     await heading.locator("..").press("Escape");
-    await expect(viewer.getByRole("tab", { name: "접근성 보기" })).toBeFocused();
+    const accessibilityTab = viewer.getByRole("tab", { name: "접근성 보기" });
+    await expect(accessibilityTab).toBeFocused();
+    await accessibilityTab.press("Shift+Tab");
+    await expect(viewer.getByRole("tab", { name: "원문 보기" })).toBeFocused();
+    await viewer.getByRole("tab", { name: "원문 보기" }).press("Tab");
+    await expect(accessibilityTab).toBeFocused();
 
     const results = await new AxeBuilder({ page: viewer })
       .include("#viewer-workspace-panel")

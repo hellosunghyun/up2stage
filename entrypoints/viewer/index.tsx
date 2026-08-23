@@ -9,8 +9,6 @@ import {
   getCanonicalAgentResult
 } from "../../src/core/storage/repositories";
 import type { DocumentRecord, ParseElement, SourceRecord } from "../../src/models/canonical";
-import { buildGuidanceViewData } from "../../src/features/guidance/adapter";
-import type { ViewerGuidanceData } from "../../src/components/document/ViewerGuidancePanel";
 import "./style.css";
 
 interface ViewerData {
@@ -19,7 +17,6 @@ interface ViewerData {
   parseElements: ParseElement[];
   bytes: Map<string, ArrayBuffer>;
   registry: SourceRegistry;
-  guidance?: ViewerGuidanceData;
 }
 
 function App() {
@@ -46,29 +43,12 @@ function App() {
         if (documents.length === 0) {
           throw new Error("저장된 문서를 찾지 못했어요.");
         }
-        const guidanceData = agentResult ? buildGuidanceViewData(agentResult) : undefined;
-        const guidance: ViewerGuidanceData | undefined = guidanceData
-          ? {
-              overview: guidanceData.guidance.overview,
-              topRequirements: guidanceData.guidance.topRequirements,
-              nearestDeadline: guidanceData.guidance.nearestDeadline,
-              requiredSubmissions: guidanceData.guidance.requiredSubmissions,
-              nextActions: guidanceData.guidance.nextActions,
-              sourceGroups: {
-                topRequirements: guidanceData.sourceGroups.topRequirements,
-                nearestDeadline: guidanceData.sourceGroups.nearestDeadline,
-                requiredSubmissions: guidanceData.sourceGroups.requiredSubmissions
-              },
-              sourceLabels: guidanceData.sourceLabels
-            }
-          : undefined;
         setData({
           documents,
           sources,
           parseElements: agentResult?.parseElements ?? [],
           bytes: new Map(files.map((file) => [file.documentId, file.bytes])),
-          registry: new SourceRegistry().register(sources),
-          ...(guidance ? { guidance } : {})
+          registry: new SourceRegistry().register(sources)
         });
       })
       .catch((cause: unknown) => {
@@ -85,7 +65,6 @@ function App() {
 
   return (
     <ViewerShell
-      caseId={caseId}
       documents={data.documents}
       sources={data.sources}
       parseElements={data.parseElements}
@@ -93,7 +72,6 @@ function App() {
       sourceRegistry={data.registry}
       initialDocumentId={documentId}
       initialSourceId={sourceId}
-      {...(data.guidance ? { guidance: data.guidance } : {})}
     />
   );
 }
