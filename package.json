@@ -52,6 +52,7 @@
     "@wxt-dev/module-react": "1.2.2",
     "eslint": "10.9.0",
     "eslint-config-prettier": "10.1.8",
+    "fake-indexeddb": "^6.2.5",
     "globals": "17.11.0",
     "jsdom": "^30.0.1",
     "prettier": "3.9.6",

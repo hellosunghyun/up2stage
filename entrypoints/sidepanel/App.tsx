@@ -7,8 +7,22 @@ import {
   canStartAnalysis,
   getSelected,
 } from "../../src/features/document-selection/selection";
+import { ProcessingView } from "../../src/features/processing/ProcessingView";
+import {
+  createCase,
+  prepareAndStart,
+  resumeProcessing,
+} from "../../src/core/agent/processor";
+import { getApiKey, setApiKey as persistApiKey } from "../../src/core/storage/apiKey";
+import { getCase } from "../../src/core/storage/repositories";
+import type { ProcessingProgress } from "../../src/core/agent/processor";
 
-type PanelState = "DISCOVERY" | "SELECTION" | "CONSENT_CONFIRM";
+type PanelState =
+  | "DISCOVERY"
+  | "SELECTION"
+  | "CONSENT_CONFIRM"
+  | "PROCESSING"
+  | "API_KEY";
 
 const COLORS = {
   bgCanvas: "#ffffff",
@@ -29,11 +43,19 @@ const RADIUS = {
   lg: 16,
 };
 
+const CURRENT_CASE_KEY = "up2stage_currentCaseId";
+
 function getUserFriendlyError(message: string): string {
   if (message.includes("Receiving end does not exist")) {
     return "현재 탭에서 확장 프로그램이 실행되지 않았어요. http/https 웹페이지에서 다시 열어주세요.";
   }
   return "문서를 불러오지 못했어요. 페이지를 새로고침하고 다시 시도해주세요.";
+}
+
+function openOptions() {
+  if (chrome.runtime.openOptionsPage) {
+    void chrome.runtime.openOptionsPage();
+  }
 }
 
 export function App() {
@@ -43,21 +65,60 @@ export function App() {
   const [consentChecked, setConsentChecked] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [apiKey, setApiKey] = useState<string | null>(null);
+  const [apiKeyInput, setApiKeyInput] = useState("");
+  const [progress, setProgress] = useState<ProcessingProgress | null>(null);
 
   const load = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      console.log("[up2stage:sidepanel] loading attachments...");
-      const docs = await messaging.discoverAttachments();
-      console.log("[up2stage:sidepanel] attachments loaded:", docs);
+      const [docs, key, stored] = await Promise.all([
+        messaging.discoverAttachments(),
+        getApiKey(),
+        chrome.storage.session.get(CURRENT_CASE_KEY),
+      ]);
       setAttachments(docs);
       setSelectedIds(new Set(docs.map((d) => d.id)));
-      setPanel("DISCOVERY");
+      setApiKey(key);
+
+      const currentCaseId = stored[CURRENT_CASE_KEY] as string | undefined;
+      if (currentCaseId) {
+        const caseRecord = await getCase(currentCaseId);
+        if (caseRecord) {
+          if (caseRecord.status === "processing") {
+            setPanel("PROCESSING");
+            setProgress({
+              caseId: caseRecord.id,
+              overall: "processing",
+              documents: [],
+              message: "진행 중인 분석을 이어 받고 있어요.",
+            });
+            void resumeProcessing(caseRecord.id, (p) => setProgress(p));
+            return;
+          }
+          if (caseRecord.status === "processed" || caseRecord.status === "failed") {
+            setPanel("PROCESSING");
+            setProgress({
+              caseId: caseRecord.id,
+              overall: caseRecord.status === "processed" ? "complete" : "failed",
+              documents: [],
+              message: caseRecord.status === "processed" ? "분석이 완료되었어요." : "분석에 실패했어요.",
+            });
+            return;
+          }
+        }
+      }
+
+      if (!key) {
+        setPanel("API_KEY");
+      } else {
+        setPanel("DISCOVERY");
+      }
     } catch (e) {
       const friendly = e instanceof Error ? e.message : "문서를 불러오지 못했어요.";
-      console.log("[up2stage:sidepanel] attachments failed:", friendly);
       setError(getUserFriendlyError(friendly));
+      setPanel("DISCOVERY");
     } finally {
       setIsLoading(false);
     }
@@ -66,8 +127,6 @@ export function App() {
   useEffect(() => {
     void load();
   }, [load]);
-
-  // TODO: 확장 프로그램 재로드 감지 시 Side Panel 새로고침은 별도 안정적 메커니즘으로 구현
 
   const selectedDocs = useMemo(
     () => getSelected(attachments, selectedIds),
@@ -89,6 +148,53 @@ export function App() {
       value ? new Set(attachments.map((a) => a.id)) : new Set()
     );
   };
+
+  const handleStartAnalysis = useCallback(async () => {
+    if (!apiKey) {
+      setPanel("API_KEY");
+      return;
+    }
+    setPanel("PROCESSING");
+    try {
+      const page = await messaging.currentPageContext();
+      const caseRecord = await createCase(
+        page.url,
+        page.title,
+        Array.from(selectedIds)
+      );
+      await chrome.storage.session.set({ [CURRENT_CASE_KEY]: caseRecord.id });
+      await prepareAndStart(
+        caseRecord,
+        selectedDocs,
+        (p) => setProgress(p)
+      );
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "분석을 시작하지 못했어요.";
+      setError(message);
+      setPanel("CONSENT_CONFIRM");
+    }
+  }, [apiKey, selectedIds, selectedDocs]);
+
+  const handleSaveApiKey = useCallback(async () => {
+    const key = apiKeyInput.trim();
+    if (!key) return;
+    await persistApiKey(key);
+    setApiKey(key);
+    setApiKeyInput("");
+    setError(null);
+    if (attachments.length > 0) {
+      setPanel("DISCOVERY");
+    } else {
+      void load();
+    }
+  }, [apiKeyInput, attachments.length, load]);
+
+  const reset = useCallback(() => {
+    void chrome.storage.session.remove(CURRENT_CASE_KEY);
+    setProgress(null);
+    setPanel("DISCOVERY");
+    void load();
+  }, [load]);
 
   return (
     <div
@@ -153,6 +259,64 @@ export function App() {
           <p style={{ margin: 0, color: COLORS.brandLime }}>{getUserFriendlyError(error)}</p>
         )}
 
+        {panel === "API_KEY" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <h2 style={{ fontSize: 19, fontWeight: 700, margin: 0 }}>
+              API Key를 입력해주세요
+            </h2>
+            <p style={{ fontSize: 14, color: COLORS.textInverseSecondary, margin: 0 }}>
+              Upstage AI 사용을 위해 API Key가 필요해요. Key는 이 브라우저 세션 동안만
+              메모리에 남습니다.
+            </p>
+            <input
+              type="password"
+              value={apiKeyInput}
+              onChange={(e) => setApiKeyInput(e.target.value)}
+              placeholder="up-..."
+              style={{
+                padding: "12px",
+                borderRadius: RADIUS.sm,
+                border: `1px solid ${COLORS.textInverseSecondary}`,
+                background: COLORS.bgInverseSurface,
+                color: COLORS.textOnInverse,
+                fontSize: 14,
+              }}
+            />
+            <button
+              onClick={() => {
+                void handleSaveApiKey();
+              }}
+              disabled={!apiKeyInput.trim()}
+              style={{
+                padding: "14px 16px",
+                borderRadius: RADIUS.md,
+                border: "none",
+                background: COLORS.brandLime,
+                color: COLORS.textPrimary,
+                fontSize: 15,
+                fontWeight: 700,
+                cursor: apiKeyInput.trim() ? "pointer" : "not-allowed",
+              }}
+            >
+              Key 확인 및 저장
+            </button>
+            <button
+              onClick={() => openOptions()}
+              style={{
+                padding: "12px",
+                borderRadius: RADIUS.sm,
+                border: `1px solid ${COLORS.textInverseSecondary}`,
+                background: "transparent",
+                color: COLORS.textOnInverse,
+                fontSize: 13,
+                cursor: "pointer",
+              }}
+            >
+              설정 페이지에서 입력
+            </button>
+          </div>
+        )}
+
         {panel === "DISCOVERY" && (
           <DiscoveryView
             attachments={attachments}
@@ -181,10 +345,15 @@ export function App() {
             consentChecked={consentChecked}
             onToggleConsent={() => setConsentChecked((v) => !v)}
             onStart={() => {
-              console.log("Phase 3: upload", selectedDocs);
+              setError(null);
+              void handleStartAnalysis();
             }}
             onBack={() => setPanel("SELECTION")}
           />
+        )}
+
+        {panel === "PROCESSING" && progress && (
+          <ProcessingView progress={progress} onReset={reset} />
         )}
       </main>
     </div>
