@@ -68,6 +68,25 @@ describe("final v0.22 Agent to Viewer integration", () => {
     expect(result.parseElements.length).toBeGreaterThan(20);
     expect(result.sources.every((source) => source.sourceId.startsWith("src:"))).toBe(true);
     expect(result.sources.some((source) => source.documentId === "doc-reference")).toBe(true);
+    expect(
+      result.sources
+        .filter((source) => source.documentId === "doc-reference")
+        .every((source) => source.page === 1)
+    ).toBe(true);
+    expect(
+      Math.max(
+        ...result.sources
+          .filter((source) => source.documentId === "doc-essay")
+          .map((source) => source.page)
+      )
+    ).toBeLessThanOrEqual(2);
+    expect(
+      Math.max(
+        ...result.sources
+          .filter((source) => source.documentId === "doc-procedure")
+          .map((source) => source.page)
+      )
+    ).toBeLessThanOrEqual(6);
 
     const guidance = buildGuidanceViewData(result);
     expect(guidance?.guidance.overview).toContain("서울미래인재재단");

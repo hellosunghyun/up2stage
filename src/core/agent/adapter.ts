@@ -494,6 +494,43 @@ function sourceToParseElement(source: SourceRecord): ParseElement {
   };
 }
 
+function toDocumentPage(document: DocumentRecord | undefined, page: number): number {
+  if (!document?.pageRange) return page;
+  return Math.max(1, page - document.pageRange[0] + 1);
+}
+
+function normalizeAdditionalPages(
+  value: unknown,
+  document: DocumentRecord | undefined
+): unknown {
+  if (Array.isArray(value)) {
+    return value.map((item) => normalizeAdditionalPages(item, document));
+  }
+  if (!value || typeof value !== "object") return value;
+
+  const normalized: Record<string, unknown> = {};
+  for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+    if (key === "page" && typeof child === "number") {
+      normalized[key] = toDocumentPage(document, child);
+      continue;
+    }
+    if (key === "page_ranges" && Array.isArray(child)) {
+      const pageRanges = child as unknown[];
+      normalized[key] = pageRanges.map((range: unknown) =>
+        Array.isArray(range) && range.length >= 2
+          ? [
+              toDocumentPage(document, Number(range[0])),
+              toDocumentPage(document, Number(range[1])),
+            ]
+          : range
+      );
+      continue;
+    }
+    normalized[key] = normalizeAdditionalPages(child, document);
+  }
+  return normalized;
+}
+
 function buildQuickQuestions(
   caseId: string,
   extracts: readonly ExtractRecord[],
@@ -670,14 +707,65 @@ export function adaptAgentJob(
       semanticNodeId: sourceId,
     };
   });
-  const registry = new SourceRegistry().register(pageNormalizedSources);
+  const globalRegistry = new SourceRegistry().register(pageNormalizedSources);
+  for (const extract of extracts) {
+    const map = buildExtractLocationMap(
+      pageNormalizedSources.filter(
+        (source) => source.documentId === extract.documentId
+      ),
+      extract.additionalValues
+    );
+    for (const mapping of map.values()) {
+      for (const sourceId of mapping.sourceIds) {
+        globalRegistry.mergeLocation(sourceId, mapping);
+      }
+    }
+  }
+  const canonicalExtracts = extracts.map((extract): ExtractRecord => {
+    const document = classified.find((item) => item.id === extract.documentId);
+    return {
+      ...extract,
+      values: extract.values.map((value) => ({
+        ...value,
+        page:
+          value.page === undefined
+            ? undefined
+            : toDocumentPage(document, value.page),
+        location: value.location
+          ? {
+              ...value.location,
+              page: toDocumentPage(document, value.location.page),
+            }
+          : undefined,
+      })),
+      additionalValues: normalizeAdditionalPages(
+        extract.additionalValues,
+        document
+      ) as Record<string, unknown>,
+      pageRange: extract.pageRange
+        ? [1, extract.pageRange[1] - extract.pageRange[0] + 1]
+        : undefined,
+    };
+  });
+  const canonicalSources = globalRegistry.all().map((source): SourceRecord => {
+    const document = classified.find((item) => item.id === source.documentId);
+    const page = toDocumentPage(document, source.page);
+    const sourceId = buildSourceId(source.documentId, page, source.elementId);
+    return {
+      ...source,
+      page,
+      sourceId,
+      semanticNodeId: sourceId,
+    };
+  });
+  const registry = new SourceRegistry().register(canonicalSources);
   const extractMaps = new Map<
     string,
     ReturnType<typeof buildExtractLocationMap>
   >();
-  for (const extract of extracts) {
+  for (const extract of canonicalExtracts) {
     const map = buildExtractLocationMap(
-      pageNormalizedSources.filter(
+      canonicalSources.filter(
         (source) => source.documentId === extract.documentId
       ),
       extract.additionalValues
@@ -700,6 +788,16 @@ export function adaptAgentJob(
       ? buildGuidance(caseRecord.id, guidanceText, getAdditionalValues(instructItem))
       : null;
   if (guidance) {
+    const primaryDocument = classified.find(
+      (document) => document.role === "primary_notice"
+    );
+    guidance.citations = guidance.citations.map((citation) => ({
+      ...citation,
+      page:
+        citation.page === undefined
+          ? undefined
+          : toDocumentPage(primaryDocument, citation.page),
+    }));
     const primaryMap = extractMaps.get("primary_notice_extract") ?? new Map();
     const resolutions = resolveInstructCitations(
       guidance.citations.map((citation) => ({
@@ -720,7 +818,11 @@ export function adaptAgentJob(
     }));
   }
 
-  const quickQuestions = buildQuickQuestions(caseRecord.id, extracts, extractMaps);
+  const quickQuestions = buildQuickQuestions(
+    caseRecord.id,
+    canonicalExtracts,
+    extractMaps
+  );
 
   return {
     caseId: caseRecord.id,
@@ -730,7 +832,7 @@ export function adaptAgentJob(
     documents: classified,
     parseElements,
     sources: resolvedSources,
-    extracts,
+    extracts: canonicalExtracts,
     guidance,
     quickQuestions,
   };

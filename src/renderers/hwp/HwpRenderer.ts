@@ -2,8 +2,6 @@ import init, { HwpDocument } from "@rhwp/core";
 import type { DocumentRecord, SourceRecord } from "../../models/canonical";
 import type { DocumentRendererAdapter } from "../types";
 
-const WASM_PATH = "/rhwp_bg.wasm";
-
 type MeasureFn = (font: string, text: string) => number;
 
 export class HwpRenderer implements DocumentRendererAdapter {
@@ -42,7 +40,7 @@ export class HwpRenderer implements DocumentRendererAdapter {
       measure;
 
     try {
-      await init({ module_or_path: WASM_PATH });
+      await init();
       this.doc = new HwpDocument(new Uint8Array(this.bytes));
       this.totalPages = this.doc.pageCount();
       await this.goToPage(1);
