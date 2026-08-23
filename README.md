@@ -171,13 +171,14 @@ Solar도 이미 존재하는 Source ID 중 근거를 선택하는 역할만 합�
 
 ## 7. 같은 문서를 여러 방식으로 탐색
 
-독립 Viewer Page는 다음 세 영역으로 구성됩니다.
+독립 Viewer Page는 다음 두 영역으로 구성됩니다.
 
-| 영역                            | 역할                | 너비     |
-| ------------------------------- | ------------------- | -------- |
-| Document Outline                | 문서 구조 기반 목차 | ~224px   |
-| Original Document Viewer        | 원본 문서 렌더링    | flexible |
-| Up to Stage Guidance / Evidence | 안내와 근거         | ~443px   |
+| 영역                     | 역할                | 너비     |
+| ------------------------ | ------------------- | -------- |
+| Document Outline         | 문서 구조 기반 목차 | ~224px   |
+| Document Workspace       | 원문·구조·접근성 보기 | flexible |
+
+Initial Guidance, Quick Check, Evidence 목록과 대화 입력은 Chrome Extension Side Panel을 사용합니다. Viewer 페이지에는 별도 우측 사이드바를 표시하지 않습니다.
 
 Viewer에서는 다음을 제공합니다.
 
@@ -245,7 +246,7 @@ flowchart TB
     subgraph Viewer[Viewer Page]
         E1[Document Outline]
         E2[Format Renderer]
-        E3[Guidance / Evidence]
+        E3[Semantic Accessible View]
     end
 ```
 

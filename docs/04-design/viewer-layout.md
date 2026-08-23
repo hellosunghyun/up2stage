@@ -1,18 +1,18 @@
 # Viewer Layout 상세 Spec
 
-224px Outline + Flexible Workspace + 443px Guidance 구조를 정의한다.
+224px Outline + Flexible Workspace 구조를 정의한다. Guidance와 Evidence interaction은 Chrome Extension Side Panel을 사용한다.
 
 # 55. Viewer Page Layout
 
 1440px 기준 Figma Layout:
 
 ```text
-┌──────────────┬───────────────────────────────┬─────────────────────┐
-│ Outline      │ Document Workspace            │ Up to Stage Panel      │
-│              │                               │                     │
-│ 224px        │ flexible (~773px)             │ 443px               │
-│              │                               │                     │
-└──────────────┴───────────────────────────────┴─────────────────────┘
+┌──────────────┬─────────────────────────────────────────────────────┐
+│ Outline      │ Document Workspace                                  │
+│              │                                                     │
+│ 224px        │ flexible                                            │
+│              │                                                     │
+└──────────────┴─────────────────────────────────────────────────────┘
 ```
 
 Chrome toolbar 제외 컨텐츠 높이 약 `946px`.
@@ -24,8 +24,7 @@ Responsive:
   display: grid;
   grid-template-columns:
     var(--outline-width, 224px)
-    minmax(0, 1fr)
-    var(--guidance-width, 443px);
+    minmax(0, 1fr);
 }
 ```
 
@@ -331,17 +330,21 @@ open Viewer / navigateToSource(sourceId)
 
 ---
 
-# 66. Viewer Right Panel
+# 66. Extension Side Panel 분리
 
-폭:
+Viewer 페이지에는 Guidance/Evidence 우측 패널을 렌더링하지 않는다.
 
 ```text
-443px
+Chrome Side Panel
+├─ Initial Guidance
+├─ Quick Check
+├─ Evidence 목록
+└─ Source click → open Viewer / navigateToSource(sourceId)
+
+Viewer Page
+├─ Document Outline
+└─ Original / Structure / Accessible Workspace
 ```
-
-Side Panel과 동일한 브랜드/컴포넌트 체계를 재사용.
-
-Mode별 content만 다르게 한다.
 
 ---
 
