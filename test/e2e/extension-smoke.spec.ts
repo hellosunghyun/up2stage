@@ -174,6 +174,36 @@ test("built extension exposes the Up to Stage Side Panel and Viewer", async () =
     }
     await expect(viewer.locator("aside")).toHaveCount(1);
     await expect(viewer.getByText("주요 요약")).toHaveCount(0);
+    const viewportBounds = await viewer.evaluate(() => {
+      const root = document.querySelector<HTMLElement>("#root");
+      if (!root) {
+        throw new Error("Viewer root element is missing");
+      }
+
+      const rootRect = root.getBoundingClientRect();
+      const bodyStyle = getComputedStyle(document.body);
+
+      return {
+        bodyMargin: bodyStyle.margin,
+        bodyPadding: bodyStyle.padding,
+        rootLeft: rootRect.left,
+        rootTop: rootRect.top,
+        rootWidth: rootRect.width,
+        rootHeight: rootRect.height,
+        viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
+      };
+    });
+    expect(viewportBounds).toEqual({
+      bodyMargin: "0px",
+      bodyPadding: "0px",
+      rootLeft: 0,
+      rootTop: 0,
+      rootWidth: viewportBounds.viewportWidth,
+      rootHeight: viewportBounds.viewportHeight,
+      viewportWidth: viewportBounds.viewportWidth,
+      viewportHeight: viewportBounds.viewportHeight,
+    });
     const viewerGrid = await viewer.locator("#root > div").evaluate((element) => ({
       columns: (element as HTMLElement).style.gridTemplateColumns,
       width: (element as HTMLElement).getBoundingClientRect().width
