@@ -9,6 +9,7 @@ import { DocumentSelector } from "./DocumentSelector";
 import { ModeTabs } from "./ModeTabs";
 import { Outline } from "./Outline";
 import { SourceBadge } from "../evidence/SourceBadge";
+import { COLORS, RADIUS } from "../../styles/tokens";
 
 type ViewerMode = "structure" | "original" | "accessibility";
 
@@ -133,18 +134,21 @@ export function ViewerShell({
     >
       <aside
         style={{
-          borderRight: "1px solid #e5e7eb",
+          borderRight: `1px solid ${COLORS.bgInverseSurface}`,
           padding: 20,
-          background: "#ffffff",
+          background: COLORS.bgInverse,
+          color: COLORS.textOnInverse,
           display: "flex",
           flexDirection: "column",
           gap: 16,
           overflow: "auto",
         }}
       >
-        <div style={{ fontWeight: 700, fontSize: 14 }}>문서 목차</div>
+        <div style={{ fontWeight: 700, fontSize: 14, color: COLORS.textOnInverse }}>
+          문서 목차
+        </div>
         {selectedDocument && (
-          <div style={{ fontSize: 12, color: "#8390a5" }}>
+          <div style={{ fontSize: 12, color: COLORS.textInverseSecondary }}>
             {selectedDocument.fileName} · {activePage}
           </div>
         )}
@@ -271,16 +275,17 @@ export function ViewerShell({
 
       <aside
         style={{
-          borderLeft: "1px solid #e5e7eb",
+          borderLeft: `1px solid ${COLORS.bgInverseSurface}`,
           padding: 20,
-          background: "#ffffff",
+          background: COLORS.bgInverse,
+          color: COLORS.textOnInverse,
           overflow: "auto",
         }}
       >
-        <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 16 }}>
+        <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 16, color: COLORS.textOnInverse }}>
           up to stage
         </div>
-        <div style={{ fontSize: 12, color: "#8390a5", marginBottom: 16 }}>
+        <div style={{ fontSize: 12, color: COLORS.textInverseSecondary, marginBottom: 16 }}>
           case {caseId}
         </div>
 
@@ -288,8 +293,8 @@ export function ViewerShell({
           <div
             style={{
               padding: 16,
-              borderRadius: 12,
-              background: "#f7f7fc",
+              borderRadius: RADIUS.md,
+              background: COLORS.bgInverseSurface,
               marginBottom: 16,
             }}
           >
@@ -304,11 +309,11 @@ export function ViewerShell({
               {activeSourceNumber !== undefined && activeSourceNumber > 0 && (
                 <SourceBadge number={activeSourceNumber} />
               )}
-              <span style={{ fontSize: 12, color: "#8390a5" }}>
+              <span style={{ fontSize: 12, color: COLORS.textInverseSecondary }}>
                 {selectedDocument?.fileName} · {activeSource.page}쪽
               </span>
             </div>
-            <p style={{ fontSize: 14, lineHeight: 1.5, margin: 0 }}>
+            <p style={{ fontSize: 14, lineHeight: 1.5, margin: 0, color: COLORS.textOnInverse }}>
               &quot;{activeSource.text}&quot;
             </p>
           </div>
@@ -316,17 +321,18 @@ export function ViewerShell({
           <div
             style={{
               padding: 16,
-              borderRadius: 12,
-              background: "#f7f7fc",
-              color: "#8390a5",
+              borderRadius: RADIUS.md,
+              background: COLORS.bgInverseSurface,
+              color: COLORS.textInverseSecondary,
               fontSize: 14,
+              marginBottom: 16,
             }}
           >
             근거를 눌러 원문의 위치로 이동하세요.
           </div>
         )}
 
-        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8 }}>
+        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, color: COLORS.textOnInverse }}>
           문서별 근거
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -342,9 +348,10 @@ export function ViewerShell({
                 alignItems: "flex-start",
                 gap: 8,
                 padding: 10,
-                border: "1px solid #e5e7eb",
-                borderRadius: 8,
-                background: "#fff",
+                border: "none",
+                borderRadius: RADIUS.sm,
+                background: COLORS.bgInverseSurface,
+                color: COLORS.textOnInverse,
                 cursor: "pointer",
                 textAlign: "left",
               }}
@@ -353,7 +360,7 @@ export function ViewerShell({
               <span
                 style={{
                   fontSize: 13,
-                  color: "#0a0d14",
+                  color: COLORS.textOnInverse,
                   lineHeight: 1.4,
                 }}
               >
