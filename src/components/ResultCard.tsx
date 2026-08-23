@@ -7,7 +7,7 @@ export interface ResultCardProps {
   sourceIds?: string[] | undefined;
   sourceLabels?: Record<string, string> | undefined;
   accent?: "lime" | "neutral" | "warning";
-  onSourceClick?: (sourceId: string) => void;
+  onSourceClick?: ((sourceId: string) => void) | undefined;
 }
 
 const ACCENT: Record<NonNullable<ResultCardProps["accent"]>, string> = {

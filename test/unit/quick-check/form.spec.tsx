@@ -16,7 +16,7 @@ const QUESTIONS: QuickQuestion[] = [
     options: ["서울 소재", "비서울 소재"],
     ruleText: "서울 소재 또는 비서울 소재",
     origin: "primary_notice",
-    sourceIds: [],
+    sourceIds: ["src:q1"]
   },
   {
     id: "q2",
@@ -27,7 +27,7 @@ const QUESTIONS: QuickQuestion[] = [
     required: true,
     ruleText: "서울시민 여부 확인",
     origin: "primary_notice",
-    sourceIds: [],
+    sourceIds: []
   },
   {
     id: "q3",
@@ -38,8 +38,8 @@ const QUESTIONS: QuickQuestion[] = [
     required: false,
     ruleText: "90점 이상",
     origin: "primary_notice",
-    sourceIds: [],
-  },
+    sourceIds: []
+  }
 ];
 
 describe("QuickQuestionForm", () => {
@@ -95,7 +95,24 @@ describe("QuickQuestionForm", () => {
         onSubmit={onSubmit}
       />
     );
-    fireEvent.click(screen.getByText("입력 완료"));
+    fireEvent.click(screen.getByText("지원 가능성 확인하기"));
     expect(onSubmit).toHaveBeenCalled();
+  });
+
+  it("shows a readable source label for a question", () => {
+    const onSourceClick = vi.fn();
+    render(
+      <QuickQuestionForm
+        questions={QUESTIONS}
+        answers={{}}
+        onChange={() => {}}
+        onSubmit={() => {}}
+        sourceLabels={{ "src:q1": "공고문.hwp · p.4" }}
+        onSourceClick={onSourceClick}
+      />
+    );
+
+    fireEvent.click(screen.getByText("공고문.hwp · p.4"));
+    expect(onSourceClick).toHaveBeenCalledWith("src:q1");
   });
 });

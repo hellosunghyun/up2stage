@@ -386,6 +386,12 @@ export function App() {
           answers={answers}
           onChange={(questionId, value) => setAnswers((prev) => ({ ...prev, [questionId]: value }))}
           onSubmit={() => setPanel("QUICK_CONFIRM")}
+          sourceLabels={guidanceData?.sourceLabels}
+          onSourceClick={(sourceId) => {
+            void navigateToSource(sourceId).catch((cause: unknown) => {
+              setError(cause instanceof Error ? cause.message : "원문을 열지 못했어요.");
+            });
+          }}
           {...(autoFocusId ? { autoFocusId } : {})}
         />
       )}
@@ -406,6 +412,17 @@ export function App() {
       {panel === "DECISION" && decision && (
         <Breakdown
           result={decision}
+          page={pageContext}
+          sourceLabels={guidanceData?.sourceLabels}
+          {...(guidanceData
+            ? {
+                guidance: {
+                  nearestDeadline: guidanceData.guidance.nearestDeadline,
+                  requiredSubmissions: guidanceData.guidance.requiredSubmissions,
+                  nextActions: guidanceData.guidance.nextActions
+                }
+              }
+            : {})}
           onMissingClick={(questionId) => {
             setAutoFocusId(questionId);
             setPanel("QUICK_FORM");

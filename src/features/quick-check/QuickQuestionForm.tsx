@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type CSSProperties, type FormEvent } from "react";
 import { COLORS, RADIUS } from "../../styles/tokens";
 import type { QuickQuestion, UserAnswer } from "../../core/decision/types";
+import { ScreenIntro } from "../../components/PanelShell";
 
 interface QuickQuestionFormProps {
   questions: QuickQuestion[];
@@ -8,6 +9,8 @@ interface QuickQuestionFormProps {
   onChange: (questionId: string, answer: UserAnswer) => void;
   onSubmit: () => void;
   autoFocusId?: string;
+  sourceLabels?: Record<string, string> | undefined;
+  onSourceClick?: (sourceId: string) => void;
 }
 
 function toDisplayValue(answer: UserAnswer): string {
@@ -20,7 +23,7 @@ function QuestionInput({
   question,
   answer,
   onChange,
-  inputRef,
+  inputRef
 }: {
   question: QuickQuestion;
   answer: UserAnswer;
@@ -35,7 +38,7 @@ function QuestionInput({
     background: COLORS.bgInverse,
     color: COLORS.textOnInverse,
     fontSize: 14,
-    boxSizing: "border-box",
+    boxSizing: "border-box"
   };
 
   switch (question.inputType) {
@@ -80,7 +83,9 @@ function QuestionInput({
         </select>
       );
     case "boolean":
-      return <BooleanControl value={answer === null ? null : answer === true} onChange={onChange} />;
+      return (
+        <BooleanControl value={answer === null ? null : answer === true} onChange={onChange} />
+      );
     case "date":
       return (
         <input
@@ -106,7 +111,7 @@ function QuestionInput({
 
 function BooleanControl({
   value,
-  onChange,
+  onChange
 }: {
   value: boolean | null;
   onChange: (v: UserAnswer) => void;
@@ -120,22 +125,14 @@ function BooleanControl({
     color: selected ? COLORS.textPrimary : COLORS.textOnInverse,
     fontSize: 14,
     cursor: "pointer",
-    textAlign: "center",
+    textAlign: "center"
   });
   return (
     <div style={{ display: "flex", gap: 8 }}>
-      <button
-        type="button"
-        onClick={() => onChange(true)}
-        style={optionStyle(value === true)}
-      >
+      <button type="button" onClick={() => onChange(true)} style={optionStyle(value === true)}>
         예
       </button>
-      <button
-        type="button"
-        onClick={() => onChange(false)}
-        style={optionStyle(value === false)}
-      >
+      <button type="button" onClick={() => onChange(false)} style={optionStyle(value === false)}>
         아니오
       </button>
     </div>
@@ -148,6 +145,8 @@ export function QuickQuestionForm({
   onChange,
   onSubmit,
   autoFocusId,
+  sourceLabels,
+  onSourceClick
 }: QuickQuestionFormProps) {
   const [expanded, setExpanded] = useState<Record<string, boolean>>({});
   const refs = useRef<Record<string, HTMLInputElement | HTMLSelectElement | null>>({});
@@ -164,92 +163,142 @@ export function QuickQuestionForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-      {questions.map((q) => {
-        const value = answers[q.id] ?? null;
-        const isOpen = expanded[q.id] ?? false;
-        return (
-          <div key={q.id} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-              <label
-                style={{
-                  fontSize: 14,
-                  fontWeight: 600,
-                  color: COLORS.textOnInverse,
-                }}
-              >
-                {q.label}
-              </label>
-              {q.required ? (
-                <span
-                  style={{
-                    padding: "2px 6px",
-                    borderRadius: 4,
-                    background: COLORS.brandLime,
-                    color: COLORS.textPrimary,
-                    fontSize: 10,
-                    fontWeight: 700,
-                  }}
-                >
-                  필수
-                </span>
-              ) : (
-                <span
-                  style={{
-                    fontSize: 11,
-                    color: COLORS.textInverseSecondary,
-                  }}
-                >
-                  모르면 비워도 돼요
-                </span>
-              )}
-            </div>
+    <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <ScreenIntro
+        title="내 조건을 입력해 주세요"
+        description="이 공고의 지원 가능성을 판단하는 데 사용해요."
+      />
 
-            <QuestionInput
-              question={q}
-              answer={value}
-              onChange={(v) => onChange(q.id, v)}
-              inputRef={(el) => {
-                refs.current[q.id] = el ?? null;
-              }}
-            />
-
-            {q.ruleText && q.ruleText.length > 0 && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setExpanded((prev) => ({ ...prev, [q.id]: !isOpen }))
-                  }
+      <div
+        style={{
+          padding: "16px 12px",
+          borderRadius: RADIUS.md,
+          background: COLORS.bgInverseSurface,
+          display: "flex",
+          flexDirection: "column",
+          gap: 20
+        }}
+      >
+        {questions.map((question) => {
+          const value = answers[question.id] ?? null;
+          const isOpen = expanded[question.id] ?? false;
+          return (
+            <div key={question.id} style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <label
                   style={{
-                    background: "transparent",
-                    border: "none",
-                    color: COLORS.textInverseSecondary,
-                    fontSize: 12,
-                    cursor: "pointer",
-                    textAlign: "left",
-                    padding: 0,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: COLORS.textOnInverse
                   }}
                 >
-                  왜 묻나요? {isOpen ? "▲" : "▼"}
-                </button>
-                {isOpen && (
-                  <p
+                  {question.label}
+                </label>
+                {question.required ? (
+                  <span
                     style={{
-                      margin: 0,
-                      fontSize: 12,
-                      lineHeight: 1.5,
-                      color: COLORS.textInverseSecondary,
+                      padding: "2px 6px",
+                      borderRadius: 4,
+                      background: COLORS.brandLime,
+                      color: COLORS.textPrimary,
+                      fontSize: 9,
+                      fontWeight: 700
                     }}
                   >
-                    {q.ruleText}
-                  </p>
+                    필수
+                  </span>
+                ) : (
+                  <span style={{ fontSize: 10, color: COLORS.textInverseSecondary }}>
+                    모르면 비워도 돼요
+                  </span>
                 )}
               </div>
-            )}
-          </div>
-        );
-      })}
+
+              <QuestionInput
+                question={question}
+                answer={value}
+                onChange={(nextValue) => onChange(question.id, nextValue)}
+                inputRef={(element) => {
+                  refs.current[question.id] = element ?? null;
+                }}
+              />
+
+              {question.sourceIds.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {question.sourceIds.map((sourceId) => (
+                    <button
+                      key={sourceId}
+                      type="button"
+                      onClick={() => onSourceClick?.(sourceId)}
+                      style={{
+                        padding: 0,
+                        border: "none",
+                        background: "transparent",
+                        color: COLORS.actionPrimary,
+                        fontSize: 10,
+                        cursor: onSourceClick ? "pointer" : "default"
+                      }}
+                    >
+                      {sourceLabels?.[sourceId] ?? sourceId}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {question.ruleText && question.ruleText.length > 0 && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setExpanded((previous) => ({
+                        ...previous,
+                        [question.id]: !isOpen
+                      }))
+                    }
+                    style={{
+                      background: "transparent",
+                      border: "none",
+                      color: COLORS.textInverseSecondary,
+                      fontSize: 11,
+                      cursor: "pointer",
+                      textAlign: "left",
+                      padding: 0
+                    }}
+                  >
+                    왜 묻나요? {isOpen ? "▲" : "▼"}
+                  </button>
+                  {isOpen && (
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 11,
+                        lineHeight: 1.5,
+                        color: COLORS.textInverseSecondary
+                      }}
+                    >
+                      {question.ruleText}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      <div
+        style={{
+          padding: "14px 16px",
+          borderRadius: RADIUS.md,
+          background: "rgba(210, 255, 149, 0.08)",
+          fontSize: 11,
+          lineHeight: 1.55,
+          color: COLORS.textInverseSecondary
+        }}
+      >
+        모르는 정보는 비워두거나 ‘잘 모르겠어요’를 선택해 주세요. 확인되지 않은 조건은 결과에서 따로
+        알려드려요.
+      </div>
 
       <button
         type="submit"
@@ -262,10 +311,10 @@ export function QuickQuestionForm({
           fontSize: 15,
           fontWeight: 700,
           cursor: "pointer",
-          width: "100%",
+          width: "100%"
         }}
       >
-        입력 완료
+        지원 가능성 확인하기
       </button>
     </form>
   );
