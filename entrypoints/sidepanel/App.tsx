@@ -8,7 +8,11 @@ import { canStartAnalysis, getSelected } from "../../src/features/document-selec
 import { ProcessingView } from "../../src/features/processing/ProcessingView";
 import { createCase, prepareAndStart, resumeProcessing } from "../../src/core/agent/processor";
 import { getApiKey, setApiKey as persistApiKey } from "../../src/core/storage/apiKey";
-import { getCanonicalAgentResult, getCase } from "../../src/core/storage/repositories";
+import {
+  getCanonicalAgentResult,
+  getCase,
+  updateCase
+} from "../../src/core/storage/repositories";
 import type { ProcessingProgress } from "../../src/core/agent/processor";
 import { InitialGuidanceView } from "../../src/features/guidance/InitialGuidanceView";
 import { QuickQuestionForm } from "../../src/features/quick-check/QuickQuestionForm";
@@ -21,6 +25,7 @@ import {
 import { evaluateDecision } from "../../src/core/decision/evaluate";
 import type { UserAnswer, DecisionResult } from "../../src/core/decision/types";
 import type { QuickQuestion } from "../../src/core/decision/types";
+import type { CanonicalAgentResult } from "../../src/models/canonical";
 import { buildGuidanceViewData, type GuidanceViewData } from "../../src/features/guidance/adapter";
 import { SourceRegistry } from "../../src/core/evidence";
 import {
@@ -35,6 +40,13 @@ import {
   PanelShell,
   ScreenIntro
 } from "../../src/components/PanelShell";
+import {
+  QaConversation,
+  runQaPipeline,
+  type CachedFactGroup,
+  type QaConversationItem
+} from "../../src/features/qa";
+import { generateId } from "../../src/utils/id";
 
 type PanelState =
   | "DISCOVERY"
@@ -45,7 +57,8 @@ type PanelState =
   | "GUIDANCE"
   | "QUICK_FORM"
   | "QUICK_CONFIRM"
-  | "DECISION";
+  | "DECISION"
+  | "QA";
 
 const CURRENT_CASE_KEY = "up2stage_currentCaseId";
 
@@ -78,6 +91,10 @@ export function App() {
   const [guidanceData, setGuidanceData] = useState<GuidanceViewData | null>(null);
   const [questions, setQuestions] = useState<QuickQuestion[]>([]);
   const [pageContext, setPageContext] = useState<PageContext | null>(null);
+  const [agentResult, setAgentResult] = useState<CanonicalAgentResult | null>(null);
+  const [qaInput, setQaInput] = useState("");
+  const [qaMessages, setQaMessages] = useState<QaConversationItem[]>([]);
+  const [qaPending, setQaPending] = useState(false);
 
   const loadCompletedCase = useCallback(async (caseId: string) => {
     const result = await getCanonicalAgentResult(caseId);
@@ -89,6 +106,7 @@ export function App() {
       throw new Error("Initial Guidance 결과를 찾지 못했어요.");
     }
     setNavigationRegistry(new SourceRegistry().register(result.sources));
+    setAgentResult(result);
     setGuidanceData(viewData);
     setQuestions(result.quickQuestions);
   }, []);
@@ -235,10 +253,76 @@ export function App() {
     void chrome.storage.session.remove(CURRENT_CASE_KEY);
     setProgress(null);
     setGuidanceData(null);
+    setAgentResult(null);
     setQuestions([]);
+    setQaInput("");
+    setQaMessages([]);
     setPanel("DISCOVERY");
     void load();
   }, [load]);
+
+  const cachedFacts = useMemo<CachedFactGroup[]>(() => {
+    if (!guidanceData) return [];
+    return [
+      {
+        kind: "schedule",
+        values: guidanceData.guidance.nearestDeadline
+          ? [guidanceData.guidance.nearestDeadline]
+          : [],
+        sourceIds: guidanceData.sourceGroups.nearestDeadline
+      },
+      {
+        kind: "submissions",
+        values: guidanceData.guidance.requiredSubmissions,
+        sourceIds: guidanceData.sourceGroups.requiredSubmissions
+      },
+      {
+        kind: "cautions",
+        values: guidanceData.guidance.topCautions,
+        sourceIds: guidanceData.sourceGroups.topCautions
+      },
+      {
+        kind: "actions",
+        values: guidanceData.guidance.nextActions,
+        sourceIds: guidanceData.sourceGroups.nextActions
+      }
+    ];
+  }, [guidanceData]);
+
+  const askQuestion = useCallback(
+    async (question: string) => {
+      const normalized = question.trim();
+      if (!normalized || !agentResult || !apiKey || qaPending) return;
+      setQaPending(true);
+      setQaInput("");
+      setPanel("QA");
+      setError(null);
+      try {
+        const caseRecord = await getCase(agentResult.caseId);
+        const result = await runQaPipeline({
+          apiKey,
+          result: agentResult,
+          question: normalized,
+          cachedFacts,
+          ...(caseRecord?.vectorStoreId
+            ? { vectorStoreId: caseRecord.vectorStoreId }
+            : {}),
+          onVectorStoreCreated: async (vectorStoreId) => {
+            await updateCase(agentResult.caseId, { vectorStoreId });
+          }
+        });
+        setQaMessages((messages) => [
+          ...messages,
+          { id: generateId(), question: normalized, result }
+        ]);
+      } catch (cause: unknown) {
+        setError(cause instanceof Error ? cause.message : "질문에 답하지 못했어요.");
+      } finally {
+        setQaPending(false);
+      }
+    },
+    [agentResult, apiKey, cachedFacts, qaPending]
+  );
 
   return (
     <PanelShell
@@ -246,7 +330,7 @@ export function App() {
         <PanelHeader loading={isLoading} onRefresh={() => void load()} onMenu={openOptions} />
       }
       footer={
-        panel === "GUIDANCE" || panel === "DECISION" ? (
+        panel === "GUIDANCE" || panel === "DECISION" || panel === "QA" ? (
           <PanelFooter>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               <SuggestionChips
@@ -254,10 +338,21 @@ export function App() {
                   if (chip === "eligibility") {
                     setAutoFocusId(undefined);
                     setPanel("QUICK_FORM");
+                  } else if (chip === "preparation") {
+                    void askQuestion("무엇을 준비해야 하나요?");
+                  } else {
+                    void askQuestion("주의사항을 알려줘");
                   }
                 }}
+                disabled={qaPending}
               />
-              <ChatComposer />
+              <ChatComposer
+                value={qaInput}
+                onChange={setQaInput}
+                onSubmit={() => void askQuestion(qaInput)}
+                disabled={!agentResult}
+                busy={qaPending}
+              />
             </div>
           </PanelFooter>
         ) : undefined
@@ -380,6 +475,18 @@ export function App() {
             setAutoFocusId(questionId);
             setPanel("QUICK_FORM");
           }}
+          onSourceClick={(sourceId) => {
+            void navigateToSource(sourceId).catch((cause: unknown) => {
+              setError(cause instanceof Error ? cause.message : "원문을 열지 못했어요.");
+            });
+          }}
+        />
+      )}
+
+      {panel === "QA" && guidanceData && (
+        <QaConversation
+          messages={qaMessages}
+          sourceLabels={guidanceData.sourceLabels}
           onSourceClick={(sourceId) => {
             void navigateToSource(sourceId).catch((cause: unknown) => {
               setError(cause instanceof Error ? cause.message : "원문을 열지 못했어요.");

@@ -177,12 +177,29 @@ export function PanelFooter({ children }: { children: ReactNode }) {
   );
 }
 
-export function ChatComposer() {
+export function ChatComposer({
+  value = "",
+  onChange,
+  onSubmit,
+  disabled = false,
+  busy = false
+}: {
+  value?: string;
+  onChange?: (value: string) => void;
+  onSubmit?: () => void;
+  disabled?: boolean;
+  busy?: boolean;
+} = {}) {
+  const interactive = Boolean(onChange && onSubmit) && !disabled;
   return (
-    <div
+    <form
       aria-label="후속 질문 입력"
-      aria-disabled="true"
-      title="후속 질문 기능은 준비 중입니다"
+      aria-disabled={!interactive}
+      title={interactive ? undefined : "문서 분석 후 질문할 수 있어요"}
+      onSubmit={(event) => {
+        event.preventDefault();
+        if (interactive && !busy && value.trim()) onSubmit?.();
+      }}
       style={{
         height: 52,
         padding: "0 14px 0 16px",
@@ -192,14 +209,41 @@ export function ChatComposer() {
         alignItems: "center",
         justifyContent: "space-between",
         color: COLORS.textInverseSecondary,
-        fontSize: 13
+        fontSize: 13,
+        gap: 8
       }}
     >
-      <span>궁금한 것을 물어보세요</span>
-      <span aria-hidden="true" style={{ fontSize: 20 }}>
+      <input
+        aria-label="궁금한 것을 물어보세요"
+        value={value}
+        onChange={(event) => onChange?.(event.target.value)}
+        disabled={!interactive || busy}
+        placeholder={busy ? "원문 근거를 확인하고 있어요" : "궁금한 것을 물어보세요"}
+        style={{
+          minWidth: 0,
+          flex: 1,
+          border: "none",
+          outline: "none",
+          background: "transparent",
+          color: COLORS.textOnInverse,
+          fontSize: 13
+        }}
+      />
+      <button
+        type="submit"
+        aria-label="질문 보내기"
+        disabled={!interactive || busy || value.trim().length === 0}
+        style={{
+          border: "none",
+          background: "transparent",
+          color: COLORS.actionPrimary,
+          fontSize: 20,
+          cursor: interactive && !busy && value.trim() ? "pointer" : "not-allowed"
+        }}
+      >
         ↗
-      </span>
-    </div>
+      </button>
+    </form>
   );
 }
 
