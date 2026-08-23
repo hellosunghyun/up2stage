@@ -3,4 +3,5 @@ export interface DownloadedDocument {
   fileName: string;
   extension: string;
   bytes: ArrayBuffer;
+  contentHash: string;
 }
