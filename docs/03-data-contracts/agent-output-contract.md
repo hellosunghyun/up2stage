@@ -177,6 +177,25 @@ Adapter 책임:
 7. citation mapping 추출
 8. canonical model 저장
 
+통합 이후 feature가 소비하는 단일 결과 계약:
+
+```ts
+export interface CanonicalAgentResult {
+  caseId: string;
+  agentJobId: string;
+  status: 'completed' | 'failed';
+  completedAt: number;
+  documents: DocumentRecord[];
+  parseElements: ParseElement[];
+  sources: SourceRecord[];
+  extracts: ExtractRecord[];
+  guidance: GuidanceRecord | null;
+  quickQuestions: QuickQuestionRecord[];
+}
+```
+
+Side Panel, Guidance, Quick Check, Evidence, Viewer는 raw Agent Job을 직접 파싱하지 않는다. IndexedDB의 canonical table을 조합한 이 결과 또는 전용 adapter를 사용한다.
+
 ---
 
 ---

@@ -21,7 +21,15 @@ searchIndexes
 chatMessages
 conflicts
 actionItems
+documentFiles
 ```
+
+Integration 기준 schema version은 v2다.
+
+- v1의 `cases`, `documents`, `parseElements`, `extracts`, `guidance`, `documentCache`, `agentJobs`를 보존한다.
+- v2에서 `sources`, `quickQuestions`, `documentFiles`, `userAnswers`, `decisions`, `actionItems`를 추가한다.
+- `agentJobs`는 raw read-back 용도이고 feature UI는 canonical table만 소비한다.
+- `documentFiles`는 Viewer가 원본 URL을 다시 요청하지 않도록 사용자가 선택한 문서 bytes를 Case 범위에 저장한다.
 
 ---
 

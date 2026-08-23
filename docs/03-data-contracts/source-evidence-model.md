@@ -49,6 +49,8 @@ export interface SourceRecord {
 
 모든 downstream 근거 UI는 SourceRecord를 참조한다.
 
+`page`는 여러 입력 문서를 합친 Agent Job 전역 page가 아니라 `documentId`가 가리키는 문서 내부의 1-based page다. Agent Extract의 전역 page는 adapter에서 document `pageRange`를 기준으로 local page로 변환한 뒤 Source ID와 Viewer에 전달한다.
+
 ---
 
 ---
@@ -245,5 +247,7 @@ async function navigateToSource(sourceId: string) {
   accessibility.focus(source.semanticNodeId);
 }
 ```
+
+Extension context 경계에서는 같은 public 함수가 Source Registry를 조회해 Viewer를 열고, Viewer 내부에서는 동일 함수가 renderer의 page 이동, source focus, outline 선택, accessibility focus를 순서대로 수행한다.
 
 ---
