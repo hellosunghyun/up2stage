@@ -7,8 +7,32 @@ import {
   canStartAnalysis,
   getSelected,
 } from "../../src/features/document-selection/selection";
+import { InitialGuidanceView } from "../../src/features/guidance/InitialGuidanceView";
+import { QuickQuestionForm } from "../../src/features/quick-check/QuickQuestionForm";
+import { QuickConfirm } from "../../src/features/quick-check/QuickConfirm";
+import { Breakdown } from "../../src/features/quick-check/Breakdown";
+import {
+  SuggestionChips,
+  type SuggestionChip,
+} from "../../src/features/quick-check/SuggestionChips";
+import { evaluateDecision } from "../../src/core/decision/evaluate";
+import type { UserAnswer, DecisionResult } from "../../src/core/decision/types";
+import {
+  DEMO_INITIAL_GUIDANCE,
+  DEMO_PRIMARY_NOTICE,
+  DEMO_APPLICATION_FORM,
+  DEMO_PROCEDURE,
+  DEMO_QUICK_QUESTIONS,
+} from "./fixture";
 
-type PanelState = "DISCOVERY" | "SELECTION" | "CONSENT_CONFIRM";
+type PanelState =
+  | "DISCOVERY"
+  | "SELECTION"
+  | "CONSENT_CONFIRM"
+  | "GUIDANCE"
+  | "QUICK_FORM"
+  | "QUICK_CONFIRM"
+  | "DECISION";
 
 const COLORS = {
   bgCanvas: "#ffffff",
@@ -43,6 +67,9 @@ export function App() {
   const [consentChecked, setConsentChecked] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [answers, setAnswers] = useState<Record<string, UserAnswer>>({});
+  const [autoFocusId, setAutoFocusId] = useState<string | undefined>(undefined);
+  const [decision, setDecision] = useState<DecisionResult | null>(null);
 
   const load = useCallback(async () => {
     setIsLoading(true);
@@ -181,12 +208,87 @@ export function App() {
             consentChecked={consentChecked}
             onToggleConsent={() => setConsentChecked((v) => !v)}
             onStart={() => {
-              console.log("Phase 3: upload", selectedDocs);
+              setAnswers({});
+              setDecision(null);
+              setPanel("GUIDANCE");
             }}
             onBack={() => setPanel("SELECTION")}
           />
         )}
+
+        {panel === "GUIDANCE" && (
+          <InitialGuidanceView
+            guidance={DEMO_INITIAL_GUIDANCE}
+            primaryNotice={DEMO_PRIMARY_NOTICE}
+            applicationForm={DEMO_APPLICATION_FORM}
+            procedure={DEMO_PROCEDURE}
+            checklistCautions={[]}
+            onQuickCheck={() => setPanel("QUICK_FORM")}
+            onMissingClick={() => setPanel("QUICK_FORM")}
+            onSourceClick={(sourceId) =>
+              console.log("[up2stage:sidepanel] source:", sourceId)
+            }
+          />
+        )}
+
+        {panel === "QUICK_FORM" && (
+          <QuickQuestionForm
+            questions={DEMO_QUICK_QUESTIONS}
+            answers={answers}
+            onChange={(questionId, value) =>
+              setAnswers((prev) => ({ ...prev, [questionId]: value }))
+            }
+            onSubmit={() => setPanel("QUICK_CONFIRM")}
+            {...(autoFocusId ? { autoFocusId } : {})}
+          />
+        )}
+
+        {panel === "QUICK_CONFIRM" && (
+          <QuickConfirm
+            questions={DEMO_QUICK_QUESTIONS}
+            answers={answers}
+            onBack={() => setPanel("QUICK_FORM")}
+            onConfirm={() => {
+              const result = evaluateDecision(DEMO_QUICK_QUESTIONS, answers);
+              setDecision(result);
+              setPanel("DECISION");
+            }}
+          />
+        )}
+
+        {panel === "DECISION" && decision && (
+          <Breakdown
+            result={decision}
+            onMissingClick={(questionId) => {
+              setAutoFocusId(questionId);
+              setPanel("QUICK_FORM");
+            }}
+            onSourceClick={(sourceId) =>
+              console.log("[up2stage:sidepanel] source:", sourceId)
+            }
+          />
+        )}
       </main>
+
+      {(panel === "GUIDANCE" || panel === "DECISION") && (
+        <div
+          style={{
+            flexShrink: 0,
+            padding: "12px 16px",
+            borderTop: `1px solid ${COLORS.bgInverseSurface}`,
+            background: COLORS.bgInverse,
+          }}
+        >
+          <SuggestionChips
+            onSelect={(chip: SuggestionChip) => {
+              if (chip === "eligibility") {
+                setAutoFocusId(undefined);
+                setPanel("QUICK_FORM");
+              }
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 }
