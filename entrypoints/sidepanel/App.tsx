@@ -338,7 +338,7 @@ export function App() {
               type="password"
               value={apiKeyInput}
               onChange={(e) => setApiKeyInput(e.target.value)}
-              placeholder="up-..."
+              placeholder="up_..."
               style={{
                 padding: "12px",
                 borderRadius: RADIUS.sm,

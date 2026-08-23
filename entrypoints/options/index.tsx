@@ -64,7 +64,7 @@ function App() {
           type="password"
           value={apiKey}
           onChange={(e) => setKeyState(e.target.value)}
-          placeholder="up-..."
+          placeholder="up_..."
           style={{
             width: "100%",
             padding: 12,
