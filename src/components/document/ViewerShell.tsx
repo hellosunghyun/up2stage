@@ -9,30 +9,25 @@ import { DocumentSelector } from "./DocumentSelector";
 import { ModeTabs } from "./ModeTabs";
 import { Outline } from "./Outline";
 import { COLORS, RADIUS } from "../../styles/tokens";
-import { ViewerGuidancePanel, type ViewerGuidanceData } from "./ViewerGuidancePanel";
 
 type ViewerMode = "structure" | "original" | "accessibility";
 
 export interface ViewerShellProps {
-  caseId: string;
   documents: DocumentRecord[];
   sources: SourceRecord[];
   documentBytes: Map<string, ArrayBuffer>;
   sourceRegistry: SourceRegistry;
   initialDocumentId: string | undefined;
   initialSourceId: string | undefined;
-  guidance?: ViewerGuidanceData | undefined;
 }
 
 export function ViewerShell({
-  caseId,
   documents,
   sources,
   documentBytes,
   sourceRegistry,
   initialDocumentId,
-  initialSourceId,
-  guidance
+  initialSourceId
 }: ViewerShellProps) {
   const [selectedDocumentId, setSelectedDocumentId] = useState(
     initialDocumentId ?? documents[0]?.id ?? ""
@@ -117,7 +112,7 @@ export function ViewerShell({
     <div
       style={{
         display: "grid",
-        gridTemplateColumns: "224px minmax(0, 1fr) 443px",
+        gridTemplateColumns: "224px minmax(0, 1fr)",
         height: "100vh",
         fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         color: COLORS.textPrimary,
@@ -257,15 +252,6 @@ export function ViewerShell({
         </div>
       </section>
 
-      <ViewerGuidancePanel
-        caseId={caseId}
-        guidance={guidance}
-        activeSource={activeSource}
-        selectedDocument={selectedDocument}
-        sources={sources}
-        sourceRegistry={sourceRegistry}
-        viewer={viewer}
-      />
     </div>
   );
 }

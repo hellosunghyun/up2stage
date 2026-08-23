@@ -5,19 +5,15 @@ import { SourceRegistry } from "../../src/core/evidence";
 import {
   getDocumentFilesForCase,
   getDocumentsForCase,
-  getSourcesForCase,
-  getCanonicalAgentResult
+  getSourcesForCase
 } from "../../src/core/storage/repositories";
 import type { DocumentRecord, SourceRecord } from "../../src/models/canonical";
-import { buildGuidanceViewData } from "../../src/features/guidance/adapter";
-import type { ViewerGuidanceData } from "../../src/components/document/ViewerGuidancePanel";
 
 interface ViewerData {
   documents: DocumentRecord[];
   sources: SourceRecord[];
   bytes: Map<string, ArrayBuffer>;
   registry: SourceRegistry;
-  guidance?: ViewerGuidanceData;
 }
 
 function App() {
@@ -37,35 +33,17 @@ function App() {
     void Promise.all([
       getDocumentsForCase(caseId),
       getSourcesForCase(caseId),
-      getDocumentFilesForCase(caseId),
-      getCanonicalAgentResult(caseId)
+      getDocumentFilesForCase(caseId)
     ])
-      .then(([documents, sources, files, agentResult]) => {
+      .then(([documents, sources, files]) => {
         if (documents.length === 0) {
           throw new Error("저장된 문서를 찾지 못했어요.");
         }
-        const guidanceData = agentResult ? buildGuidanceViewData(agentResult) : undefined;
-        const guidance: ViewerGuidanceData | undefined = guidanceData
-          ? {
-              overview: guidanceData.guidance.overview,
-              topRequirements: guidanceData.guidance.topRequirements,
-              nearestDeadline: guidanceData.guidance.nearestDeadline,
-              requiredSubmissions: guidanceData.guidance.requiredSubmissions,
-              nextActions: guidanceData.guidance.nextActions,
-              sourceGroups: {
-                topRequirements: guidanceData.sourceGroups.topRequirements,
-                nearestDeadline: guidanceData.sourceGroups.nearestDeadline,
-                requiredSubmissions: guidanceData.sourceGroups.requiredSubmissions
-              },
-              sourceLabels: guidanceData.sourceLabels
-            }
-          : undefined;
         setData({
           documents,
           sources,
           bytes: new Map(files.map((file) => [file.documentId, file.bytes])),
-          registry: new SourceRegistry().register(sources),
-          ...(guidance ? { guidance } : {})
+          registry: new SourceRegistry().register(sources)
         });
       })
       .catch((cause: unknown) => {
@@ -82,14 +60,12 @@ function App() {
 
   return (
     <ViewerShell
-      caseId={caseId}
       documents={data.documents}
       sources={data.sources}
       documentBytes={data.bytes}
       sourceRegistry={data.registry}
       initialDocumentId={documentId}
       initialSourceId={sourceId}
-      {...(data.guidance ? { guidance: data.guidance } : {})}
     />
   );
 }
