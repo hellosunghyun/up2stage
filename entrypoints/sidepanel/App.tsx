@@ -266,59 +266,12 @@ export function App() {
       {error && <p style={{ margin: 0, color: COLORS.brandLime }}>{getUserFriendlyError(error)}</p>}
 
       {panel === "API_KEY" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          <h2 style={{ fontSize: 19, fontWeight: 700, margin: 0 }}>API Key를 입력해주세요</h2>
-          <p style={{ fontSize: 14, color: COLORS.textInverseSecondary, margin: 0 }}>
-            Upstage AI 사용을 위해 API Key가 필요해요. Key는 이 브라우저 세션 동안만 메모리에
-            남습니다.
-          </p>
-          <input
-            type="password"
-            value={apiKeyInput}
-            onChange={(e) => setApiKeyInput(e.target.value)}
-            placeholder="up_..."
-            style={{
-              padding: "12px",
-              borderRadius: RADIUS.sm,
-              border: `1px solid ${COLORS.textInverseSecondary}`,
-              background: COLORS.bgInverseSurface,
-              color: COLORS.textOnInverse,
-              fontSize: 14
-            }}
-          />
-          <button
-            onClick={() => {
-              void handleSaveApiKey();
-            }}
-            disabled={!apiKeyInput.trim()}
-            style={{
-              padding: "14px 16px",
-              borderRadius: RADIUS.md,
-              border: "none",
-              background: COLORS.brandLime,
-              color: COLORS.textPrimary,
-              fontSize: 15,
-              fontWeight: 700,
-              cursor: apiKeyInput.trim() ? "pointer" : "not-allowed"
-            }}
-          >
-            Key 확인 및 저장
-          </button>
-          <button
-            onClick={() => openOptions()}
-            style={{
-              padding: "12px",
-              borderRadius: RADIUS.sm,
-              border: `1px solid ${COLORS.textInverseSecondary}`,
-              background: "transparent",
-              color: COLORS.textOnInverse,
-              fontSize: 13,
-              cursor: "pointer"
-            }}
-          >
-            설정 페이지에서 입력
-          </button>
-        </div>
+        <ApiKeySetup
+          value={apiKeyInput}
+          onChange={setApiKeyInput}
+          onSubmit={() => void handleSaveApiKey()}
+          onHelp={openOptions}
+        />
       )}
 
       {panel === "DISCOVERY" && (
@@ -437,6 +390,98 @@ export function App() {
     </PanelShell>
   );
 }
+
+export function ApiKeySetup({
+  value,
+  onChange,
+  onSubmit,
+  onHelp
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  onSubmit: () => void;
+  onHelp: () => void;
+}) {
+  const canSubmit = value.trim().length > 0;
+  return (
+    <div
+      style={{
+        minHeight: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        gap: 28
+      }}
+    >
+      <ScreenIntro
+        title="Upstage를 연결해 주세요"
+        description="선택한 문서를 분석할 수 있도록 API Key를 입력해 주세요. Key는 현재 브라우저 세션에만 보관됩니다."
+      />
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        <label htmlFor="upstage-api-key" style={{ fontSize: 12, fontWeight: 700 }}>
+          API Key
+        </label>
+        <input
+          id="upstage-api-key"
+          type="password"
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder="Upstage API Key를 붙여넣어 주세요"
+          style={{
+            height: 52,
+            padding: "0 14px",
+            borderRadius: RADIUS.md,
+            border: `1px solid ${COLORS.bgInverseSurface}`,
+            background: COLORS.bgInverseSurface,
+            color: COLORS.textOnInverse,
+            fontSize: 13
+          }}
+        />
+      </div>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        <button type="button" onClick={onHelp} style={helpButtonStyle}>
+          <span style={{ color: COLORS.brandLime }}>?</span> API Key는 어디서 찾나요?
+        </button>
+        <button type="button" onClick={onHelp} style={helpButtonStyle}>
+          <span style={{ color: COLORS.brandLime }}>ⓘ</span> 이 키를 입력하면 무엇이 연결되나요?
+        </button>
+      </div>
+
+      <button
+        type="button"
+        onClick={onSubmit}
+        disabled={!canSubmit}
+        style={{
+          padding: "14px 16px",
+          borderRadius: RADIUS.md,
+          border: "none",
+          background: canSubmit ? COLORS.brandLime : COLORS.bgInverseSurface,
+          color: canSubmit ? COLORS.textPrimary : COLORS.textInverseSecondary,
+          fontSize: 15,
+          fontWeight: 700,
+          cursor: canSubmit ? "pointer" : "not-allowed"
+        }}
+      >
+        연결하기
+      </button>
+    </div>
+  );
+}
+
+const helpButtonStyle = {
+  padding: "12px 16px",
+  borderRadius: 999,
+  border: "none",
+  background: "rgba(255,255,255,0.06)",
+  color: COLORS.textOnInverse,
+  display: "flex",
+  alignItems: "center",
+  gap: 10,
+  fontSize: 13,
+  cursor: "pointer"
+} as const;
 
 export function DiscoveryView({
   attachments,

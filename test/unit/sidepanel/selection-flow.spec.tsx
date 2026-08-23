@@ -1,6 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { ConsentView, DiscoveryView, SelectionView } from "../../../entrypoints/sidepanel/App";
+import {
+  ApiKeySetup,
+  ConsentView,
+  DiscoveryView,
+  SelectionView
+} from "../../../entrypoints/sidepanel/App";
 import type { AttachmentPayload } from "../../../src/core/messaging/protocol";
 
 afterEach(cleanup);
@@ -25,6 +30,23 @@ const attachments: AttachmentPayload[] = [
 ];
 
 describe("side panel discovery and selection flow", () => {
+  it("enables the Upstage connection only after a key is entered", () => {
+    const onSubmit = vi.fn();
+    const onHelp = vi.fn();
+    const { rerender } = render(
+      <ApiKeySetup value="" onChange={() => {}} onSubmit={onSubmit} onHelp={onHelp} />
+    );
+    expect(screen.getByRole("button", { name: "연결하기" }).hasAttribute("disabled")).toBe(true);
+
+    rerender(
+      <ApiKeySetup value="up_test" onChange={() => {}} onSubmit={onSubmit} onHelp={onHelp} />
+    );
+    fireEvent.click(screen.getByRole("button", { name: "연결하기" }));
+    fireEvent.click(screen.getByRole("button", { name: /API Key는 어디서 찾나요/ }));
+    expect(onSubmit).toHaveBeenCalledOnce();
+    expect(onHelp).toHaveBeenCalledOnce();
+  });
+
   it("starts document selection from the primary discovery action", () => {
     const onStart = vi.fn();
     render(<DiscoveryView attachments={attachments} onStart={onStart} />);
