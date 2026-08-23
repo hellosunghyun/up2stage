@@ -77,12 +77,28 @@ export class HwpRenderer implements DocumentRendererAdapter {
     if (!wrapper) {
       return;
     }
+    wrapper.style.position = "relative";
+
     const overlay = document.createElement("div");
     overlay.style.position = "absolute";
-    overlay.style.inset = "0";
-    overlay.style.background = "rgba(210,255,149,0.42)";
     overlay.style.pointerEvents = "none";
-    wrapper.style.position = "relative";
+    overlay.style.background = "rgba(210,255,149,0.42)";
+
+    if (source.polygon && source.polygon.length >= 2) {
+      const xs = source.polygon.map((p) => p.x);
+      const ys = source.polygon.map((p) => p.y);
+      const left = Math.min(...xs);
+      const top = Math.min(...ys);
+      const right = Math.max(...xs);
+      const bottom = Math.max(...ys);
+      overlay.style.left = `${left * 100}%`;
+      overlay.style.top = `${top * 100}%`;
+      overlay.style.width = `${(right - left) * 100}%`;
+      overlay.style.height = `${(bottom - top) * 100}%`;
+    } else {
+      overlay.style.inset = "0";
+    }
+
     wrapper.appendChild(overlay);
   }
 
