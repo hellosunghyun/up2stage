@@ -13,7 +13,7 @@ export default defineConfig({
     description:
       "웹에서 마주친 여러 문서를 구조화되고 신뢰할 수 있으며 접근 가능한 안내로 펼칩니다.",
     permissions: ["activeTab", "sidePanel", "storage", "scripting"],
-    host_permissions: ["https://api.upstage.ai/*"],
+    host_permissions: ["https://api.upstage.ai/*", "http://hissf.or.kr/*"],
     optional_host_permissions: ["https://*/*", "http://*/*"],
     action: {
       default_title: "up to stage 열기"

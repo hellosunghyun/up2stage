@@ -32,6 +32,32 @@ async function sendToContent<T>(name: string): Promise<T> {
     return result;
   } catch (e) {
     const message = e instanceof Error ? e.message : String(e);
+    console.log("[up2stage:background] sendToContent first try failed:", message);
+
+    if (message.includes("Receiving end does not exist")) {
+      try {
+        await chrome.scripting.executeScript({
+          target: { tabId },
+          files: ["content-scripts/content.js"],
+          world: "ISOLATED",
+        });
+        console.log("[up2stage:background] content script re-injected");
+      } catch (injectError) {
+        const injectMessage = injectError instanceof Error ? injectError.message : String(injectError);
+        console.log("[up2stage:background] content script re-injection skipped:", injectMessage);
+      }
+
+      try {
+        const result = (await chrome.tabs.sendMessage(tabId, { name, data: undefined })) as T;
+        console.log(`[up2stage:background] sendToContent retry response:`, result);
+        return result;
+      } catch (retryError) {
+        const retryMessage = retryError instanceof Error ? retryError.message : String(retryError);
+        console.error("[up2stage:background] sendToContent retry failed:", retryMessage);
+        throw new Error(friendlyMessagingError(retryMessage), { cause: retryError });
+      }
+    }
+
     console.error("[up2stage:background] sendToContent failed:", message);
     throw new Error(friendlyMessagingError(message), { cause: e });
   }
