@@ -12,3 +12,4 @@ test-results/
 .dev-profile/
 .chrome-profile/
 artifacts/
+output/playwright/
