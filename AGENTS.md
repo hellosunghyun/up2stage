@@ -95,21 +95,23 @@
 - Viewer / Source navigation: integration + manual visual check
 - 접근성: keyboard, visible focus, axe, VoiceOver 확인
 
-가능한 경우 다음을 실행한다.
+커밋 전에는 반드시 다음을 실행하고 모두 통과해야 한다.
 
 ```bash
+pnpm build
 pnpm lint
 pnpm typecheck
 pnpm test
-pnpm build
 ```
 
-전체 검증이 불가능하면 실행한 것과 실행하지 못한 이유를 커밋 본문 또는 작업 보고에 남긴다.
+`pnpm check`는 위 네 단계를 한 번에 실행한다. 전체 검증이 불가능하면 실행한 것과 실행하지 못한 이유를 커밋 본문 또는 작업 보고에 남긴다.
 
 ## 8. 커밋 규칙
 
 사용자가 눈으로 확인할 수 있는 기능 하나가 완성될 때마다 즉시 커밋한다.
 여러 기능을 한 커밋에 쌓지 않는다.
+
+모든 커밋 전 `pnpm build`를 포함한 검증을 통과해야 하며, 실패 시 커밋하지 않는다.
 
 필수 형식:
 
