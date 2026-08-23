@@ -4,7 +4,11 @@ import type { DocumentRecord } from "../../models/document";
 import type { SourceRecord } from "../../models/source";
 import type { DocumentRendererAdapter } from "../types";
 
-pdfjs.GlobalWorkerOptions.workerSrc = "";
+const pdfWorkerUrl = new URL(
+  "pdfjs-dist/build/pdf.worker.mjs",
+  import.meta.url
+).toString();
+pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
 export class PdfRenderer implements DocumentRendererAdapter {
   private container: HTMLElement | null = null;
