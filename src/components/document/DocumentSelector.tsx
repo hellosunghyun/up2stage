@@ -1,3 +1,4 @@
+import { COLORS, RADIUS } from "../../styles/tokens";
 import type { DocumentRecord } from "../../models/canonical";
 
 export interface DocumentSelectorProps {
@@ -21,7 +22,7 @@ export function DocumentSelector({
         alignItems: "center",
         gap: 12,
         fontSize: 13,
-        color: "#0a0d14",
+        color: COLORS.textPrimary,
       }}
     >
       <select
@@ -29,10 +30,10 @@ export function DocumentSelector({
         onChange={(e) => onSelect(e.target.value)}
         style={{
           padding: "6px 10px",
-          borderRadius: 8,
-          border: "1px solid #e5e7eb",
-          background: "#fff",
-          color: "#0a0d14",
+          borderRadius: RADIUS.sm,
+          border: `1px solid ${COLORS.border}`,
+          background: COLORS.bgCanvas,
+          color: COLORS.textPrimary,
           fontSize: 13,
           minWidth: 160,
         }}
@@ -44,7 +45,7 @@ export function DocumentSelector({
           </option>
         ))}
       </select>
-      <span style={{ color: "#8390a5" }}>
+      <span style={{ color: COLORS.textSecondary }}>
         {selected ? `${currentIndex + 1} / ${documents.length}` : ""}
       </span>
     </div>

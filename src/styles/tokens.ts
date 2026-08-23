@@ -4,6 +4,7 @@
  */
 export const COLORS = {
   bgCanvas: "#ffffff",
+  bgSurface: "#f7f7fc",
   bgInverse: "#0a0d14",
   bgInverseSurface: "#111722",
   brandLime: "#d2ff95",

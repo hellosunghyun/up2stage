@@ -39,6 +39,7 @@ import {
   navigateToSource,
   setNavigationRegistry,
 } from "../../src/features/source-navigation/navigate";
+import { COLORS, RADIUS } from "../../src/styles/tokens";
 
 type PanelState =
   | "DISCOVERY"
@@ -50,25 +51,6 @@ type PanelState =
   | "QUICK_FORM"
   | "QUICK_CONFIRM"
   | "DECISION";
-
-const COLORS = {
-  bgCanvas: "#ffffff",
-  bgInverse: "#0a0d14",
-  bgInverseSurface: "#111722",
-  brandLime: "#d2ff95",
-  actionPrimary: "#5b52ff",
-  textPrimary: "#0a0d14",
-  textOnInverse: "#ffffff",
-  textInverseSecondary: "#8390a5",
-  textSecondary: "#6b7280",
-  border: "#e5e7eb",
-};
-
-const RADIUS = {
-  sm: 8,
-  md: 12,
-  lg: 16,
-};
 
 const CURRENT_CASE_KEY = "up2stage_currentCaseId";
 

@@ -1,3 +1,4 @@
+import { COLORS } from "../../styles/tokens";
 import type { Point } from "../../models/canonical";
 
 export interface EvidenceOverlayProps {
@@ -33,14 +34,14 @@ export function EvidenceOverlay({ width, height, polygon, number }: EvidenceOver
       <polygon
         points={points}
         fill="rgba(210,255,149,0.42)"
-        stroke="#d2ff95"
+        stroke={COLORS.brandLime}
         strokeWidth={1}
       />
       {number !== undefined && (
         <text
           x={first.x * width + 6}
           y={first.y * height + 14}
-          fill="#0a0d14"
+          fill={COLORS.textPrimary}
           fontSize={11}
           fontWeight={700}
         >

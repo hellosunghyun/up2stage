@@ -1,3 +1,5 @@
+import { COLORS, RADIUS } from "../../styles/tokens";
+
 type ViewerMode = "structure" | "original" | "accessibility";
 
 export interface ModeTabsProps {
@@ -30,9 +32,9 @@ export function ModeTabs({ mode, onChange }: ModeTabsProps) {
             style={{
               padding: "8px 14px",
               border: "none",
-              borderRadius: 8,
-              background: active ? "#0a0d14" : "transparent",
-              color: active ? "#ffffff" : "#0a0d14",
+              borderRadius: RADIUS.sm,
+              background: active ? COLORS.bgInverse : "transparent",
+              color: active ? COLORS.textOnInverse : COLORS.textPrimary,
               fontSize: 13,
               fontWeight: active ? 700 : 400,
               cursor: "pointer",
