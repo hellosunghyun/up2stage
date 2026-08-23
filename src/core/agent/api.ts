@@ -33,6 +33,8 @@ const MIME_TYPES: Record<string, string> = {
   eml: "message/rfc822",
   mht: "message/rfc822",
   html: "text/html",
+  md: "text/markdown",
+  txt: "text/plain",
 };
 
 function normalizeMimeType(fileName: string, mimeType?: string): string {
