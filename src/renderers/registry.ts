@@ -1,4 +1,4 @@
-import type { DocumentRecord } from "../models/document";
+import type { DocumentRecord } from "../models/canonical";
 import { HwpRenderer } from "./hwp/HwpRenderer";
 import { PdfRenderer } from "./pdf/PdfRenderer";
 import type { DocumentRendererAdapter } from "./types";

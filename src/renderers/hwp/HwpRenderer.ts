@@ -1,6 +1,5 @@
 import init, { HwpDocument } from "@rhwp/core";
-import type { DocumentRecord } from "../../models/document";
-import type { SourceRecord } from "../../models/source";
+import type { DocumentRecord, SourceRecord } from "../../models/canonical";
 import type { DocumentRendererAdapter } from "../types";
 
 const WASM_PATH = "/rhwp_bg.wasm";

@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { DocumentRecord } from "../../models/document";
-import type { SourceRecord } from "../../models/source";
+import type { DocumentRecord, SourceRecord } from "../../models/canonical";
 import { createRenderer } from "../../renderers/registry";
 import type { DocumentRendererAdapter } from "../../renderers/types";
 import type { SourceRegistry } from "../../features/source-navigation/navigate";

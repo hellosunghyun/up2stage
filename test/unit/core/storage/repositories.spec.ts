@@ -9,6 +9,10 @@ import {
   saveDocuments,
   getCachedFileId,
   getOrCreateCachedFileId,
+  saveSources,
+  getSourcesForCase,
+  saveDocumentFile,
+  getDocumentFilesForCase,
 } from "../../../../src/core/storage/repositories";
 import type { CaseRecord, DocumentRecord } from "../../../../src/models/canonical";
 
@@ -93,5 +97,32 @@ describe("storage repositories", () => {
     expect(second).toBe("file-cached");
     expect(called).toBe(false);
     expect(await getCachedFileId("h1", "v0.22")).toBe("file-cached");
+  });
+
+  it("persists canonical sources and document bytes for Viewer loading", async () => {
+    await saveSources([
+      {
+        sourceId: "src:d1:p2:e7",
+        caseId: "c1",
+        documentId: "d1",
+        page: 2,
+        elementId: 7,
+        category: "paragraph",
+        text: "지원 조건",
+      },
+    ]);
+    await saveDocumentFile({
+      caseId: "c1",
+      documentId: "d1",
+      bytes: new Uint8Array([1, 2, 3]).buffer,
+      mimeType: "application/pdf",
+      createdAt: 0,
+    });
+
+    expect(await getSourcesForCase("c1")).toHaveLength(1);
+    const files = await getDocumentFilesForCase("c1");
+    expect(new Uint8Array(files[0]?.bytes ?? new ArrayBuffer(0))).toEqual(
+      new Uint8Array([1, 2, 3])
+    );
   });
 });

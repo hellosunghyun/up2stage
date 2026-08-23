@@ -6,6 +6,10 @@ import type {
   ExtractRecord,
   GuidanceRecord,
   ParseElement,
+  SourceRecord,
+  QuickQuestionRecord,
+  DocumentFileRecord,
+  CanonicalAgentResult,
 } from "../../models/canonical";
 
 export async function saveAgentJob(
@@ -80,6 +84,79 @@ export async function saveExtracts(records: ExtractRecord[]): Promise<void> {
 export async function saveGuidance(record: GuidanceRecord | null): Promise<void> {
   if (!record) return;
   await db.guidance.put(record);
+}
+
+export async function saveSources(records: SourceRecord[]): Promise<void> {
+  if (records.length === 0) return;
+  await db.sources.bulkPut(records);
+}
+
+export async function getSourcesForCase(caseId: string): Promise<SourceRecord[]> {
+  return db.sources.where({ caseId }).toArray();
+}
+
+export async function getSourcesForDocument(
+  caseId: string,
+  documentId: string
+): Promise<SourceRecord[]> {
+  return db.sources.where({ caseId, documentId }).toArray();
+}
+
+export async function getSource(sourceId: string): Promise<SourceRecord | undefined> {
+  return db.sources.get(sourceId);
+}
+
+export async function saveQuickQuestions(
+  records: QuickQuestionRecord[]
+): Promise<void> {
+  if (records.length === 0) return;
+  await db.quickQuestions.bulkPut(records);
+}
+
+export async function getQuickQuestionsForCase(
+  caseId: string
+): Promise<QuickQuestionRecord[]> {
+  return db.quickQuestions.where({ caseId }).toArray();
+}
+
+export async function saveDocumentFile(record: DocumentFileRecord): Promise<void> {
+  await db.documentFiles.put(record);
+}
+
+export async function getDocumentFilesForCase(
+  caseId: string
+): Promise<DocumentFileRecord[]> {
+  return db.documentFiles.where({ caseId }).toArray();
+}
+
+export async function getCanonicalAgentResult(
+  caseId: string
+): Promise<CanonicalAgentResult | undefined> {
+  const caseRecord = await db.cases.get(caseId);
+  if (!caseRecord?.agentJobId) return undefined;
+
+  const [documents, parseElements, sources, extracts, guidance, quickQuestions] =
+    await Promise.all([
+      db.documents.where({ caseId }).toArray(),
+      db.parseElements.where({ caseId }).toArray(),
+      db.sources.where({ caseId }).toArray(),
+      db.extracts.where({ caseId }).toArray(),
+      db.guidance.where({ caseId }).first(),
+      db.quickQuestions.where({ caseId }).toArray(),
+    ]);
+
+  return {
+    caseId,
+    agentJobId: caseRecord.agentJobId,
+    status: caseRecord.status === "failed" ? "failed" : "completed",
+    completedAt: caseRecord.updatedAt,
+    documents,
+    parseElements,
+    sources,
+    extracts,
+    guidance: guidance ?? null,
+    quickQuestions,
+  };
 }
 
 export async function getOrCreateCachedFileId(

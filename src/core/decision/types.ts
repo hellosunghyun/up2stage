@@ -1,27 +1,10 @@
-export type QuestionInputType =
-  | "text"
-  | "number"
-  | "select"
-  | "boolean"
-  | "date"
-  | "organization_select";
+import type { QuickQuestionRecord } from "../../models/canonical";
+
+export type { QuestionInputType, QuestionOrigin } from "../../models/canonical";
 
 export type UserAnswer = string | number | boolean | null;
 
-export type QuestionOrigin = "primary_notice" | "requirements_checklist";
-
-export interface QuickQuestion {
-  id: string;
-  key: string;
-  label: string;
-  inputType: QuestionInputType;
-  required: boolean;
-  options?: string[];
-  ruleText?: string;
-  sourceIds?: string[];
-  confidence?: number;
-  origin: QuestionOrigin;
-}
+export type QuickQuestion = QuickQuestionRecord;
 
 export interface UserInput {
   [questionId: string]: UserAnswer;

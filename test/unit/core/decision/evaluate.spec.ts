@@ -8,6 +8,7 @@ import type { QuickQuestion } from "../../../../src/core/decision/types";
 function q(inputType: QuickQuestion["inputType"], ruleText: string, required = true): QuickQuestion {
   return {
     id: inputType,
+    caseId: "case-test",
     key: inputType,
     label: "테스트",
     inputType,

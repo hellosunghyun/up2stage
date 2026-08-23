@@ -1,5 +1,5 @@
 import { navigateToSource } from "../../features/source-navigation/navigate";
-import type { SourceRecord } from "../../models/source";
+import type { SourceRecord } from "../../models/canonical";
 import type {
   SourceRegistry,
   ViewerHost,

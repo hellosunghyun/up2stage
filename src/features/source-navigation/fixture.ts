@@ -1,6 +1,5 @@
 import * as XLSX from "xlsx";
-import type { DocumentRecord } from "../../models/document";
-import type { SourceRecord } from "../../models/source";
+import type { DocumentRecord, SourceRecord } from "../../models/canonical";
 import type { SourceRegistry } from "./navigate";
 
 export const fixtureDocuments: DocumentRecord[] = [
@@ -11,6 +10,7 @@ export const fixtureDocuments: DocumentRecord[] = [
     extension: "pdf",
     contentHash: "sha256-pdf",
     renderType: "pdf",
+    processingStatus: "complete",
     createdAt: Date.now(),
   },
   {
@@ -20,6 +20,7 @@ export const fixtureDocuments: DocumentRecord[] = [
     extension: "hwp",
     contentHash: "sha256-hwp",
     renderType: "hwp",
+    processingStatus: "complete",
     createdAt: Date.now(),
   },
   {
@@ -29,6 +30,7 @@ export const fixtureDocuments: DocumentRecord[] = [
     extension: "xlsx",
     contentHash: "sha256-xlsx",
     renderType: "xlsx",
+    processingStatus: "complete",
     createdAt: Date.now(),
   },
 ];

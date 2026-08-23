@@ -1,4 +1,4 @@
-import type { DocumentRecord } from "../../models/document";
+import type { DocumentRecord } from "../../models/canonical";
 
 export interface DocumentSelectorProps {
   documents: DocumentRecord[];

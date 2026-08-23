@@ -2,8 +2,7 @@ import { useVirtualizer } from "@tanstack/react-virtual";
 import * as XLSX from "xlsx";
 import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
-import type { DocumentRecord } from "../../models/document";
-import type { SourceRecord } from "../../models/source";
+import type { DocumentRecord, SourceRecord } from "../../models/canonical";
 import type { DocumentRendererAdapter } from "../types";
 
 interface GridProps {

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { SourceRecord } from "../../models/source";
+import type { SourceRecord } from "../../models/canonical";
 import { fixtureSourceRegistry, fixtureSources } from "./fixture";
 import { navigateToSource } from "./navigate";
 

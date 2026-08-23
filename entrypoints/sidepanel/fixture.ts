@@ -121,6 +121,8 @@ export const DEMO_PROCEDURE: ProcedureExtract = {
 export const DEMO_QUICK_QUESTIONS: QuickQuestion[] = [
   {
     id: "qq_university_location",
+    caseId: "case-demo",
+    sourceIds: [],
     key: "university_location_type",
     label: "재학 중인 대학교 유형",
     inputType: "select",
@@ -132,6 +134,8 @@ export const DEMO_QUICK_QUESTIONS: QuickQuestion[] = [
   },
   {
     id: "qq_seoul_citizen",
+    caseId: "case-demo",
+    sourceIds: [],
     key: "is_seoul_citizen",
     label: "본인 또는 부모가 서울시민인가요?",
     inputType: "boolean",
@@ -141,6 +145,8 @@ export const DEMO_QUICK_QUESTIONS: QuickQuestion[] = [
   },
   {
     id: "qq_grade",
+    caseId: "case-demo",
+    sourceIds: [],
     key: "percentile_score",
     label: "1학년 1학기 백분위 성적",
     inputType: "number",
@@ -150,6 +156,8 @@ export const DEMO_QUICK_QUESTIONS: QuickQuestion[] = [
   },
   {
     id: "qq_income",
+    caseId: "case-demo",
+    sourceIds: [],
     key: "income_bracket",
     label: "학자금 지원구간",
     inputType: "number",
@@ -159,6 +167,8 @@ export const DEMO_QUICK_QUESTIONS: QuickQuestion[] = [
   },
   {
     id: "qq_other_scholarship",
+    caseId: "case-demo",
+    sourceIds: [],
     key: "received_other_foundation_scholarship_2026",
     label: "2026년 내 재단 타 장학금 수혜 사실이 있나요?",
     inputType: "boolean",
@@ -168,6 +178,8 @@ export const DEMO_QUICK_QUESTIONS: QuickQuestion[] = [
   },
   {
     id: "qq_submission_date",
+    caseId: "case-demo",
+    sourceIds: [],
     key: "planned_submission_date",
     label: "제출 예정일",
     inputType: "date",

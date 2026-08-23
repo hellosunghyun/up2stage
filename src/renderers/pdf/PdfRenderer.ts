@@ -1,7 +1,6 @@
 import * as pdfjs from "pdfjs-dist";
 import type { PDFDocumentLoadingTask, PDFDocumentProxy } from "pdfjs-dist";
-import type { DocumentRecord } from "../../models/document";
-import type { SourceRecord } from "../../models/source";
+import type { DocumentRecord, SourceRecord } from "../../models/canonical";
 import type { DocumentRendererAdapter } from "../types";
 
 const pdfWorkerUrl = new URL(

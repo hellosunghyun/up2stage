@@ -1,6 +1,7 @@
 import { generateId } from "../../utils/id";
 import type { AgentJob, OutputItem } from "./types";
 import type {
+  CanonicalAgentResult,
   Citation,
   DocumentRecord,
   DocumentRole,
@@ -8,8 +9,22 @@ import type {
   ExtractRecord,
   GuidanceRecord,
   ParseElement,
+  QuickQuestionRecord,
+  SourceRecord,
   SourceLocation,
 } from "../../models/canonical";
+import {
+  buildExtractLocationMap,
+  buildSourceId,
+  buildSourcesFromParse,
+  resolveInstructCitations,
+  SourceRegistry,
+  type ExtractLocationMapping,
+} from "../evidence";
+import {
+  dedupeCanonicalQuickQuestions,
+  parseCanonicalQuickQuestion,
+} from "../decision/questions";
 
 const ROLE_SCHEMAS: Record<DocumentRole, string> = {
   primary_notice: "primary_notice_extract",
@@ -105,49 +120,6 @@ function categoryToType(category: string | undefined):
   if (category.includes("caption")) return "caption";
   if (category.includes("paragraph")) return "paragraph";
   return "other";
-}
-
-function buildParseElements(
-  caseId: string,
-  documentId: string,
-  elements: Array<Record<string, unknown>>
-): ParseElement[] {
-  return elements.map((el, idx) => {
-    const content = (el.content as Record<string, string | undefined> | undefined) ?? {};
-    const coords = el.coordinates as Array<{ x: number; y: number }> | undefined;
-    const wordCoords = el.word_coordinates as
-      | Array<Array<{ x: number; y: number }>>
-      | undefined;
-    const page = typeof el.page === "number" ? el.page : undefined;
-    const id = typeof el.id === "string" ? el.id : String(idx);
-    return {
-      id: generateId(),
-      caseId,
-      documentId,
-      sourceId: `parse:${documentId}:${page ?? 0}:${id}`,
-      type: categoryToType(el.category as string | undefined),
-      level: typeof el.level === "number" ? el.level : undefined,
-      page,
-      html: content.html,
-      markdown: content.markdown,
-      text: content.text,
-      coordinates: coords,
-      wordCoordinates: wordCoords,
-    };
-  });
-}
-
-function mapElementToDocument(
-  element: ParseElement,
-  documents: DocumentRecord[]
-): DocumentRecord | undefined {
-  if (element.page == null) return documents[0];
-  return documents.find((d) => {
-    if (d.pageRange == null) return false;
-    const start = d.pageRange[0] ?? 0;
-    const end = d.pageRange[1] ?? 0;
-    return element.page! >= start && element.page! <= end;
-  });
 }
 
 interface ConfidenceResult {
@@ -263,6 +235,7 @@ function buildExtractRecord(
     schemaName,
     values: flattenExtractValues(raw, additional),
     rawJson: raw,
+    additionalValues: additional ?? {},
     pageRange,
   };
 }
@@ -291,6 +264,7 @@ function buildGuidance(
     wordCoordinates: Array.isArray(c.word_coordinates)
       ? (c.word_coordinates as Array<Array<{ x: number; y: number }>>)
       : undefined,
+    sourceIds: [],
   }));
 
   return {
@@ -319,17 +293,164 @@ function buildGuidance(
   };
 }
 
+interface ExtractDescriptor {
+  schemaName: string;
+  role: DocumentRole;
+  text: string;
+  additional: Record<string, unknown> | undefined;
+  pageRange: [number, number] | undefined;
+}
+
+function getPageRange(
+  additional: Record<string, unknown> | undefined
+): [number, number] | undefined {
+  if (!Array.isArray(additional?.page_ranges)) return undefined;
+  const first = (additional.page_ranges as unknown[])[0];
+  return Array.isArray(first) && first.length >= 2
+    ? [Number(first[0]), Number(first[1])]
+    : undefined;
+}
+
+function orderDocumentsByParseInput(
+  documents: DocumentRecord[],
+  parseAdditional: Record<string, unknown> | undefined
+): DocumentRecord[] {
+  const ids = Array.isArray(parseAdditional?.document_ids)
+    ? (parseAdditional.document_ids as unknown[]).filter(
+        (value): value is string => typeof value === "string"
+      )
+    : [];
+  if (ids.length === 0) return documents;
+
+  const ordered = ids
+    .map((id) => documents.find((document) => document.upstageFileId === id))
+    .filter((document): document is DocumentRecord => document !== undefined);
+  return [...ordered, ...documents.filter((document) => !ordered.includes(document))];
+}
+
+function inferDocumentRanges(
+  documents: DocumentRecord[],
+  descriptors: readonly ExtractDescriptor[],
+  totalPages: number,
+  parseAdditional: Record<string, unknown> | undefined
+): void {
+  const known = descriptors
+    .filter(
+      (descriptor): descriptor is ExtractDescriptor & { pageRange: [number, number] } =>
+        descriptor.pageRange !== undefined
+    )
+    .sort((a, b) => a.pageRange[0] - b.pageRange[0]);
+  if (known.length === 0 || totalPages < 1) return;
+
+  const spans: Array<{
+    range: [number, number];
+    role: DocumentRole;
+  }> = [];
+  let cursor = 1;
+  for (const descriptor of known) {
+    const [start, end] = descriptor.pageRange;
+    if (start > cursor) {
+      spans.push({ range: [cursor, start - 1], role: "reference_material" });
+    }
+    spans.push({ range: [start, end], role: descriptor.role });
+    cursor = Math.max(cursor, end + 1);
+  }
+  if (cursor <= totalPages) {
+    spans.push({ range: [cursor, totalPages], role: "reference_material" });
+  }
+
+  if (spans.length !== documents.length) return;
+  const orderedDocuments = orderDocumentsByParseInput(documents, parseAdditional);
+  spans.forEach((span, index) => {
+    const document = orderedDocuments[index];
+    if (!document) return;
+    document.pageRange = span.range;
+    document.role = span.role;
+  });
+}
+
+function documentForPage(
+  documents: readonly DocumentRecord[],
+  page: number
+): DocumentRecord | undefined {
+  return documents.find((document) => {
+    if (!document.pageRange) return false;
+    return page >= document.pageRange[0] && page <= document.pageRange[1];
+  });
+}
+
+function sourceToParseElement(source: SourceRecord): ParseElement {
+  return {
+    id: `pe:${source.sourceId}`,
+    caseId: source.caseId,
+    documentId: source.documentId,
+    sourceId: source.sourceId,
+    elementId: source.elementId,
+    category: source.category,
+    type: categoryToType(source.category),
+    page: source.page,
+    html: source.html,
+    markdown: source.markdown,
+    text: source.text,
+    coordinates: source.polygon,
+    wordCoordinates: source.wordCoordinates,
+  };
+}
+
+function buildQuickQuestions(
+  caseId: string,
+  extracts: readonly ExtractRecord[],
+  extractMaps: ReadonlyMap<
+    string,
+    ReadonlyMap<string, ExtractLocationMapping>
+  >
+): QuickQuestionRecord[] {
+  const questions: QuickQuestionRecord[] = [];
+  const origins: Array<{
+    schemaName: string;
+    origin: "primary_notice" | "requirements_checklist";
+  }> = [
+    { schemaName: "primary_notice_extract", origin: "primary_notice" },
+    {
+      schemaName: "requirements_checklist_extract",
+      origin: "requirements_checklist",
+    },
+  ];
+
+  for (const { schemaName, origin } of origins) {
+    const extract = extracts.find((record) => record.schemaName === schemaName);
+    const lines = Array.isArray(extract?.rawJson.quick_questions)
+      ? extract.rawJson.quick_questions.filter(
+          (value): value is string => typeof value === "string"
+        )
+      : [];
+    const map = extractMaps.get(schemaName);
+    lines.forEach((source, index) => {
+      questions.push(
+        parseCanonicalQuickQuestion({
+          caseId,
+          source,
+          origin,
+          index,
+          sourceIds: map?.get(`quick_questions[${index}]`)?.sourceIds ?? [],
+        })
+      );
+    });
+  }
+  return dedupeCanonicalQuickQuestions(questions);
+}
+
 export function adaptAgentJob(
   job: AgentJob,
-  _caseRecord: { id: string },
+  caseRecord: { id: string },
   documents: DocumentRecord[]
-): { documents: DocumentRecord[]; parseElements: ParseElement[]; extracts: ExtractRecord[]; guidance: GuidanceRecord | null } {
+): CanonicalAgentResult {
   const parseItem = job.output.find((o) => o.model === "step_1_parse");
   const parseText = getOutputText(parseItem);
   const parsedParse = parseText ? parseParseOutput(parseText) : undefined;
+  const parseAdditional = getAdditionalValues(parseItem);
 
   const classified: DocumentRecord[] = documents.map((d) => ({ ...d }));
-  const parseElements: ParseElement[] = [];
   const extracts: ExtractRecord[] = [];
 
   // 1. Classify
@@ -360,74 +481,69 @@ export function adaptAgentJob(
     doc.processingStatus = "uploaded";
   }
 
-  // 2. Parse elements
-  if (parsedParse?.elements) {
-    const allElements = buildParseElements(
-      _caseRecord.id,
-      "unknown",
-      parsedParse.elements
-    );
-    for (const el of allElements) {
-      const targetDoc = mapElementToDocument(el, classified);
-      if (targetDoc) {
-        parseElements.push({
-          ...el,
-          documentId: targetDoc.id,
-          sourceId: `parse:${targetDoc.id}:${el.page ?? 0}:${el.sourceId.split(":").pop() ?? ""}`,
-        });
-      } else if (classified.length > 0) {
-        const first = classified[0];
-        if (first) {
-          parseElements.push({
-            ...el,
-            documentId: first.id,
-            sourceId: `parse:${first.id}:${el.page ?? 0}:${el.sourceId.split(":").pop() ?? ""}`,
-          });
-        }
-      }
-    }
-  } else if (parsedParse) {
-    // If no element list, store the full parse per document as a single element
-    for (const doc of classified) {
-      parseElements.push({
-        id: generateId(),
-        caseId: _caseRecord.id,
-        documentId: doc.id,
-        sourceId: `parse:${doc.id}:full`,
-        type: "other",
-        html: parsedParse.html,
-        markdown: parsedParse.markdown,
-        text: parsedParse.text,
-      });
-    }
-  }
-
-  // 3. Extract
+  // 2. Extract descriptors establish document page ranges in the actual v0.22 run.
   const extractItems = job.output.filter((o) =>
     o.model.startsWith("Information Extract - ")
   );
-  const roleDocIndex: Partial<Record<DocumentRole, number>> = {};
-
+  const descriptors: ExtractDescriptor[] = [];
   for (const item of extractItems) {
     const schemaName = item.model.replace("Information Extract - ", "").trim();
     const role = SCHEMA_ROLES[schemaName];
     const text = getOutputText(item);
     const additional = getAdditionalValues(item);
-
     if (!role || !text) continue;
+    descriptors.push({
+      schemaName,
+      role,
+      text,
+      additional,
+      pageRange: getPageRange(additional),
+    });
+  }
 
-    const roleDocs = classified.filter((d) => d.role === role);
-    const idx = roleDocIndex[role] ?? 0;
-    const doc = roleDocs[idx];
-    roleDocIndex[role] = idx + 1;
+  const rawSources = parsedParse?.html
+    ? buildSourcesFromParse({
+        caseId: caseRecord.id,
+        documentId: "unassigned",
+        html: parsedParse.html,
+      })
+    : [];
+  const totalPages = rawSources.reduce(
+    (maximum, source) => Math.max(maximum, source.page),
+    0
+  );
+  inferDocumentRanges(classified, descriptors, totalPages, parseAdditional);
+
+  const sources = rawSources.flatMap((source): SourceRecord[] => {
+    const document = documentForPage(classified, source.page);
+    if (!document) return [];
+    return [
+      {
+        ...source,
+        documentId: document.id,
+        sourceId: buildSourceId(document.id, source.page, source.elementId),
+        semanticNodeId: buildSourceId(document.id, source.page, source.elementId),
+      },
+    ];
+  });
+  const parseElements = sources.map(sourceToParseElement);
+
+  // 3. Extract records are linked by page range, never by raw component access.
+  for (const descriptor of descriptors) {
+    const page = descriptor.pageRange?.[0];
+    const doc =
+      (page ? documentForPage(classified, page) : undefined) ??
+      classified.find((document) => document.role === descriptor.role);
 
     if (doc) {
+      doc.role = descriptor.role;
+      if (descriptor.pageRange) doc.pageRange = descriptor.pageRange;
       const record = buildExtractRecord(
-        _caseRecord.id,
+        caseRecord.id,
         doc.id,
-        schemaName,
-        text,
-        additional
+        descriptor.schemaName,
+        descriptor.text,
+        descriptor.additional
       );
       if (record) {
         extracts.push(record);
@@ -435,13 +551,65 @@ export function adaptAgentJob(
     }
   }
 
-  // 4. Guidance
+  const registry = new SourceRegistry().register(sources);
+  const extractMaps = new Map<
+    string,
+    ReturnType<typeof buildExtractLocationMap>
+  >();
+  for (const extract of extracts) {
+    const map = buildExtractLocationMap(
+      sources.filter((source) => source.documentId === extract.documentId),
+      extract.additionalValues
+    );
+    extractMaps.set(extract.schemaName, map);
+    for (const mapping of map.values()) {
+      for (const sourceId of mapping.sourceIds) {
+        registry.mergeLocation(sourceId, mapping);
+      }
+    }
+  }
+  const resolvedSources = registry.all();
+
+  // 4. Guidance citations resolve only to Source IDs already in the Registry.
   const instructItem = job.output.find((o) => o.model.startsWith("Instruct - "));
   const guidanceText = getOutputText(instructItem);
-  const guidance =
+  const guidance: GuidanceRecord | null =
     guidanceText
-      ? buildGuidance(_caseRecord.id, guidanceText, getAdditionalValues(instructItem))
+      ? buildGuidance(caseRecord.id, guidanceText, getAdditionalValues(instructItem))
       : null;
+  if (guidance) {
+    const primaryMap = extractMaps.get("primary_notice_extract") ?? new Map();
+    const resolutions = resolveInstructCitations(
+      guidance.citations.map((citation) => ({
+        index: citation.index,
+        sourceType: citation.sourceType,
+        sourceRef: citation.sourceRef,
+        page: citation.page ?? 1,
+        coordinates: citation.coordinates ?? [],
+        wordCoordinates: citation.wordCoordinates ?? [],
+      })),
+      primaryMap
+    );
+    guidance.citations = guidance.citations.map((citation) => ({
+      ...citation,
+      sourceIds:
+        resolutions.find((resolution) => resolution.index === citation.index)
+          ?.sourceIds ?? [],
+    }));
+  }
 
-  return { documents: classified, parseElements, extracts, guidance };
+  const quickQuestions = buildQuickQuestions(caseRecord.id, extracts, extractMaps);
+
+  return {
+    caseId: caseRecord.id,
+    agentJobId: job.id,
+    status: job.status === "failed" ? "failed" : "completed",
+    completedAt: Date.now(),
+    documents: classified,
+    parseElements,
+    sources: resolvedSources,
+    extracts,
+    guidance,
+    quickQuestions,
+  };
 }

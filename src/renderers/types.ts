@@ -1,5 +1,4 @@
-import type { DocumentRecord } from "../models/document";
-import type { Point, SourceRecord } from "../models/source";
+import type { DocumentRecord, Point, SourceRecord } from "../models/canonical";
 
 export interface CoordinateTransform {
   sourceToViewport(point: Point): { x: number; y: number };

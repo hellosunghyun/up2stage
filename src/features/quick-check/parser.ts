@@ -68,10 +68,12 @@ export function parseQuickQuestion(
 
   const base = {
     id: `${origin}_${key}_${index}`,
+    caseId: "unscoped",
     key,
     label,
     inputType,
     required,
+    sourceIds: [],
     origin,
   };
 
@@ -95,10 +97,12 @@ export function parseQuickQuestions(
       } catch {
         return {
           id: `${origin}_fallback_${index}`,
+          caseId: "unscoped",
           key: `fallback_${index}`,
           label: trimmed,
           inputType: "text",
           required: false,
+          sourceIds: [],
           origin,
         };
       }

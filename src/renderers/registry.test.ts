@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { DocumentRecord } from "../models/document";
+import type { DocumentRecord } from "../models/canonical";
 import { createRenderer } from "./registry";
 
 vi.mock("pdfjs-dist", () => ({
@@ -15,6 +15,7 @@ function doc(renderType: DocumentRecord["renderType"]): DocumentRecord {
     extension: renderType,
     contentHash: "sha256-test",
     renderType,
+    processingStatus: "complete",
     createdAt: 0,
   };
 }

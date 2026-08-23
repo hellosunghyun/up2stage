@@ -1,4 +1,4 @@
-import type { Point } from "../../models/source";
+import type { Point } from "../../models/canonical";
 
 export interface EvidenceOverlayProps {
   width: number;

@@ -8,6 +8,7 @@ import type { QuickQuestion } from "../../../src/core/decision/types";
 const QUESTIONS: QuickQuestion[] = [
   {
     id: "q1",
+    caseId: "case-test",
     key: "university_location",
     label: "대학교 유형",
     inputType: "select",
@@ -15,24 +16,29 @@ const QUESTIONS: QuickQuestion[] = [
     options: ["서울 소재", "비서울 소재"],
     ruleText: "서울 소재 또는 비서울 소재",
     origin: "primary_notice",
+    sourceIds: [],
   },
   {
     id: "q2",
+    caseId: "case-test",
     key: "is_seoul_citizen",
     label: "서울시민",
     inputType: "boolean",
     required: true,
     ruleText: "서울시민 여부 확인",
     origin: "primary_notice",
+    sourceIds: [],
   },
   {
     id: "q3",
+    caseId: "case-test",
     key: "score",
     label: "성적",
     inputType: "number",
     required: false,
     ruleText: "90점 이상",
     origin: "primary_notice",
+    sourceIds: [],
   },
 ];
 

@@ -11,6 +11,9 @@ import {
   saveExtracts,
   saveGuidance,
   saveParseElements,
+  saveSources,
+  saveQuickQuestions,
+  saveDocumentFile,
   updateCase,
 } from "../storage/repositories";
 import { AGENT_VERSION } from "./config";
@@ -94,7 +97,7 @@ export async function prepareAndStart(
   const updated: DocumentRecord[] = [];
 
   for (const doc of documents) {
-    const attachment = attachments.find((a) => a.id === doc.originalUrl);
+    const attachment = attachments.find((a) => a.url === doc.originalUrl);
     if (!attachment) {
       doc.processingStatus = "download_failed";
       doc.processingError = "선택한 첨부 파일을 찾을 수 없어요.";
@@ -110,6 +113,13 @@ export async function prepareAndStart(
       doc.contentHash = downloaded.contentHash;
       doc.mimeType = downloaded.mimeType;
       doc.size = downloaded.bytes.byteLength;
+      await saveDocumentFile({
+        documentId: doc.id,
+        caseId: caseRecord.id,
+        bytes: downloaded.bytes,
+        mimeType: downloaded.mimeType,
+        createdAt: Date.now(),
+      });
 
       doc.processingStatus = "uploading";
       onProgress({ caseId: caseRecord.id, overall: "preparing", documents: [...updated, doc], message: `${doc.fileName} 업로드 중` });
@@ -217,6 +227,8 @@ async function pollAndStore(
     saveParseElements(result.parseElements),
     saveExtracts(result.extracts),
     saveGuidance(result.guidance),
+    saveSources(result.sources),
+    saveQuickQuestions(result.quickQuestions),
     updateCase(caseId, {
       status: "processed",
       agentStatus: "completed",

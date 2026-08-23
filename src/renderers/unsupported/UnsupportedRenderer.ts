@@ -1,5 +1,4 @@
-import type { DocumentRecord } from "../../models/document";
-import type { SourceRecord } from "../../models/source";
+import type { DocumentRecord, SourceRecord } from "../../models/canonical";
 import type { DocumentRendererAdapter } from "../types";
 
 export class UnsupportedRenderer implements DocumentRendererAdapter {

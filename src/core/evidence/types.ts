@@ -1,23 +1,6 @@
-export interface Point {
-  x: number;
-  y: number;
-}
+import type { Point } from "../../models/canonical";
 
-export interface SourceRecord {
-  sourceId: string;
-  caseId: string;
-  documentId: string;
-  page: number;
-  elementId: string | number;
-  category: string;
-  text: string;
-  html?: string;
-  markdown?: string;
-  polygon?: Point[];
-  wordCoordinates?: Point[][];
-  confidence?: number;
-  semanticNodeId?: string;
-}
+export type { Point, SourceRecord } from "../../models/canonical";
 
 export interface ParseSourceOptions {
   caseId: string;
