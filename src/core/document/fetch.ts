@@ -1,26 +1,25 @@
-import type { AttachmentPayload } from "../messaging/protocol";
+import { messaging, type AttachmentPayload } from "../messaging/protocol";
 import { sha256 } from "../../utils/hash";
 import type { DownloadedDocument } from "./types";
 
-function sanitizeMimeType(value: string | null): string {
-  if (!value) return "application/octet-stream";
-  return value.split(";")[0]!.trim();
-}
-
-async function downloadDocument(url: string): Promise<{ bytes: ArrayBuffer; mimeType: string }> {
-  const res = await fetch(url, { method: "GET", credentials: "omit" });
-  if (!res.ok) {
-    throw new Error(`download failed: ${res.status} ${res.statusText}`);
+function base64ToArrayBuffer(base64: string): ArrayBuffer {
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
   }
-  const bytes = await res.arrayBuffer();
-  const mimeType = sanitizeMimeType(res.headers.get("content-type"));
-  return { bytes, mimeType };
+  return bytes.buffer;
 }
 
 export async function downloadAttachment(
   attachment: AttachmentPayload
 ): Promise<DownloadedDocument> {
-  const { bytes, mimeType } = await downloadDocument(attachment.url);
+  const { base64, mimeType } = await messaging.downloadAttachment({
+    url: attachment.url,
+    fileName: attachment.fileName,
+    extension: attachment.extension ?? undefined,
+  });
+  const bytes = base64ToArrayBuffer(base64);
   const contentHash = await sha256(bytes);
   return {
     url: attachment.url,

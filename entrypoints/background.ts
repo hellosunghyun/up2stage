@@ -3,6 +3,8 @@ import {
   messaging,
   type AttachmentPayload,
   type PageContext,
+  type DownloadAttachmentRequest,
+  type DownloadAttachmentResponse,
 } from "../src/core/messaging/protocol";
 
 async function getActiveTabId(): Promise<number> {
@@ -45,12 +47,12 @@ async function logDiscoveryDiagnostics(tabId: number): Promise<void> {
   }
 }
 
-async function sendToContent<T>(name: string): Promise<T> {
+async function sendToContent<T>(name: string, data?: unknown): Promise<T> {
   const tabId = await getActiveTabId();
   console.log(`[up2stage:background] sendToContent tabId=${tabId}, name=${name}`);
 
   try {
-    const result = (await chrome.tabs.sendMessage(tabId, { name, data: undefined })) as T;
+    const result = (await chrome.tabs.sendMessage(tabId, { name, data })) as T;
     console.log(`[up2stage:background] sendToContent response:`, result);
     if (name === "discoverAttachments" && Array.isArray(result) && result.length === 0) {
       await logDiscoveryDiagnostics(tabId);
@@ -74,7 +76,7 @@ async function sendToContent<T>(name: string): Promise<T> {
       }
 
       try {
-        const result = (await chrome.tabs.sendMessage(tabId, { name, data: undefined })) as T;
+        const result = (await chrome.tabs.sendMessage(tabId, { name, data })) as T;
         console.log(`[up2stage:background] sendToContent retry response:`, result);
         if (name === "discoverAttachments" && Array.isArray(result) && result.length === 0) {
           await logDiscoveryDiagnostics(tabId);
@@ -108,6 +110,17 @@ export default defineBackground(() => {
 
   messaging.onDiscoverAttachments(async () => {
     return sendToContent<AttachmentPayload[]>("discoverAttachments");
+  });
+
+  messaging.onDownloadAttachment(async (data: DownloadAttachmentRequest) => {
+    const result = await sendToContent<DownloadAttachmentResponse>(
+      "downloadAttachment",
+      data
+    );
+    if ("error" in result) {
+      throw new Error(result.error);
+    }
+    return result;
   });
 
   messaging.onOpenViewer(async ({ caseId, documentId, sourceId }) => {

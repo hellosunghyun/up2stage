@@ -15,6 +15,26 @@ const PageContextSchema = z.object({
   title: z.string(),
 });
 
+const DownloadAttachmentRequestSchema = z.object({
+  url: z.string(),
+  fileName: z.string().optional(),
+  extension: z.string().optional(),
+});
+
+const DownloadAttachmentSuccessSchema = z.object({
+  base64: z.string(),
+  mimeType: z.string(),
+});
+
+const DownloadAttachmentErrorSchema = z.object({
+  error: z.string(),
+});
+
+const DownloadAttachmentResponseSchema = z.union([
+  DownloadAttachmentSuccessSchema,
+  DownloadAttachmentErrorSchema,
+]);
+
 const AttachmentPayloadSchema = z.object({
   id: z.string(),
   url: z.string(),
@@ -31,6 +51,10 @@ const DiscoverAttachmentsResponseSchema = z.array(AttachmentPayloadSchema);
 export type OpenSidePanelData = z.infer<typeof OpenSidePanelSchema>;
 export type OpenViewerData = z.infer<typeof OpenViewerSchema>;
 export type PageContext = z.infer<typeof PageContextSchema>;
+export type DownloadAttachmentRequest = z.infer<typeof DownloadAttachmentRequestSchema>;
+export type DownloadAttachmentSuccess = z.infer<typeof DownloadAttachmentSuccessSchema>;
+export type DownloadAttachmentError = z.infer<typeof DownloadAttachmentErrorSchema>;
+export type DownloadAttachmentResponse = z.infer<typeof DownloadAttachmentResponseSchema>;
 export type AttachmentPayload = z.infer<typeof AttachmentPayloadSchema>;
 
 export interface MessagingProtocol {
@@ -38,6 +62,7 @@ export interface MessagingProtocol {
   openViewer(data: OpenViewerData): void;
   currentPageContext(): Promise<PageContext>;
   discoverAttachments(): Promise<AttachmentPayload[]>;
+  downloadAttachment(data: DownloadAttachmentRequest): Promise<DownloadAttachmentResponse>;
 }
 
 const { sendMessage, onMessage } = defineExtensionMessaging<MessagingProtocol>();
@@ -88,6 +113,27 @@ export const messaging = {
   ): void {
     onMessage("discoverAttachments", async () => {
       return DiscoverAttachmentsResponseSchema.parse(await handler());
+    });
+  },
+  async downloadAttachment(
+    data: DownloadAttachmentRequest
+  ): Promise<DownloadAttachmentSuccess> {
+    const response = DownloadAttachmentResponseSchema.parse(
+      await sendMessage("downloadAttachment", DownloadAttachmentRequestSchema.parse(data))
+    );
+    if ("error" in response) {
+      throw new Error(response.error);
+    }
+    return response;
+  },
+  onDownloadAttachment(
+    handler: (
+      data: DownloadAttachmentRequest
+    ) => DownloadAttachmentResponse | Promise<DownloadAttachmentResponse>
+  ): void {
+    onMessage("downloadAttachment", async (message) => {
+      const parsed = DownloadAttachmentRequestSchema.parse(message.data);
+      return DownloadAttachmentResponseSchema.parse(await handler(parsed));
     });
   },
 };
