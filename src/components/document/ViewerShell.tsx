@@ -8,8 +8,8 @@ import { AccessibilityView } from "./AccessibilityView";
 import { DocumentSelector } from "./DocumentSelector";
 import { ModeTabs } from "./ModeTabs";
 import { Outline } from "./Outline";
-import { SourceBadge } from "../evidence/SourceBadge";
 import { COLORS, RADIUS } from "../../styles/tokens";
+import { ViewerGuidancePanel, type ViewerGuidanceData } from "./ViewerGuidancePanel";
 
 type ViewerMode = "structure" | "original" | "accessibility";
 
@@ -21,6 +21,7 @@ export interface ViewerShellProps {
   sourceRegistry: SourceRegistry;
   initialDocumentId: string | undefined;
   initialSourceId: string | undefined;
+  guidance?: ViewerGuidanceData | undefined;
 }
 
 export function ViewerShell({
@@ -31,6 +32,7 @@ export function ViewerShell({
   sourceRegistry,
   initialDocumentId,
   initialSourceId,
+  guidance
 }: ViewerShellProps) {
   const [selectedDocumentId, setSelectedDocumentId] = useState(
     initialDocumentId ?? documents[0]?.id ?? ""
@@ -39,18 +41,13 @@ export function ViewerShell({
   const [zoom, setZoom] = useState(1.25);
   const [activePage, setActivePage] = useState(1);
   const [activeSource, setActiveSource] = useState<SourceRecord | null>(null);
-  const [selectedOutlineId, setSelectedOutlineId] = useState<string | undefined>(
-    initialSourceId
-  );
+  const [selectedOutlineId, setSelectedOutlineId] = useState<string | undefined>(initialSourceId);
   const workspaceRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<DocumentRendererAdapter | null>(null);
 
-  const selectedDocument =
-    documents.find((d) => d.id === selectedDocumentId) ?? documents[0];
+  const selectedDocument = documents.find((d) => d.id === selectedDocumentId) ?? documents[0];
 
-  const filteredSources = sources.filter(
-    (s) => s.documentId === selectedDocument?.id
-  );
+  const filteredSources = sources.filter((s) => s.documentId === selectedDocument?.id);
 
   const viewer: ViewerHost = {
     selectDocument(documentId: string) {
@@ -70,7 +67,7 @@ export function ViewerShell({
     accessibilityFocus(_nodeId: string | undefined) {
       void _nodeId;
       // Phase 8 outlet slot
-    },
+    }
   };
 
   useEffect(() => {
@@ -116,20 +113,15 @@ export function ViewerShell({
     rendererRef.current?.setZoom(next);
   };
 
-  const activeSourceNumber = activeSource
-    ? filteredSources.findIndex((s) => s.sourceId === activeSource.sourceId) + 1
-    : undefined;
-
   return (
     <div
       style={{
         display: "grid",
         gridTemplateColumns: "224px minmax(0, 1fr) 443px",
         height: "100vh",
-        fontFamily:
-          '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         color: COLORS.textPrimary,
-        background: COLORS.bgSurface,
+        background: COLORS.bgSurface
       }}
     >
       <aside
@@ -141,12 +133,10 @@ export function ViewerShell({
           display: "flex",
           flexDirection: "column",
           gap: 16,
-          overflow: "auto",
+          overflow: "auto"
         }}
       >
-        <div style={{ fontWeight: 700, fontSize: 14, color: COLORS.textOnInverse }}>
-          문서 목차
-        </div>
+        <div style={{ fontWeight: 700, fontSize: 14, color: COLORS.textOnInverse }}>문서 목차</div>
         {selectedDocument && (
           <div style={{ fontSize: 12, color: COLORS.textInverseSecondary }}>
             {selectedDocument.fileName} · {activePage}
@@ -171,7 +161,7 @@ export function ViewerShell({
             justifyContent: "space-between",
             padding: "12px 20px",
             borderBottom: `1px solid ${COLORS.border}`,
-            background: COLORS.bgCanvas,
+            background: COLORS.bgCanvas
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
@@ -196,7 +186,7 @@ export function ViewerShell({
                 borderRadius: RADIUS.sm,
                 background: COLORS.bgCanvas,
                 cursor: "pointer",
-                fontSize: 13,
+                fontSize: 13
               }}
               aria-label="축소"
             >
@@ -214,7 +204,7 @@ export function ViewerShell({
                 borderRadius: RADIUS.sm,
                 background: COLORS.bgCanvas,
                 cursor: "pointer",
-                fontSize: 13,
+                fontSize: 13
               }}
               aria-label="확대"
             >
@@ -228,7 +218,7 @@ export function ViewerShell({
           style={{
             flex: 1,
             overflow: "auto",
-            padding: 20,
+            padding: 20
           }}
         >
           {mode === "structure" && (
@@ -239,20 +229,14 @@ export function ViewerShell({
                   <li key={source.sourceId}>
                     <button
                       type="button"
-                      onClick={() =>
-                        void navigateToSource(
-                          source.sourceId,
-                          sourceRegistry,
-                          viewer
-                        )
-                      }
+                      onClick={() => void navigateToSource(source.sourceId, sourceRegistry, viewer)}
                       style={{
                         background: "transparent",
                         border: "none",
                         color: COLORS.actionPrimary,
                         cursor: "pointer",
                         fontSize: 14,
-                        padding: 0,
+                        padding: 0
                       }}
                     >
                       {source.text}
@@ -273,103 +257,15 @@ export function ViewerShell({
         </div>
       </section>
 
-      <aside
-        style={{
-          borderLeft: `1px solid ${COLORS.bgInverseSurface}`,
-          padding: 20,
-          background: COLORS.bgInverse,
-          color: COLORS.textOnInverse,
-          overflow: "auto",
-        }}
-      >
-        <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 16, color: COLORS.textOnInverse }}>
-          Up to Stage
-        </div>
-        <div style={{ fontSize: 12, color: COLORS.textInverseSecondary, marginBottom: 16 }}>
-          case {caseId}
-        </div>
-
-        {activeSource ? (
-          <div
-            style={{
-              padding: 16,
-              borderRadius: RADIUS.md,
-              background: COLORS.bgInverseSurface,
-              marginBottom: 16,
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-                marginBottom: 8,
-              }}
-            >
-              {activeSourceNumber !== undefined && activeSourceNumber > 0 && (
-                <SourceBadge number={activeSourceNumber} />
-              )}
-              <span style={{ fontSize: 12, color: COLORS.textInverseSecondary }}>
-                {selectedDocument?.fileName} · {activeSource.page}쪽
-              </span>
-            </div>
-            <p style={{ fontSize: 14, lineHeight: 1.5, margin: 0, color: COLORS.textOnInverse }}>
-              &quot;{activeSource.text}&quot;
-            </p>
-          </div>
-        ) : (
-          <div
-            style={{
-              padding: 16,
-              borderRadius: RADIUS.md,
-              background: COLORS.bgInverseSurface,
-              color: COLORS.textInverseSecondary,
-              fontSize: 14,
-              marginBottom: 16,
-            }}
-          >
-            근거를 눌러 원문의 위치로 이동하세요.
-          </div>
-        )}
-
-        <div style={{ fontSize: 13, fontWeight: 700, marginBottom: 8, color: COLORS.textOnInverse }}>
-          문서별 근거
-        </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          {filteredSources.map((source, i) => (
-            <button
-              key={source.sourceId}
-              type="button"
-              onClick={() =>
-                void navigateToSource(source.sourceId, sourceRegistry, viewer)
-              }
-              style={{
-                display: "flex",
-                alignItems: "flex-start",
-                gap: 8,
-                padding: 10,
-                border: "none",
-                borderRadius: RADIUS.sm,
-                background: COLORS.bgInverseSurface,
-                color: COLORS.textOnInverse,
-                cursor: "pointer",
-                textAlign: "left",
-              }}
-            >
-              <SourceBadge number={i + 1} />
-              <span
-                style={{
-                  fontSize: 13,
-                  color: COLORS.textOnInverse,
-                  lineHeight: 1.4,
-                }}
-              >
-                {source.text}
-              </span>
-            </button>
-          ))}
-        </div>
-      </aside>
+      <ViewerGuidancePanel
+        caseId={caseId}
+        guidance={guidance}
+        activeSource={activeSource}
+        selectedDocument={selectedDocument}
+        sources={sources}
+        sourceRegistry={sourceRegistry}
+        viewer={viewer}
+      />
     </div>
   );
 }
