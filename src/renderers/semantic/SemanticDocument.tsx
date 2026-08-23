@@ -134,19 +134,24 @@ function SemanticContent({
       return (
         <figure style={{ margin: "20px 0", padding: 16, background: COLORS.bgSurface, borderRadius: RADIUS.md }}>
           <p style={{ margin: 0 }}>{node.text}</p>
-          {node.children?.map((child) => (
-            <figcaption
-              key={child.id}
-              {...sourceProps(child, activeNodeId, onNodeFocus, onNodeActivate, onEscape)}
-              style={{
-                ...sourceProps(child, activeNodeId, onNodeFocus, onNodeActivate, onEscape).style,
-                marginTop: 8,
-                color: COLORS.textSecondary
-              }}
-            >
-              {child.text}
-            </figcaption>
-          ))}
+          {node.children?.map((child) => {
+            const props = sourceProps(
+              child,
+              activeNodeId,
+              onNodeFocus,
+              onNodeActivate,
+              onEscape
+            );
+            return (
+              <figcaption
+                key={child.id}
+                {...props}
+                style={{ ...props.style, marginTop: 8, color: COLORS.textSecondary }}
+              >
+                {child.text}
+              </figcaption>
+            );
+          })}
         </figure>
       );
     case "caption":

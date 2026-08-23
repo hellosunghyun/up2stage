@@ -4,7 +4,7 @@ import { createRenderer } from "../../renderers/registry";
 import type { DocumentRendererAdapter } from "../../renderers/types";
 import type { SourceRegistry } from "../../features/source-navigation/navigate";
 import { navigateToSource, type ViewerHost } from "../../features/source-navigation/navigate";
-import { AccessibilityView } from "../../features/accessibility";
+import { AccessibilityView } from "../../features/accessibility/AccessibilityView";
 import { DocumentSelector } from "./DocumentSelector";
 import { ModeTabs } from "./ModeTabs";
 import { Outline } from "./Outline";

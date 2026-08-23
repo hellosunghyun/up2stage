@@ -7,8 +7,10 @@ const extensionPath = path.resolve(".output/chrome-mv3");
 
 test("built extension exposes the Up to Stage Side Panel and Viewer", async () => {
   const profile = await mkdtemp(path.join(os.tmpdir(), "up2stage-e2e-"));
+  const headless = process.env.PLAYWRIGHT_HEADLESS === "true";
   const context = await chromium.launchPersistentContext(profile, {
-    headless: false,
+    headless,
+    ...(headless ? { channel: "chromium" } : {}),
     ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
       ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH }
       : {}),
