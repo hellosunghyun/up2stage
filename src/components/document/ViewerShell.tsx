@@ -5,6 +5,7 @@ import { createRenderer } from "../../renderers/registry";
 import type { DocumentRendererAdapter } from "../../renderers/types";
 import type { SourceRegistry } from "../../features/source-navigation/navigate";
 import { navigateToSource, type ViewerHost } from "../../features/source-navigation/navigate";
+import { AccessibilityView } from "./AccessibilityView";
 import { DocumentSelector } from "./DocumentSelector";
 import { ModeTabs } from "./ModeTabs";
 import { Outline } from "./Outline";
@@ -258,13 +259,13 @@ export function ViewerShell({
               </ul>
             </div>
           )}
-          {mode === "accessibility" && (
-            <div style={{ padding: 20 }}>
-              <h2 style={{ fontSize: 16, marginBottom: 12 }}>접근성 보기</h2>
-              <p style={{ color: "#8390a5" }}>
-                Phase 8에서 semantic HTML 기반 접근성 뷰가 연결될 슬롯입니다.
-              </p>
-            </div>
+          {mode === "accessibility" && selectedDocument && (
+            <AccessibilityView
+              sources={sources}
+              documentId={selectedDocument.id}
+              sourceRegistry={sourceRegistry}
+              viewer={viewer}
+            />
           )}
         </div>
       </section>
