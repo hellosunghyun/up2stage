@@ -12,19 +12,28 @@ async function getActiveTabId(): Promise<number> {
   });
   const id = tab?.id;
   if (!id) throw new Error("활성 탭을 찾을 수 없어요.");
-  const url = tab.url ?? "";
-  if (!url.startsWith("http://") && !url.startsWith("https://")) {
-    throw new Error("현재 페이지에서 확장 프로그램을 실행할 수 없어요. http/https 웹페이지에서 다시 시도해 주세요.");
-  }
   return id;
+}
+
+function friendlyMessagingError(message: string): string {
+  if (message.includes("Receiving end does not exist")) {
+    return "현재 탭에서 확장 프로그램을 실행할 수 없어요. http/https 웹페이지에서 다시 시도해 주세요.";
+  }
+  return `메시지 전달 실패: ${message}`;
 }
 
 async function sendToContent<T>(name: string): Promise<T> {
   const tabId = await getActiveTabId();
   console.log(`[up2stage:background] sendToContent tabId=${tabId}, name=${name}`);
-  const result = (await chrome.tabs.sendMessage(tabId, { name, data: undefined })) as T;
-  console.log(`[up2stage:background] sendToContent response:`, result);
-  return result;
+  try {
+    const result = (await chrome.tabs.sendMessage(tabId, { name, data: undefined })) as T;
+    console.log(`[up2stage:background] sendToContent response:`, result);
+    return result;
+  } catch (e) {
+    const message = e instanceof Error ? e.message : String(e);
+    console.error("[up2stage:background] sendToContent failed:", message);
+    throw new Error(friendlyMessagingError(message), { cause: e });
+  }
 }
 
 export default defineBackground(() => {

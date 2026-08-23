@@ -69,7 +69,7 @@ function checkAndRenderOverlay() {
 }
 
 export default defineContentScript({
-  matches: ["http://*/*", "https://*/*"],
+  matches: ["http://*/*", "https://*/*", "file://*/*"],
   main() {
     if (window.__up2stageInjected) {
       return;
