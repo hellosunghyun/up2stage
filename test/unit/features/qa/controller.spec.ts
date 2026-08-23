@@ -82,6 +82,25 @@ describe("Retrieval & Solar Q&A controller", () => {
     expect(askSolar).not.toHaveBeenCalled();
   });
 
+  it.each([
+    ["마감은 언제인가요?", "schedule", "2026년 8월 30일 18:00"],
+    ["주의사항을 알려줘", "cautions", "제출 후 접수 완료 여부를 확인하세요."],
+    ["다음에 무엇을 해야 하나요?", "actions", "신청서를 작성하세요."],
+  ] as const)("answers representative cached question: %s", async (question, kind, value) => {
+    const search = vi.fn();
+    const askSolar = vi.fn();
+    const result = await answerQuestion({
+      ...baseInput(),
+      question,
+      cachedFacts: [{ kind, values: [value], sourceIds: [sources[0]!.sourceId] }],
+      dependencies: { search, askSolar },
+    });
+    expect(result).toMatchObject({ origin: "cached", status: "answered" });
+    expect(result.answer).toContain(value);
+    expect(search).not.toHaveBeenCalled();
+    expect(askSolar).not.toHaveBeenCalled();
+  });
+
   it("retrieves the expected chunk and narrows Solar to candidate sources", async () => {
     const askSolar = vi.fn().mockResolvedValue({
       answer: "원격대학 재학생은 지원 대상이 아닙니다.",
