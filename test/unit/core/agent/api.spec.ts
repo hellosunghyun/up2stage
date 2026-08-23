@@ -62,7 +62,10 @@ describe("Upstage Agent API adapter", () => {
     expect(result.id).toBe("job-456");
     const [url, init] = fetchMock.mock.calls[0] as [string, RequestInit | undefined];
     expect(url).toContain("/v2/responses");
-    const body = init ? (JSON.parse(init.body as string) as { include: string[]; input: unknown[] }) : null;
+    const body = init
+      ? (JSON.parse(init.body as string) as { model: string; include: string[]; input: unknown[] })
+      : null;
+    expect(body?.model).toMatch(/^agt_/);
     expect(body?.include).toEqual(["all"]);
     expect(body?.input[0]).toMatchObject({
       role: "user",

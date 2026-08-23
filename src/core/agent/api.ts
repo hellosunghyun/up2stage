@@ -1,4 +1,4 @@
-import { BASE_URL } from "./config";
+import { AGENT_ID, BASE_URL } from "./config";
 import { agentJobSchema, upstageFileSchema } from "./types";
 import type { AgentJob, UpstageFile } from "./types";
 
@@ -55,6 +55,7 @@ export async function createAgentJob(input: CreateAgentJobInput): Promise<AgentJ
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        model: AGENT_ID,
         include: ["all"],
         input: [
           {
