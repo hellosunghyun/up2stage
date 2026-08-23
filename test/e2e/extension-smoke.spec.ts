@@ -24,8 +24,10 @@ test("built extension exposes the Up to Stage Side Panel and Viewer", async () =
       )
     : undefined;
   const testFileName = realPdfBase64 ? "검증용 원문.pdf" : "검증용 원문.unsupported";
+  const headless = process.env.PLAYWRIGHT_HEADLESS === "true";
   const context = await chromium.launchPersistentContext(profile, {
-    headless: false,
+    headless,
+    ...(headless ? { channel: "chromium" } : {}),
     ...(process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH
       ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH }
       : {}),

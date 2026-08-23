@@ -45,6 +45,7 @@ describe("ViewerShell layout", () => {
       <ViewerShell
         documents={[document]}
         sources={[source]}
+        parseElements={[]}
         documentBytes={new Map([[document.id, new ArrayBuffer(0)]])}
         sourceRegistry={registry}
         initialDocumentId={document.id}

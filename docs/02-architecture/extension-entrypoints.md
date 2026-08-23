@@ -78,7 +78,8 @@ chrome-extension://<id>/viewer.html?case=<caseId>&document=<documentId>&source=<
 - Evidence Highlight
 - Source navigation
 - Semantic Accessible View
-- 오른쪽 Guidance panel
+
+Initial Guidance, Quick Check, Evidence 목록과 대화 입력은 Chrome Side Panel에 유지한다. Viewer 페이지는 별도 Guidance sidebar를 렌더링하지 않는다.
 
 ---
 

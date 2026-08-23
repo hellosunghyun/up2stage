@@ -6,7 +6,7 @@
 
 ## 책임
 
-독립 Viewer Page shell에서 Outline, Renderer, Guidance Panel을 조합한다.
+독립 Viewer Page shell에서 Outline과 Renderer를 조합한다. Guidance와 Evidence interaction은 Chrome Extension Side Panel이 담당한다.
 
 ## 작업 전 필수 문서
 
@@ -16,8 +16,8 @@
 
 ## 폴더 규칙
 
-- 224px Outline + flexible Workspace 구조를 기준으로 한다.
-- Guidance와 Q&A를 Viewer에 복제하지 않고 Chrome Extension Side Panel에 유지한다.
+- 224px + flexible 2-column 구조를 기준으로 한다.
+- Viewer 페이지에 Guidance/Quick Check/Q&A/Evidence 우측 사이드바를 추가하지 않는다.
 - Source navigation은 `navigateToSource` 단일 경로를 사용한다.
 - 렌더러별 로직을 Viewer shell에 직접 넣지 않는다.
 

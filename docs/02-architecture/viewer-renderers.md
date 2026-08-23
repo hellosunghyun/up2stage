@@ -9,7 +9,9 @@ Viewer는 원문 탐색에 집중하는 2-column layout이다.
 ```text
 ┌──────────────┬─────────────────────────────────────────────────────┐
 │ Outline      │ Document Workspace                                  │
+│              │                                                     │
 │ 224px        │ flexible                                            │
+│              │                                                     │
 └──────────────┴─────────────────────────────────────────────────────┘
 ```
 
@@ -330,9 +332,7 @@ open Viewer / navigateToSource(sourceId)
 
 # 66. Chrome Extension Side Panel과의 경계
 
-Guidance, Quick Check, Search/Solar Q&A는 Chrome Extension Side Panel이 담당한다.
-
-Viewer에는 이를 복제한 우측 패널을 두지 않는다. Side Panel의 Source click이 Viewer를 열고 `navigateToSource`로 원문 위치에 집중시킨다.
+Viewer 페이지에는 Guidance/Evidence 우측 패널을 렌더링하지 않는다. Initial Guidance, Quick Check, Search/Solar Q&A, Evidence 목록과 대화 입력은 Chrome Extension Side Panel에 유지한다. Side Panel의 Source 선택은 `navigateToSource`로 Viewer를 열고 original renderer, outline, Accessible View의 정확한 위치에 집중시킨다.
 
 ---
 

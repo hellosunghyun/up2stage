@@ -1,6 +1,6 @@
 # Viewer Layout 상세 Spec
 
-224px Outline + Flexible Workspace 구조를 정의한다. Guidance와 Q&A는 Chrome Extension Side Panel을 사용한다.
+224px Outline + Flexible Workspace 구조를 정의한다. Guidance, Quick Check, Search/Solar Q&A, Evidence interaction은 Chrome Extension Side Panel을 사용한다.
 
 # 55. Viewer Page Layout
 
@@ -9,7 +9,9 @@ Viewer는 원문 탐색에 집중하는 2-column layout이다.
 ```text
 ┌──────────────┬─────────────────────────────────────────────────────┐
 │ Outline      │ Document Workspace                                  │
+│              │                                                     │
 │ 224px        │ flexible                                            │
+│              │                                                     │
 └──────────────┴─────────────────────────────────────────────────────┘
 ```
 
@@ -330,9 +332,20 @@ open Viewer / navigateToSource(sourceId)
 
 # 66. Chrome Extension Side Panel과의 경계
 
-Guidance, Quick Check, Search/Solar Q&A는 Chrome Extension Side Panel에 유지한다.
+Viewer 페이지에는 Guidance/Evidence 우측 패널을 렌더링하지 않는다.
 
-Viewer에는 우측 Guidance 패널을 복제하지 않는다. Side Panel의 Source click이 Viewer를 열고 원문 위치로 이동한다.
+```text
+Chrome Side Panel
+├─ Initial Guidance
+├─ Quick Check
+├─ Search/Solar Q&A
+├─ Evidence 목록
+└─ Source click → open Viewer / navigateToSource(sourceId)
+
+Viewer Page
+├─ Document Outline
+└─ Original / Structure / Accessible Workspace
+```
 
 ---
 

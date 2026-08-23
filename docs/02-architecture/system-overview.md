@@ -54,9 +54,9 @@
                              ▼
 ┌──────────────────────── Viewer Page ─────────────────────────┐
 │                                                              │
-│ Document Outline | Original Renderer | Guidance / Evidence   │
-│                  | Evidence Overlay  |                       │
-│                  | Semantic Layer    |                       │
+│ Document Outline | Original Renderer                         │
+│                  | Evidence Overlay                          │
+│                  | Semantic Layer                            │
 └──────────────────────────────────────────────────────────────┘
 ```
 

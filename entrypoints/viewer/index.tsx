@@ -5,13 +5,16 @@ import { SourceRegistry } from "../../src/core/evidence";
 import {
   getDocumentFilesForCase,
   getDocumentsForCase,
-  getSourcesForCase
+  getSourcesForCase,
+  getCanonicalAgentResult
 } from "../../src/core/storage/repositories";
-import type { DocumentRecord, SourceRecord } from "../../src/models/canonical";
+import type { DocumentRecord, ParseElement, SourceRecord } from "../../src/models/canonical";
+import "./style.css";
 
 interface ViewerData {
   documents: DocumentRecord[];
   sources: SourceRecord[];
+  parseElements: ParseElement[];
   bytes: Map<string, ArrayBuffer>;
   registry: SourceRegistry;
 }
@@ -33,15 +36,17 @@ function App() {
     void Promise.all([
       getDocumentsForCase(caseId),
       getSourcesForCase(caseId),
-      getDocumentFilesForCase(caseId)
+      getDocumentFilesForCase(caseId),
+      getCanonicalAgentResult(caseId)
     ])
-      .then(([documents, sources, files]) => {
+      .then(([documents, sources, files, agentResult]) => {
         if (documents.length === 0) {
           throw new Error("저장된 문서를 찾지 못했어요.");
         }
         setData({
           documents,
           sources,
+          parseElements: agentResult?.parseElements ?? [],
           bytes: new Map(files.map((file) => [file.documentId, file.bytes])),
           registry: new SourceRegistry().register(sources)
         });
@@ -62,6 +67,7 @@ function App() {
     <ViewerShell
       documents={data.documents}
       sources={data.sources}
+      parseElements={data.parseElements}
       documentBytes={data.bytes}
       sourceRegistry={data.registry}
       initialDocumentId={documentId}
